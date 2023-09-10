@@ -1,0 +1,11 @@
+{
+	"dependencies": {
+		"run-script-os": "^1.1.6"
+	},
+    "scripts": {
+        "init":"run-script-os",
+        "init:windows":"pnpm -C gui install && python -m venv pyenv && pyenv\\Scripts\\activate.bat && pip install -r requirements.txt",
+        "devBack":"pyenv\\Scripts\\activate.bat  && python manage.py runserver 8090",
+        "devFront":"pnpm -C gui run dev"
+    }
+}
