@@ -13,6 +13,6 @@
         "devFront": "pnpm -C gui run dev",
         "build": "run-script-os",
         "build:windows":"echo 'building...' && pnpm -C gui run build",
-        "build:linux":"echo 'building...' && pnpm -C gui run build && source pyenv/bin/activate && python manage.py collectstatic && sudo systemctl restart nginx && uswgi --ini uwsgi.ini"
+        "build:linux":"echo 'building...' && pnpm -C gui run build && source pyenv/bin/activate && python manage.py collectstatic && sudo systemctl restart nginx && uwsgi --ini uwsgi.ini"
     }
 }
