@@ -9,7 +9,6 @@ urlpatterns = [
     path('blog/', blog.BlogView.as_view(), name='blog'),
     path('blog/<int:id>/', blog.BlogDetailView.as_view({
         'put': 'update',
-        'delete': 'destroy',
         'get': 'retrieve'
     }), name='blog_detail'),
     path('upload/', blog.upload, name='upload'),
