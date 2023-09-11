@@ -43,7 +43,7 @@ const toggleDarkMode = () => {
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-footer elevated class="lt-sm">
+    <q-footer elevated class="lt-md">
       <q-toolbar class="bg-grey-3 text-black flex flex-center">
         <q-tabs inline-label>
           <q-route-tab icon="home" to="/" exact  />

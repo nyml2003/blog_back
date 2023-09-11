@@ -53,9 +53,9 @@ const maxPage = ref(0);
 </script>
 <template>
   <q-page class="flex justify-center items-start">
-    <div style="width: 50vw" class="q-ma-xl">
+    <div style="width: 75vw" class="q-ma-xl">
       <q-toolbar>
-        <q-toolbar-title class="text-h3">目录</q-toolbar-title>
+        <q-toolbar-title class="text-h3 gt-md">目录</q-toolbar-title>
         <q-space />
 
         <q-input outlined dense v-model="keyword" placeholder="搜索">
@@ -95,7 +95,7 @@ const maxPage = ref(0);
           />
         </div>
       </q-toolbar>
-      <q-timeline v-if="blogs.length">
+      <q-timeline v-if="blogs.length" style="min-width: 300px;">
         <q-timeline-entry heading> </q-timeline-entry>
         <q-timeline-entry
           v-for="(blog, id) in blogs"

@@ -14,6 +14,7 @@ const views = ref(0);
 const id = "preview-only";
 const scrollElement = document.documentElement;
 const blog_id = ref(0);
+const isMenuVisible = ref(false);
 const loadData = () => {
   blog_id.value = parseInt(route.params.id);
   api.get("/api/blog/" + blog_id.value).then((res) => {
@@ -97,6 +98,15 @@ const isDrawerOpen = ref(false);
         @click="isDrawerOpen = !isDrawerOpen"
       />
     </q-page-sticky>
+    <q-page-sticky position="right" :offset="[18, 0]">
+      <q-btn
+        round
+        color="accent"
+        :icon="isMenuVisible ? 'menu_open' : 'menu'"
+        @click="isMenuVisible = !isMenuVisible"
+        v-if="!isMenuVisible"
+      />
+    </q-page-sticky>
     <q-drawer v-model="isDrawerOpen" side="left" bordered>
       <q-list>
         <q-item v-for="(blog, id) in blogList" :key="id">
@@ -130,7 +140,7 @@ const isDrawerOpen = ref(false);
         </q-item>
       </q-list>
     </q-drawer>
-    <div class="q-ma-xl" style="width: 50vw">
+    <div class="q-ma-xl" style="width: 70vw">
       <q-toolbar class="q-mb-sm">
         <q-btn
           label="上一篇"
@@ -219,7 +229,7 @@ const isDrawerOpen = ref(false);
       </q-toolbar>
     </div>
     <div class="q-ma-xl">
-      <q-card style="position: fixed; right: 5vw; top: 10vh">
+      <q-card class="fixed-right" v-if="isMenuVisible" style="height: 80vh;top: 10vh">
         <q-card-actions align="right">
           <div class="text-h6 q-ma-md">快速导航</div>
           <q-btn
@@ -232,6 +242,11 @@ const isDrawerOpen = ref(false);
             flat
             dense
             @click="scrollElement.scrollTop = scrollElement.scrollHeight"
+          />
+          <q-btn
+            icon="close"
+            flat
+            @click="isMenuVisible = false"
           />
         </q-card-actions>
         <q-card-section>
