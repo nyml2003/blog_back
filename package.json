@@ -1,14 +1,16 @@
 {
-	"dependencies": {
-		"run-script-os": "^1.1.6"
-	},
+    "dependencies": {
+        "@quasar/cli": "^2.2.3",
+        "run-script-os": "^1.1.6"
+    },
     "scripts": {
-        "init":"run-script-os",
-        "init:windows":"pnpm -C gui install && python -m venv pyenv && pyenv\\Scripts\\activate.bat && pip install -r requirements.txt",
-        "init:linux":"pnpm -C gui install && python3 -m venv pyenv && source pyenv/bin/activate && pip install -r requirements.txt",
-        "devBack":"run-script-os",
-        "devBack:windows":"pyenv\\Scripts\\activate.bat  && python manage.py runserver 8090",
-        "devBack:linux":"source pyenv/bin/activate && python manage.py runserver 8090",
-        "devFront":"pnpm -C gui run dev"
+        "init": "run-script-os",
+        "init:windows": "pnpm -C gui install && python -m venv pyenv && pyenv\\Scripts\\activate.bat && pip install -r requirements.txt",
+        "init:linux": "pnpm -C gui install && python3 -m venv pyenv && source pyenv/bin/activate && pip install -r requirements.txt",
+        "devBack": "run-script-os",
+        "devBack:windows": "pyenv\\Scripts\\activate.bat  && python manage.py runserver 8090",
+        "devBack:linux": "source pyenv/bin/activate && python manage.py runserver 8090",
+        "devFront": "pnpm -C gui run dev",
+        "build": "echo 'building...' && pnpm -C gui run build && source pyenv/bin/activate && python manage.py collectstatic && sudo systemctl restart nginx && uswgi --ini uwsgi.ini"
     }
 }
