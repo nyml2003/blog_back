@@ -89,7 +89,7 @@ const handleKeyboardInput = (keyCode) => {
 };
 let isKeyDown = false;
 const gamekeydown = (event) => {
-  console.log('keydown')
+  console.log("keydown");
   if (!isKeyDown) {
     isKeyDown = true;
     nextFoot.value = 1 - nextFoot.value;
@@ -97,7 +97,7 @@ const gamekeydown = (event) => {
   }
 };
 const gamekeyup = (event) => {
-  console.log('keyup')
+  console.log("keyup");
   isKeyDown = false;
   if (keyCodeMap.has(event.keyCode))
     hero.value.orientation = keyCodeMap.get(event.keyCode);
@@ -145,6 +145,7 @@ const getMaze = async () => {
 };
 onMounted(() => {
   getMaze();
+  responseCanvas();
 });
 const handleSwipe = ({ evt, ...newInfo }) => {
   console.log(newInfo);
@@ -157,31 +158,29 @@ const handleSwipe = ({ evt, ...newInfo }) => {
   gamekeydown({ keyCode: direction2KeyCode.get(newInfo.direction) });
   setTimeout(() => {
     gamekeyup({ keyCode: direction2KeyCode.get(newInfo.direction) });
-  }, newInfo.duration*3);
-
-}
+  }, newInfo.duration * 3);
+};
 //canvas的绘制
 const canvas = ref(null);
+const responseCanvas = () => {
+  canvas.value.width = 100;
+  canvas.value.height = 100;
+};
 </script>
 <template>
-  <q-page class="flex flex-center" @keydown="gamekeydown"
-      @keyup="gamekeyup"
-      tabindex="0"
-      v-touch-swipe.mouse="handleSwipe"
-      ref="mask">
-    <q-card class="q-mt-xl"
-
-    >
-    <q-responsive :ratio="1/1" style="width: 90vw;"
-    ><canvas ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
-    </q-responsive>
-
+  <q-page
+    class="flex flex-center"
+    @keydown="gamekeydown"
+    @keyup="gamekeyup"
+    tabindex="0"
+    v-touch-swipe.mouse="handleSwipe"
+    ref="mask"
+  >
+  <!-- 占据剩余部分 -->
+    <q-card class="q-ma-md" style="width: 50vh; height: 50vh">
+      <canvas ref="canvas" style="width: 100%; height: 100%"></canvas>
     </q-card>
   </q-page>
-  <div style="position: fixed">
-    窗口宽度: {{ width }}<br />
-    窗口高度: {{ height }}
-  </div>
 </template>
 
 <style scoped>
