@@ -5,7 +5,10 @@
     "scripts": {
         "init":"run-script-os",
         "init:windows":"pnpm -C gui install && python -m venv pyenv && pyenv\\Scripts\\activate.bat && pip install -r requirements.txt",
-        "devBack":"pyenv\\Scripts\\activate.bat  && python manage.py runserver 8090",
+        "init:linux":"pnpm -C gui install && python3 -m venv pyenv && source pyenv/bin/activate && pip install -r requirements.txt",
+        "devBack":"run-script-os",
+        "devBack:windows":"pyenv\\Scripts\\activate.bat  && python manage.py runserver 8090",
+        "devBack:linux":"source pyenv/bin/activate && python manage.py runserver 8090",
         "devFront":"pnpm -C gui run dev"
     }
 }

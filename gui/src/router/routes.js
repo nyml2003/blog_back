@@ -8,7 +8,6 @@ const routes = [
       { path: "game", component: () => import("pages/GamePage.vue") },
       { path: "blog", component: () => import("pages/BlogPage.vue") },
       { path: "test", component: () => import("components/BlogDetail.vue") },
-      { path: "upload", component: () => import("pages/UploadPage.vue") },
       { path: 'edit', component: () => import("components/BlogEdit.vue") },
       {
         path: 'blog/:id',
