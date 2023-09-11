@@ -1,13 +1,12 @@
 <template>
-  <q-btn icon="edit" flat dense color="warning" @click="click" />
+  <q-page class="flex flex-center">
+    <div class="text-h6">
+    {{$q.platform.is.desktop ? 'Desktop' : 'Mobile'}}
+  </div>
+  </q-page>
 </template>
 
 <script setup>
-const click = () => {
-  const arr = new Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  const l = {
-    articles: arr,
-  };
-  console.log(l);
-};
+import { useQuasar } from "quasar";
+const $q = useQuasar();
 </script>

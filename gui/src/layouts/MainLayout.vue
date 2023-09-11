@@ -8,9 +8,10 @@ const toggleDarkMode = () => {
 };
 </script>
 <template>
-  <q-layout view="hHh LpR fFf" class="non-selectable">
-    <q-header elevated>
-      <q-toolbar class="bg-grey-3 text-black">
+
+  <q-layout view="hHh LpR fFf" class="non-selectable des">
+    <q-header elevated class="gt-sm">
+      <q-toolbar class="bg-grey-3 text-black ">
         <q-toolbar-title> 风唤长河的博客 </q-toolbar-title>
 
         <q-space />
@@ -42,5 +43,16 @@ const toggleDarkMode = () => {
     <q-page-container>
       <router-view />
     </q-page-container>
+    <q-footer elevated class="lt-sm">
+      <q-toolbar class="bg-grey-3 text-black flex flex-center">
+        <q-tabs inline-label>
+          <q-route-tab icon="home" to="/" exact  />
+          <q-route-tab icon="account_circle" to="/about"  />
+          <q-route-tab icon="menu_book" to="/blog"  />
+          <q-route-tab icon="videogame_asset" to="/game"  exact />
+          </q-tabs>
+          </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
+
