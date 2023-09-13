@@ -16,6 +16,11 @@ const { configure } = require('quasar/wrappers');
 
 module.exports = configure(function (ctx) {
   return {
+    vendor: {
+      disable: true,
+      remove: ['quasar/dist/api', 'quasar/dist/quasar.esm.js','axios','vue-i18n','vue-router','vue','pinia'],
+      add: ['quasar-app-extension-axios', 'quasar-app-extension-i18n', 'quasar-app-extension-qmarkdown']
+    },
     // https://v2.quasar.dev/quasar-cli-webpack/supporting-ts
     supportTS: false,
 
