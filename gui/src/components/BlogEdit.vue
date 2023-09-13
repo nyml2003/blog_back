@@ -16,7 +16,7 @@ const upload = () => {
     content: content.value,
   });
   api
-    .post("/api/upload/", {
+    .post("/upload/", {
       title: title.value,
       description: description.value,
       content: content.value,
@@ -27,7 +27,7 @@ const upload = () => {
 };
 const update = () => {
   api
-    .put("/api/blog/" + blog_id + "/", {
+    .put("/blog/" + blog_id + "/", {
       title: title.value,
       description: description.value,
       content: content.value,

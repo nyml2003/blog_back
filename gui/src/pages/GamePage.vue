@@ -124,7 +124,7 @@ const hero = ref({
 
 const getMaze = async () => {
   await api
-    .get(`/api/maze/create?row=${rowInput.value}&col=${colInput.value}`)
+    .get(`/maze/create?row=${rowInput.value}&col=${colInput.value}`)
     .then((res) => {
       console.log(res);
       map.value = res.data.maze;

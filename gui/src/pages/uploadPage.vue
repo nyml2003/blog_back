@@ -31,7 +31,7 @@ const upload = () => {
     formData.append("title", title);
     formData.append("description", description);
     api
-      .post("/api/upload", formData, {
+      .post("/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

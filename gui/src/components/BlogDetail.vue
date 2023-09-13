@@ -17,7 +17,7 @@ const blog_id = ref(0);
 const isMenuVisible = ref(false);
 const loadData = () => {
   blog_id.value = parseInt(route.params.id);
-  api.get("/api/blog/" + blog_id.value).then((res) => {
+  api.get("/blog/" + blog_id.value).then((res) => {
     createdAtTime.value = res.data.created_at;
     title.value = res.data.title;
     description.value = res.data.description;

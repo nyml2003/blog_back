@@ -14,7 +14,7 @@ onMounted(() => {
 });
 const loadData = () => {
   api
-    .get("/api/blog/", {
+    .get("/blog/", {
       params: {
         page: currentPage.value,
         page_size: recordsPerPage.value,
@@ -42,7 +42,7 @@ const loadData = () => {
     });
 };
 const loadList = () => {
-  api.get("/api/blog/getBlogList").then((res) => {
+  api.get("/blog/getBlogList").then((res) => {
     blogStore.setBlogList(res.data.data);
   });
 };
