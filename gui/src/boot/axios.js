@@ -8,8 +8,7 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  // baseURL: process.env.NODE_ENV === 'production' ? 'http://8.130.84.162:8000' : 'http://localhost:8090',
-  baseURL:'http://8.130.84.162:8000',
+  baseURL: process.env.NODE_ENV === 'production' ? 'https://ventusvocatflumen.cn:8000' : 'http://localhost:8090',
 });
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
