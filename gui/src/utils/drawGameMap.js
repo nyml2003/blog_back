@@ -1,27 +1,27 @@
 let fullMapCanvas = null;
 let BackGroundCanvas = null;
 const IMAGE_Length = 32;
-const imgbackground = require("../assets/image/BackGround.png");
+const imgbackground = require("assets/image/BackGround.png");
 const images = [
-  require("../assets/image/TransparentPicture.png"),
-  require("../assets/image/Stone.png"),
-  require("../assets/image/Exit.png"),
-  require("../assets/image/Ball0.png"),
-  require("../assets/image/Ball1.png"),
+  require("assets/image/TransparentPicture.png"),
+  require("assets/image/Stone.png"),
+  require("assets/image/Exit.png"),
+  require("assets/image/Ball0.png"),
+  require("assets/image/Ball1.png"),
 ];
 const heroImage = [
-  require("../assets/image/Hero10.png"),
-  require("../assets/image/Hero11.png"),
-  require("../assets/image/Hero12.png"),
-  require("../assets/image/Hero20.png"),
-  require("../assets/image/Hero21.png"),
-  require("../assets/image/Hero22.png"),
-  require("../assets/image/Hero30.png"),
-  require("../assets/image/Hero31.png"),
-  require("../assets/image/Hero32.png"),
-  require("../assets/image/Hero40.png"),
-  require("../assets/image/Hero41.png"),
-  require("../assets/image/Hero42.png"),
+  require("assets/image/Hero10.png"),
+  require("assets/image/Hero11.png"),
+  require("assets/image/Hero12.png"),
+  require("assets/image/Hero20.png"),
+  require("assets/image/Hero21.png"),
+  require("assets/image/Hero22.png"),
+  require("assets/image/Hero30.png"),
+  require("assets/image/Hero31.png"),
+  require("assets/image/Hero32.png"),
+  require("assets/image/Hero40.png"),
+  require("assets/image/Hero41.png"),
+  require("assets/image/Hero42.png"),
 ];
 export function initFullMapCanvas(map, row, col) {
   fullMapCanvas = document.createElement("canvas");

@@ -1,8 +1,9 @@
 <script setup>
 import { useQuasar } from "quasar";
 import { ref, onMounted } from "vue";
-import { initFullMapCanvas, drawVisibleMapArea } from "boot/drawGameMap";
-import { api } from "boot/axios";
+import { initFullMapCanvas, drawVisibleMapArea } from "src/utils/drawGameMap";
+import { guestApi} from "boot/axios";
+
 const $q = useQuasar();
 const keyCodeMap = new Map([
   [87, 0],
@@ -123,7 +124,7 @@ const hero = ref({
 });
 
 const getMaze = async () => {
-  await api
+  await guestApi
     .get(`/maze/create?row=${rowInput.value}&col=${colInput.value}`)
     .then((res) => {
       console.log(res);

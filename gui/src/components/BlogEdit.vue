@@ -1,40 +1,41 @@
 <script setup>
-import { ref, toRefs } from "vue";
-import { api } from "boot/axios";
+import { ref,onMounted } from "vue";
+import { userApi} from "boot/axios";
 import { MdEditor } from "md-editor-v3";
 import { useRoute } from "vue-router";
-import { useBlogStore } from "stores/blog-store";
-const blogStore = useBlogStore();
 const route = useRoute();
 import "md-editor-v3/lib/style.css";
-const { title, description, content } = toRefs(blogStore.getBlog());
-const blog_id = route.params.id;
-const upload = () => {
-  console.log({
-    title: title.value,
-    description: description.value,
-    content: content.value,
+const blog_id = ref(0);
+const title = ref("");
+const description = ref("");
+const content = ref("");
+const loadData = () => {
+  blog_id.value = parseInt(route.params.id);
+  userApi.get("/blog/rest/" + route.params.id + "/").then((res) => {
+    title.value = res.data.title;
+    description.value = res.data.description;
+    content.value = res.data.content;
   });
-  api
-    .post("/upload/", {
+};
+onMounted(() => {
+  loadData();
+});
+const upload = () => {
+  userApi
+    .post("/blog/upload/", {
       title: title.value,
       description: description.value,
       content: content.value,
     })
-    .then((res) => {
-      console.log(res);
-    });
 };
 const update = () => {
-  api
-    .put("/blog/" + blog_id + "/", {
+  userApi
+    .put("/blog/rest/" + blog_id.value + "/", {
       title: title.value,
       description: description.value,
       content: content.value,
     })
-    .then((res) => {
-      console.log(res);
-    });
+
 };
 </script>
 <template>

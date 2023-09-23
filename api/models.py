@@ -3,17 +3,26 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Blog(models.Model):
     title = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     content = models.TextField()
     description = models.TextField()
+    tags = models.ManyToManyField(Tag)
     views = models.IntegerField(default=0)
 
 
-class test(models.Model):
-    name = models.CharField(max_length=50)
+class Comment(models.Model):
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent_blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True, blank=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Move(models.Model):

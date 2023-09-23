@@ -1,13 +1,12 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { MdPreview, MdCatalog } from "md-editor-v3";
-import { useRoute, useRouter } from "vue-router";
-import { api } from "boot/axios";
-import { useBlogStore } from "stores/blog-store";
-const blogStore = useBlogStore();
+import {onMounted, ref} from "vue";
+import {MdCatalog, MdPreview} from "md-editor-v3";
+import {useRoute, useRouter} from "vue-router";
+import {guestApi} from "boot/axios";
+import "md-editor-v3/lib/preview.css";
+
 const route = useRoute();
 const router = useRouter();
-import "md-editor-v3/lib/preview.css";
 const title = ref("");
 const description = ref("");
 const views = ref(0);
@@ -17,26 +16,20 @@ const blog_id = ref(0);
 const isMenuVisible = ref(false);
 const loadData = () => {
   blog_id.value = parseInt(route.params.id);
-  api.get("/blog/" + blog_id.value).then((res) => {
-    createdAtTime.value = res.data.created_at;
-    title.value = res.data.title;
-    description.value = res.data.description;
-    content.value = res.data.content;
-    views.value = res.data.views;
-    blogList.value = blogStore.getBlogList();
-    if (blogList.value.length === 0) {
-      router.push({
-        path: "/blog",
-      });
-    }
-    nextId.value = blogStore.getNextId(blog_id.value);
-    prevId.value = blogStore.getPrevId(blog_id.value);
-    blogStore.setBlog({
-      title: res.data.title,
-      content: res.data.content,
-      description: res.data.description,
-    });
+  guestApi.get(`/blog/rest/`).then((res) => {
+    blogList.value = res.data.data;
   });
+  guestApi.get(`/blog/rest/${blog_id.value}/`).then((res) => {
+    if (res) {
+      title.value = res.data.title;
+      description.value = res.data.description;
+      content.value = res.data.content;
+      views.value = res.data.views;
+      createdAtTime.value = res.data.created_at;
+      nextId.value = res.data.next_id;
+      prevId.value = res.data.prev_id;
+    }
+  })
 };
 const blogList = ref([]);
 const nextId = ref(0);
@@ -116,7 +109,8 @@ const isDrawerOpen = ref(false);
                 'text-primary': blog.id === blog_id,
                 'text-grey': blog.id !== blog_id,
               }"
-              >{{ blog.title }}</q-item-label
+            >{{ blog.title }}
+            </q-item-label
             >
           </q-item-section>
           <q-item-section side top>
@@ -149,7 +143,7 @@ const isDrawerOpen = ref(false);
           @click="prevBlog"
           :disable="prevId === 0"
         />
-        <q-space />
+        <q-space/>
         <q-btn
           label="下一篇"
           icon-right="arrow_forward"
@@ -161,7 +155,7 @@ const isDrawerOpen = ref(false);
       <q-card>
         <q-card-section>
           <div class="row items-center no-wrap">
-            <div clas="col-4 q-ma-md">
+            <div class="col-4 q-ma-md">
               <div class="text-h5 row">
                 {{ title }}
                 <q-btn
@@ -171,21 +165,21 @@ const isDrawerOpen = ref(false);
                   color="warning"
                   @click="editBlog"
                 />
-                <q-btn icon="delete" flat dense color="red" />
+                <q-btn icon="delete" flat dense color="red"/>
               </div>
 
               <div class="text-subtitle2 text-grey row no-wrap q-mt-md">
                 <div class="q-ma-xs">
-                  <q-icon name="history_edu" size="sm" />
+                  <q-icon name="history_edu" size="sm"/>
                   Word Count:{{ content.length }}
                 </div>
                 <div class="q-ma-xs">
-                  <q-icon name="timer" size="sm" />
+                  <q-icon name="timer" size="sm"/>
                   {{ new Date(createdAtTime).toLocaleString() }}
                 </div>
               </div>
             </div>
-            <q-space />
+            <q-space/>
             <div class="col-auto">
               <!-- <div class="row q-ma-xs">
                 <q-icon name="thumb_up" size="sm" />114
@@ -196,14 +190,16 @@ const isDrawerOpen = ref(false);
               </div> -->
               <!-- <q-separator /> -->
               <div class="row q-ma-xs">
-                <q-icon name="visibility" size="sm" />{{ views }}
+                <q-icon name="visibility" size="sm"/>
+                {{ views }}
               </div>
             </div>
           </div>
         </q-card-section>
-        <q-separator />
+        <q-separator/>
         <q-card-section
-          ><MdPreview
+        >
+          <MdPreview
             :editorId="id"
             :modelValue="content"
             @onGetCatalog="onGetCatalog"
@@ -218,7 +214,7 @@ const isDrawerOpen = ref(false);
           @click="prevBlog"
           :disable="prevId === 0"
         />
-        <q-space />
+        <q-space/>
         <q-btn
           label="下一篇"
           icon-right="arrow_forward"
@@ -229,7 +225,11 @@ const isDrawerOpen = ref(false);
       </q-toolbar>
     </div>
     <div class="q-ma-xl">
-      <q-card class="fixed-right" v-if="isMenuVisible" style="height: 80vh;top: 10vh">
+      <q-card
+        class="fixed-right"
+        v-if="isMenuVisible"
+        style="height: 80vh; top: 10vh"
+      >
         <q-card-actions align="right">
           <div class="text-h6 q-ma-md">快速导航</div>
           <q-btn
@@ -243,17 +243,13 @@ const isDrawerOpen = ref(false);
             dense
             @click="scrollElement.scrollTop = scrollElement.scrollHeight"
           />
-          <q-btn
-            icon="close"
-            flat
-            @click="isMenuVisible = false"
-          />
+          <q-btn icon="close" flat @click="isMenuVisible = false"/>
         </q-card-actions>
         <q-card-section>
           <q-scroll-area style="height: 70vh">
             <div v-if="isCatalogVisible">
               <div class="text-h6">目录</div>
-              <MdCatalog :editorId="id" :scrollElement="scrollElement" />
+              <MdCatalog :editorId="id" :scrollElement="scrollElement"/>
             </div>
             <div v-else class="text-h6">本篇文章无目录</div>
           </q-scroll-area>

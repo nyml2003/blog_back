@@ -6,18 +6,31 @@ const routes = [
     children: [
       { path: "", component: () => import("pages/IndexPage.vue") },
       { path: "game", component: () => import("pages/GamePage.vue") },
-      { path: "blog", component: () => import("pages/BlogPage.vue") },
+      { path: "blog", component: () => import("pages/BlogPage.vue"),
+      },
       { path: "test", component: () => import("components/BlogDetail.vue") },
       { path: 'edit', component: () => import("components/BlogEdit.vue") },
       {
         path: 'blog/:id',
         name: 'BlogDetail',
-        component: () => import("components/BlogDetail.vue")
+        component: () => import("components/BlogDetail.vue"),
       },
       {
-        path: 'blog/:id/edit',
+        path: 'blog/edit/:id',
         name: 'BlogEdit',
-        component: () => import("components/BlogEdit.vue")
+        meta: {requireAuth: true, permission:'change_blog'},
+        component: () => import("components/BlogEdit.vue"),
+      },
+      {
+        path: 'login',
+        name: 'Login',
+        meta: {requireAuth: false},
+        component: () => import("pages/LoginPage.vue")
+      },
+      {
+        path: 'register',
+        name: 'Register',
+        component: () => import("pages/RegisterPage.vue")
       }
     ],
   },
