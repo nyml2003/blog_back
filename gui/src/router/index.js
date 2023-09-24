@@ -32,8 +32,15 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach((to, from, next) => {
     if (to.meta.requireAuth === true) {
       const loginStore = useLoginStore();
-      if (loginStore.isLogged) {
-        loginStore.checkPermission(to.meta.permission).then((res) => {
+      console.log(loginStore.isLogged)
+      if (loginStore.isLogged === undefined || loginStore.isLogged === null) {
+        next({
+          path: '/'
+        })
+      }
+      else if (loginStore.isLogged) {
+        if (to.meta.permission){
+          loginStore.checkPermission(to.meta.permission).then((res) => {
           if (res === 'no permission') {
             Notify.create({
               message: '您没有权限',
@@ -48,7 +55,9 @@ export default route(function (/* { store, ssrContext } */) {
             next()
           }
         })
+        }else next()
       } else {
+        console.log(loginStore.isLogged)
         Notify.create({
           message: '请先登录',
           color: 'red',
@@ -58,7 +67,7 @@ export default route(function (/* { store, ssrContext } */) {
         next({
           path: '/login'
         })
-      }
+        }
     } else if (to.meta.requireAuth === false) {
       const loginStore = useLoginStore();
       if (loginStore.isLogged) {

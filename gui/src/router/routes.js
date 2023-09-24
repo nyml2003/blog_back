@@ -1,24 +1,27 @@
+import {Platform} from "quasar";
+const platform = Platform.is.desktop ? 'Desktop' : 'Mobile';
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/MainLayout.vue"),
-
+    // component: () => import("layouts/MainLayout.vue"),
+    component: () => import(`layouts/MainLayout${platform}.vue`),
     children: [
-      { path: "", component: () => import("pages/IndexPage.vue") },
-      { path: "game", component: () => import("pages/GamePage.vue") },
-      { path: "blog", component: () => import("pages/BlogPage.vue"),
+      {path: "", component: () => import("pages/IndexPage.vue")},
+      {path: "game", component: () => import("pages/GamePage.vue")},
+      {
+        path: "blog", component: () => import(`pages/BlogPage${platform}.vue`),
       },
-      { path: "test", component: () => import("components/BlogDetail.vue") },
-      { path: 'edit', component: () => import("components/BlogEdit.vue") },
+      {path: "test", component: () => import("components/BlogDetail.vue")},
+      {path: 'edit', component: () => import("components/BlogEdit.vue")},
       {
         path: 'blog/:id',
         name: 'BlogDetail',
-        component: () => import("components/BlogDetail.vue"),
+        component: () => import(`components/BlogDetail${platform}.vue`),
       },
       {
         path: 'blog/edit/:id',
         name: 'BlogEdit',
-        meta: {requireAuth: true, permission:'change_blog'},
+        meta: {requireAuth: true, permission: 'change_blog'},
         component: () => import("components/BlogEdit.vue"),
       },
       {
@@ -31,7 +34,23 @@ const routes = [
         path: 'register',
         name: 'Register',
         component: () => import("pages/RegisterPage.vue")
-      }
+      },
+      {
+        path: "/user",
+        meta: {requireAuth: true},
+        children: [
+          {
+            path: 'profile',
+            name: 'Profile',
+            component: () => import("pages/ProfilePage.vue")
+          },
+          {
+            path: 'comment',
+            name: 'Comment',
+            component: () => import("pages/CommentPage.vue")
+          }
+        ]
+      },
     ],
   },
 

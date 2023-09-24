@@ -46,8 +46,9 @@ export const useLoginStore = defineStore("LoginStore", {
         })
       },
       getPermission: function () {
-        userApi.get('/permission/').then((res) => {
-          this.permission = res.data.permissions;
+        userApi.get('/user/permission/').then((res) => {
+          console.log(res)
+          this.permission = res.data;
         })
       },
       checkPermission: function (permission) {
@@ -62,7 +63,7 @@ export const useLoginStore = defineStore("LoginStore", {
     },
     state: () => ({
       return: {
-        isLogged: false,
+        isLogged: null,
         permission: [],
       }
     })

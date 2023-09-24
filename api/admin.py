@@ -27,3 +27,5 @@ from django.contrib.auth.models import Group, Permission, User
 # user=User.objects.create_user(username='user',password='user')
 # group=Group.objects.get(name='NormalUserGroup')
 # group.user_set.add(user)
+
+
