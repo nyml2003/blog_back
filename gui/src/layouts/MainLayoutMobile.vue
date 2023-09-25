@@ -90,15 +90,13 @@ watch(rightDrawerOpen, () => {
     )
   } else {
     userApi.get('/user/rest/').then((res) => {
-      useInfo.value.username = res.data.username;
-      useInfo.value.email = res.data.email;
+      username.value = res.data.username;
+      email.value = res.data.email;
     })
   }
 })
-const useInfo = ref({
-  username: "",
-  email: "",
-})
+const username = ref("");
+const email = ref("");
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -167,8 +165,8 @@ const useInfo = ref({
               src="https://avatars.githubusercontent.com/u/106670529?s=400&u=1285065547ee37395586d36887a3d7a7b340d112&v=4">
           </q-avatar>
           <div class="text-right q-ma-md">
-            <div class="text-h6 text-weight-bold">{{ userInfo?.username }}</div>
-            <div class="text-subtitle2 q-mt-md">{{ userInfo?.email }}</div>
+            <div class="text-h6 text-weight-bold">{{ username }}</div>
+            <div class="text-subtitle2 q-mt-md">{{ email }}</div>
           </div>
         </div>
       </q-img>
