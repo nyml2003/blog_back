@@ -1,9 +1,10 @@
 import {Platform} from "quasar";
+
 const platform = Platform.is.desktop ? 'Desktop' : 'Mobile';
+console.log('platform: ', platform);
 const routes = [
   {
     path: "/",
-    // component: () => import("layouts/MainLayout.vue"),
     component: () => import(`layouts/MainLayout${platform}.vue`),
     children: [
       {path: "", component: () => import("pages/IndexPage.vue")},

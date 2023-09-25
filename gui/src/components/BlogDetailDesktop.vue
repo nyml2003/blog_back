@@ -85,8 +85,8 @@ const isLogged = ref(inject("isLogged"));
 const showComment = ref(false);
 </script>
 <template>
-  <q-page class="flex flex-center ">
-    <q-card class="q-ma-sm" style="width: 95%">
+  <q-page class="flex" style="flex-direction: column;align-items: center">
+    <q-card class="q-ma-sm" style="width: 700px;">
       <q-card-actions>
         <q-btn
           label="上一篇"
@@ -149,7 +149,7 @@ const showComment = ref(false);
         />
       </q-card-actions>
     </q-card>
-    <q-card class="q-ma-sm" style="width: 95%">
+    <q-card class="q-ma-sm" style="width: 700px;">
       <q-list separator>
         <q-item>
           <q-item-section>
@@ -188,16 +188,16 @@ const showComment = ref(false);
                   icon="send"
                   :disable="!comment || isLogged===false"
                   @click="()=>{
-                    $q.notify({
-                      message: '是否确认提交评论？',
-                      color: 'white',
-                      textColor: 'black',
-                      position: 'center',
-                      actions: [
-                        { label: '取消', color: 'black', handler: () => {console.log('no')} },
-                        { label: '确定', color: 'blue', handler: () => {submitComment()} }]
-                    })
-                  }"
+                        $q.notify({
+                          message: '是否确认提交评论？',
+                          color: 'white',
+                          textColor: 'black',
+                          position: 'center',
+                          actions: [
+                            { label: '取消', color: 'black', handler: () => {console.log('no')} },
+                            { label: '确定', color: 'blue', handler: () => {submitComment()} }]
+                        })
+                      }"
                 />
               </template>
             </q-input>
@@ -206,5 +206,6 @@ const showComment = ref(false);
       </q-list>
 
     </q-card>
+
   </q-page>
 </template>

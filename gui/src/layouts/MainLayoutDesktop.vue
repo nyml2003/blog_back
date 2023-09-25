@@ -35,20 +35,6 @@ const toggleLog = () => {
   })
 };
 onMounted(() => {
-  const handleClickOutside = (event) => {
-    if (enableSearch.value === false) {
-      isInputKeyword.value = false;
-    } else if (toolbarRef.value && !toolbarRef.value.$el.contains(event.target)) {
-      enableSearch.value = false;
-      isInputKeyword.value = false;
-    } else {
-      isInputKeyword.value = true;
-    }
-  }
-  document.addEventListener("click", handleClickOutside);
-  onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
-  });
   toggleLog();
 });
 const isLogged = ref(computed(() => loginStore.isLogged));
@@ -76,13 +62,18 @@ const reload = () => {
   })
 }
 const isInputKeyword = ref(false);
-const toolbarRef = ref(null);
 const enableSearch = ref(false);
 watch(rightDrawerOpen, () => {
   if (isLogged.value === false) {
     rightDrawerOpen.value = false;
     setTimeout(
       () => {
+        $q.notify({
+          message: '请先登录',
+          icon: 'warning',
+          color: 'red',
+          position: 'top',
+        })
         router.push({
           path: '/login'
         })
@@ -102,11 +93,44 @@ const useInfo = ref({
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
-    <q-header elevated>
+    <q-header reveal>
+      <q-toolbar class="bg-white text-black justify-center" v-if="!isInputKeyword">
+        <q-tabs inline-label>
+          <q-route-tab icon="home" to="/" exact/>
+          <q-route-tab icon="group" to="/friend"/>
+          <q-route-tab icon="menu_book" to="/blog"/>
+          <q-route-tab icon="videogame_asset" to="/game" exact/>
+        </q-tabs>
+        <q-input
+          ref="input"
+          v-model="keywordCopy"
+          color="primary"
+          dense
+          outlined
+          placeholder="Search"
+        >
+          <template #prepend>
+            <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
+          </template>
+        </q-input>
+        <q-btn flat icon="account_circle" @click="()=>{
+          if (isLogged) {
+            rightDrawerOpen = true
+          } else {
+            $q.notify({
+              message: '请先登录',
+              icon: 'warning',
+              color: 'red',
+              position: 'top',
+            })
+            login()
+          }
+        }" class="q-ml-md"
+               label="帐号"/>
+      </q-toolbar>
     </q-header>
     <q-drawer
       v-model="rightDrawerOpen"
-      show-if-above
       :width="300"
       side="right"
       elevated
@@ -163,8 +187,8 @@ const useInfo = ref({
       <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
         <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
           <q-avatar size="100px">
-            <img
-              src="https://avatars.githubusercontent.com/u/106670529?s=400&u=1285065547ee37395586d36887a3d7a7b340d112&v=4">
+            <img alt="avatar"
+                 src="https://avatars.githubusercontent.com/u/106670529?s=400&u=1285065547ee37395586d36887a3d7a7b340d112&v=4">
           </q-avatar>
           <div class="text-right q-ma-md">
             <div class="text-h6 text-weight-bold">{{ userInfo?.username }}</div>
@@ -172,71 +196,13 @@ const useInfo = ref({
           </div>
         </div>
       </q-img>
-      <q-btn
-        style="position: absolute; bottom: 50vh; left:-16.8px"
-        dense
-        round
-        unelevated
-        color="accent"
-        icon='chevron_right'
-        @click="rightDrawerOpen =false"
-      />
     </q-drawer>
     <q-page-container>
-      <q-page-sticky class="z-top" position="right" :offset="[-16.8,0]">
-        <q-btn
-          dense
-          round
-          unelevated
-          color="accent"
-          icon='chevron_left'
-          @click="rightDrawerOpen =true"
-          v-if="!rightDrawerOpen"
-        />
-      </q-page-sticky>
-
       <router-view v-if="isRouteActive"/>
     </q-page-container>
-
-    <q-footer ref="toolbarRef" reveal>
-      <q-toolbar class="bg-white text-black justify-between" v-if="!isInputKeyword">
-        <q-tabs inline-label>
-          <q-route-tab icon="home" to="/" exact/>
-          <q-route-tab icon="group" to="/friend"/>
-        </q-tabs>
-        <q-btn round icon="search" color="primary" @click="enableSearch = true"></q-btn>
-        <q-tabs inline-label>
-          <q-route-tab icon="menu_book" to="/blog"/>
-          <q-route-tab icon="videogame_asset" to="/game" exact/>
-        </q-tabs>
-      </q-toolbar>
-      <q-toolbar v-else class="bg-white text-black justify-center">
-        <q-input
-          ref="input"
-          v-model="keywordCopy"
-          color="primary"
-          dense
-          borderless
-          style="width: 100%"
-          placeholder="Search"
-        >
-
-          <template #prepend>
-            <q-btn flat dense icon="search" color="primary" @click="search"/>
-          </template>
-        </q-input>
-      </q-toolbar>
-    </q-footer>
 
   </q-layout>
 </template>
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
-
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
 </style>
 
