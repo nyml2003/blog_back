@@ -7,7 +7,8 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const baseAxiosConfig = {
-  baseURL: process.env.NODE_ENV === 'production' ? 'https://ventusvocatflumen.cn/api' : 'http://localhost:8090/api',
+  // baseURL: process.env.NODE_ENV === 'production' ? 'https://ventusvocatflumen.cn/api' : 'http://localhost:8090/api',
+  baseURL: process.env.NODE_ENV === 'production' ? 'http://8.130.84.162:8090/api' : 'http://localhost:8090/api',
   timeout: 1000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
