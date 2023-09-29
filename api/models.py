@@ -1,8 +1,28 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import AbstractUser, Permission
 
 
 # Create your models here.
+class BlogUser(AbstractUser):
+    # username,password,email
+    nickname = models.CharField(max_length=50, null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar', null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    logic_delete = models.BooleanField(default=False)
+    telephone = models.CharField(max_length=11, null=True, blank=True)
+
+
+class Friend(models.Model):
+    nickname = models.CharField(max_length=50, null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar', null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    logic_delete = models.BooleanField(default=False)
+    url = models.CharField(max_length=100, null=True, blank=True)
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
@@ -12,18 +32,25 @@ class Blog(models.Model):
     title = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    content = models.TextField()
+    content = models.FileField(upload_to='blog', null=True, blank=True)
     description = models.TextField()
     tags = models.ManyToManyField(Tag)
     views = models.IntegerField(default=0)
+    logic_delete = models.BooleanField(default=False)
 
 
 class Comment(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey(BlogUser, on_delete=models.CASCADE)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     parent_blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True, blank=True)
-    content = models.TextField()
+    content = models.FileField(upload_to='comment', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    logic_delete = models.BooleanField(default=True)
+
+
+class AbstractPermissions(models.Model):
+    class Meta:
+        abstract = True
 
 
 class Move(models.Model):

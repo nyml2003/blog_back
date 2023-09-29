@@ -1,0 +1,65 @@
+<script setup>
+import {useQuasar} from "quasar";
+import {useRouter} from "vue-router";
+import {ref} from "vue";
+
+const $q = useQuasar();
+const miniState = ref(false);
+const router = useRouter();
+const leftDrawerOpen = ref(true);
+</script>
+
+<template>
+  <q-layout view="hHh lpR fFf" class="non-selectable">
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered content-class="bg-grey-3"
+              :width="miniState ? 50 : 150"
+              :mini="miniState"
+              @mouseover="miniState = false"
+              @mouseout="miniState = true">
+      <q-scroll-area style="height: 100%">
+        <q-list padding>
+          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
+            <q-item-section avatar>
+              <q-icon name="home" size="md"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>首页</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item clickable v-ripple @click="router.push({path: '/admin/manage'})">
+            <q-item-section avatar>
+              <q-icon name="group" size="md"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>管理</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
+            <q-item-section avatar>
+              <q-icon name="forum" size="md"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>论坛</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
+            <q-item-section avatar>
+              <q-icon name="settings" size="md"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>设置</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
+    </q-drawer>
+    <q-page-container>
+      <router-view/>
+    </q-page-container>
+
+  </q-layout>
+</template>
+
+<style scoped>
+
+</style>

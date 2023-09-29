@@ -6,7 +6,7 @@ export const useLoginStore = defineStore("LoginStore", {
     actions: {
       checkToken: function (token) {
         return new Promise((resolve, reject) => {
-          guestApi.post("/token/verify/", {
+          guestApi.post("/user/verify/", {
             "token": token
           }).then((res) => {
             resolve("token valid")
@@ -16,7 +16,7 @@ export const useLoginStore = defineStore("LoginStore", {
         })
       },
       login: function (username, password) {
-        guestApi.post("/token/", {
+        guestApi.post("/user/login/", {
           username: username,
           password: password,
         }).then((res) => {
@@ -45,26 +45,23 @@ export const useLoginStore = defineStore("LoginStore", {
           }
         })
       },
-      getPermission: function () {
-        userApi.get('/user/permission/').then((res) => {
-          console.log(res)
-          this.permission = res.data;
-        })
-      },
       checkPermission: function (permission) {
         return new Promise((resolve, reject) => {
-          if (this.permission.includes(permission)) {
-            resolve()
-          } else {
-            resolve('no permission')
-          }
+          userApi.post("/user/permission/", {
+            "permission": permission
+          }).then((res) => {
+            if (res.data.has('message')) {
+              resolve(res.data.get('message'))
+            } else {
+              resolve('no permission')
+            }
+          })
         })
       },
     },
     state: () => ({
       return: {
         isLogged: null,
-        permission: [],
       }
     })
   })

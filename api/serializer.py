@@ -1,7 +1,20 @@
 from rest_framework import serializers
-from .models import Blog, Comment
-from django.contrib.auth.models import User
+from .models import Blog, Comment, BlogUser
 
+
+# 后台管理列表
+class BlogUserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogUser
+        fields = ['id', 'nickname', 'avatar', 'created_at', 'updated_at', 'logic_delete', 'description', 'email',
+                  'telephone']
+
+
+class BlogUserSelfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogUser
+        fields = ['id', 'nickname', 'avatar', 'created_at', 'updated_at', 'logic_delete', 'description', 'email',
+                  'telephone', 'username']
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -31,30 +44,71 @@ class BlogDetailSerializer(serializers.ModelSerializer):
         return next.id
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'date_joined', 'last_login']
-
-
 class CommentBlogSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
-        fields = ['content', 'created_at','username']
+        fields = ['content', 'name', 'avatar', 'updated_at']
 
-    def get_username(self, obj):
-        return obj.user.username
+    def get_name(self, obj):
+        if obj.user.nickname is not None:
+            return obj.user.nickname
+        else:
+            return obj.user.username
+
+    def get_avatar(self, obj):
+        if obj.user.avatar is not None:
+            return obj.user.avatar.url
+        else:
+            return None
+
 
 class CommentUserSerializer(serializers.ModelSerializer):
-    blog_id=serializers.SerializerMethodField()
-    blog_title=serializers.SerializerMethodField()
+    parent_id = serializers.SerializerMethodField()
+    parent_name = serializers.SerializerMethodField()
+    parent_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
-        fields = ['content', 'created_at','blog_id','blog_title']
+        fields = ['content', 'updated_at', 'parent_id', 'parent_name', 'parent_type']
 
-    def get_blog_id(self, obj):
-        return obj.parent_blog.id
+    def get_parent_id(self, obj):
+        if obj.parent_blog is not None:
+            return obj.parent_blog.id
+        else:
+            return obj.parent_comment.id
 
-    def get_blog_title(self, obj):
-        return obj.parent_blog.title
+    def get_parent_name(self, obj):
+        if obj.parent_blog is not None:
+            return obj.parent_blog.title
+        else:
+            user = obj.parent_comment.user
+            if user.nickname is not None:
+                return user.nickname
+            else:
+                return user.username
+
+    def get_parent_type(self, obj):
+        if obj.parent_blog is not None:
+            return 'blog'
+        else:
+            return 'comment'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogUser
+        fields = '__all__'
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogUser
+        fields = '__all__'

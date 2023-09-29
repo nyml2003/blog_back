@@ -14,8 +14,8 @@ const baseAxiosConfig = {
     'Content-Type': 'application/json;charset=UTF-8'
   }
 }
-const guestApi=axios.create(baseAxiosConfig);
-const userApi=axios.create(baseAxiosConfig);
+const guestApi = axios.create(baseAxiosConfig);
+const userApi = axios.create(baseAxiosConfig);
 userApi.interceptors.request.use(
   config => {
     if (localStorage.getItem("accessToken") === null) {
@@ -23,23 +23,22 @@ userApi.interceptors.request.use(
     }
     config.headers.Authorization = `Bearer ${localStorage.getItem("accessToken")}`;
     const api = axios.create(baseAxiosConfig);
-    return api.post("/token/verify/", {
+    return api.post("/user/verify/", {
       "token": localStorage.getItem("accessToken")
     }).catch((err) => {
       if (err.response.status === 401) {
-        return api.post("/token/refresh/", {
+        return api.post("/user/refresh/", {
           "refresh": localStorage.getItem("refreshToken")
         }).then((res) => {
           localStorage.setItem("accessToken", res.data.access);
           config.headers.Authorization = `Bearer ${localStorage.getItem("accessToken")}`;
           return config;
         })
-      }
-      else {
+      } else {
         return config;
       }
     }).then((res) => {
-        return config;
+      return config;
     })
   }
 )
@@ -56,4 +55,4 @@ export default boot(({app}) => {
   //       so you can easily perform requests against your app's API
 })
 
-export {guestApi,userApi}
+export {guestApi, userApi}

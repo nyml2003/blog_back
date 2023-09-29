@@ -27,7 +27,6 @@ const toggleLog = () => {
   loginStore.checkLogged().then((res) => {
     if (res === 'token valid') {
       loginStore.isLogged = true;
-      loginStore.getPermission();
     } else {
       loginStore.logout();
       loginStore.isLogged = false;

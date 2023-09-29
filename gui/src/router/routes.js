@@ -54,7 +54,43 @@ const routes = [
       },
     ],
   },
-
+  {
+    path: "/admin",
+    component: () => import("layouts/AdminLayout.vue"),
+    children: [
+      {
+        path: 'manage',
+        name: 'Manage',
+        component: () => import("pages/ManagePage.vue"),
+        children: [
+          {
+            path: 'blog',
+            name: 'BlogManage',
+            component: () => import("components/manage/BlogManage.vue"),
+          },
+          {
+            path: 'user',
+            name: 'UserManage',
+            component: () => import("components/manage/UserManage.vue"),
+          },
+          {
+            path: 'comment',
+            name: 'CommentManage',
+            component: () => import("components/manage/CommentManage.vue"),
+          },
+          {
+            path: 'tag',
+            name: 'TagManage',
+            component: () => import("components/manage/TagManage.vue"),
+          },
+          {
+            path: 'friend',
+            name: 'FriendManage',
+            component: () => import("components/manage/FriendManage.vue"),
+          }]
+      }
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

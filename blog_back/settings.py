@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-md!fburgtp4rhej6k)*hzo$yr$d=on=92*y33*h!t)i0_vp%z1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -51,7 +52,10 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
-
+AUTH_USER_MODEL = 'api.BlogUser'
+AUTHENTICATION_BACKENDS = (
+    'api.backend.BlogBackend',
+)
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -103,9 +107,9 @@ MIDDLEWARE = [
 
 ]
 CORS_ORIGIN_ALLOW_ALL = True
-
+TEMPLATES_DIR = BASE_DIR / 'templates'
 ROOT_URLCONF = 'blog_back.urls'
-APPEND_SLASH= False
+APPEND_SLASH = False
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

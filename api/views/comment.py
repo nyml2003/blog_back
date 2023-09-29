@@ -1,64 +1,105 @@
 from django.http import JsonResponse
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from api.models import Comment,Blog
-import json
-from api.serializer import CommentBlogSerializer,CommentUserSerializer
+from rest_framework.viewsets import ModelViewSet
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_comment_list_by_user(request):
-    if request.method == 'GET':
-        user_id = request.user.id
-        comments = Comment.objects.filter(user=user_id)
-        serializer = CommentUserSerializer(comments, many=True)
-        return JsonResponse(serializer.data, safe=False)
+from api.pagination import BlogPagination
+from api.permission import IsUser, IsAdmin
+from api.serializer import CommentBlogSerializer, CommentUserSerializer, Comment, CommentSerializer
 
 
-@api_view(['GET'])
-def get_comment_list_by_blog(request, blog_id):
-    if request.method == 'GET':
-        comments = Comment.objects.filter(parent_blog_id=blog_id)
-        serializer=CommentBlogSerializer(comments, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class CommentListByBlog(ListAPIView):
+    serializer_class = CommentBlogSerializer
+
+    def get_queryset(self):
+        blog_id = self.kwargs['blog_id']
+        return Comment.objects.filter(parent_blog_id=blog_id, logic_delete=False).order_by('-id')
 
 
+class CommentListByUser(ListAPIView):
+    serializer_class = CommentUserSerializer
+    pagination_class = BlogPagination
+    permission_classes = [IsAuthenticated, IsUser]
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_comment(request):
-    if request.method == 'POST':
-        if request.user.is_anonymous:
-            return JsonResponse({'error': 'you must login first'}, safe=False)
-        # 根据request.user获取user_id
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Comment.objects.filter(user_id=user_id, logic_delete=False).order_by('-id')
+
+
+class Recycle(ListAPIView):
+    serializer_class = CommentUserSerializer
+    pagination_class = BlogPagination
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Comment.objects.filter(user_id=user_id, logic_delete=True).order_by('-id')
+
+
+class CommentView(ModelViewSet):
+    permission_classes = [IsAuthenticated, IsUser]
+    pagination_class = BlogPagination
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(logic_delete=False).order_by('-id')
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        content = request.FILES.get('content')
+        if content is None:
+            return JsonResponse({'error': 'content cannot be null'}, safe=False)
+        parent_blog_id = request.POST.get('parent_blog_id')
+        parent_comment_id = request.POST.get('parent_comment_id')
+        if parent_blog_id is None and parent_comment_id is None:
+            return JsonResponse({'error': 'parent_blog_id or parent_comment_id cannot be null'}, safe=False)
         user = request.user
-        json_data = json.loads(request.body)
-        content = json_data.get('content')
-        blog_id = json_data.get('blog_id')
-        parent_comment_id = json_data.get('parent_comment_id')
-        if blog_id is None and parent_comment_id is None:
-            return JsonResponse({'error': 'blog_id and parent_comment_id cannot be both null'}, safe=False)
-        if blog_id is not None and parent_comment_id is not None:
-            return JsonResponse({'error': 'blog_id and parent_comment_id cannot be both not null'}, safe=False)
-        if blog_id is not None:
-            parent_blog = Blog.objects.get(id=blog_id)
-            comment = Comment.objects.create(user=user, content=content,parent_blog=parent_blog)
-        else:
-            parent_comment = Comment.objects.get(id=parent_comment_id)
-            comment = Comment.objects.create(user=user, content=content,
-                                             parent_comment=parent_comment)
-        return JsonResponse(json.loads(json.dumps(comment, default=str)), safe=False)
+        Comment.objects.create(content=content, user=user, parent_blog_id=parent_blog_id,
+                               parent_comment_id=parent_comment_id)
+        return JsonResponse({'message': 'create success'}, safe=False)
 
 
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_comment(request, comment_id):
-    if request.method == 'PUT':
-        user_id = request.user.id
-        if Comment.objects.get(id=comment_id).user_id != user_id:
-            return JsonResponse({'error': 'you are not the author of this comment'}, safe=False)
-        content = request.POST.get('content')
+class CommentDetailView(ModelViewSet):
+    permission_classes = [IsAuthenticated, IsAdmin]
+    pagination_class = BlogPagination
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(logic_delete=False).order_by('-id')
+
+    def retrieve(self, request, *args, **kwargs):
+        comment_id = kwargs['comment_id']
         comment = Comment.objects.get(id=comment_id)
+        if comment is None:
+            return JsonResponse({'error': 'comment not found'}, safe=False)
+        if comment.user_id != request.user.id:
+            return JsonResponse({'error': 'permission denied'}, safe=False)
+        serializer = CommentUserSerializer(comment)
+        return JsonResponse(serializer.data, safe=False)
+
+    def update(self, request, *args, **kwargs):
+        comment_id = kwargs['comment_id']
+        comment = Comment.objects.get(id=comment_id)
+        if comment is None:
+            return JsonResponse({'error': 'comment not found'}, safe=False)
+        if comment.user_id != request.user.id:
+            return JsonResponse({'error': 'permission denied'}, safe=False)
+        content = request.FILES.get('content')
+        if content is None:
+            return JsonResponse({'error': 'content cannot be null'}, safe=False)
         comment.content = content
         comment.save()
-        return JsonResponse(comment, safe=False)
+        return JsonResponse({'message': 'update success'}, safe=False)
+
+    def destroy(self, request, *args, **kwargs):
+        comment_id = kwargs['comment_id']
+        comment = Comment.objects.get(id=comment_id)
+        if comment is None:
+            return JsonResponse({'error': 'comment not found'}, safe=False)
+        if comment.user_id != request.user.id:
+            return JsonResponse({'error': 'permission denied'}, safe=False)
+        comment.logic_delete = True
+        comment.save()
+        return JsonResponse({'message': 'delete success'}, safe=False)
