@@ -3,9 +3,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from api.pagination import BlogPagination
+from api.pagination import ApiDefaultPagination
 from api.permission import IsUser, IsAdmin
-from api.serializer import CommentBlogSerializer, CommentUserSerializer, Comment, CommentSerializer
+from api.serializer import CommentBlogSerializer, CommentUserSerializer, CommentSerializer
+from api.models import Comment
 
 
 class CommentListByBlog(ListAPIView):
@@ -18,7 +19,7 @@ class CommentListByBlog(ListAPIView):
 
 class CommentListByUser(ListAPIView):
     serializer_class = CommentUserSerializer
-    pagination_class = BlogPagination
+    pagination_class = ApiDefaultPagination
     permission_classes = [IsAuthenticated, IsUser]
 
     def get_queryset(self):
@@ -28,7 +29,7 @@ class CommentListByUser(ListAPIView):
 
 class Recycle(ListAPIView):
     serializer_class = CommentUserSerializer
-    pagination_class = BlogPagination
+    pagination_class = ApiDefaultPagination
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get_queryset(self):
@@ -38,7 +39,7 @@ class Recycle(ListAPIView):
 
 class CommentView(ModelViewSet):
     permission_classes = [IsAuthenticated, IsUser]
-    pagination_class = BlogPagination
+    pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -63,7 +64,7 @@ class CommentView(ModelViewSet):
 
 class CommentDetailView(ModelViewSet):
     permission_classes = [IsAuthenticated, IsAdmin]
-    pagination_class = BlogPagination
+    pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 
     def get_queryset(self):

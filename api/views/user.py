@@ -1,40 +1,42 @@
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework.viewsets import ModelViewSet
 
-from api.filter import UserFilter
+from api.filter import BlogUserFilter
 from api.models import BlogUser
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api.pagination import BlogPagination
-from api.permission import IsUser
+from api.pagination import ApiDefaultPagination
+from api.permission import IsUser, IsAdmin
 from api.serializer import BlogUserListSerializer, BlogUserSelfSerializer
-from utils.blog.username import generate_unique_username
+from api.serializer.blogUser import RegisterSerializer
 
 
-@api_view(['POST'])
-def register(request):
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
-        # 随机生成用户名
-        username = generate_unique_username()
-        password = json_data.get('password')
-        nickname = json_data.get('nickname')
-        if nickname is None:
-            nickname = username
-        if password is None:
-            return JsonResponse({'error': 'username and password cannot be null'}, safe=False)
-        user = BlogUser.objects.create_user(username=username, password=password, nickname=nickname)
-        token = RefreshToken.for_user(user)
-        # 不知道怎么获取access_token，所以先用123代替
-        return JsonResponse({
+class RegisterView(ModelViewSet):
+    queryset = get_user_model().objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        data = {
             'message': 'register success',
-            'access_token': '123',
-            'refresh_token': str(token)
-        }, safe=False)
+            'access_token': '123',  # 这里应该是你的实际access_token
+            'refresh_token': str(RefreshToken.for_user(user))
+        }
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
 
 
 @api_view(['POST'])
@@ -63,30 +65,43 @@ def permission(request):
 
 
 class UserView(ListAPIView):
-    queryset = BlogUser.objects.all().order_by('-id')
+    queryset = BlogUser.objects.all().order_by('id')
     serializer_class = BlogUserListSerializer
-    pagination_class = BlogPagination
-    filterset_class = UserFilter
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    pagination_class = ApiDefaultPagination
+    filterset_class = BlogUserFilter
+    permission_classes = [IsAuthenticated, IsAdmin]
     lookup_field = 'id'
 
 
-class UserDetailView(ModelViewSet):
-    queryset = BlogUser.objects.all().order_by('-id')
+class UserSelfView(ModelViewSet):
     serializer_class = BlogUserSelfSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, IsUser]
-    lookup_field = 'id'
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_object(self):
+        return self.request.user
+    def get_queryset(self):
+        return BlogUser.objects.filter(id=self.request.user.id)
 
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
+
+class UserDetailView(ModelViewSet):
+    queryset = BlogUser.objects.all().order_by('id')
+    serializer_class = BlogUserListSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    lookup_field = 'id'
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.logic_delete = True
-        instance.save()
+        if instance.avatar:
+            instance.avatar.delete()
+        instance.delete()
         return JsonResponse({
             'message': 'success'
         })

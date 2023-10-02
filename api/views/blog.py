@@ -1,7 +1,3 @@
-import os
-import shutil
-import uuid
-
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -10,23 +6,23 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from api.models import Blog
-from api.pagination import BlogPagination
+from api.models import BlogPost
+from api.pagination import ApiDefaultPagination
 from api.permission import IsAdmin
-from api.serializer import BlogSerializer, BlogDetailSerializer
-from api.filter import BlogFilter
+from api.serializer import BlogPostSerializer, BlogPostDetailSerializer
+from api.filter import BlogPostFilter
 import json
 
 
 # Create your views here.
 class BlogView(ModelViewSet):
-    serializer_class = BlogSerializer
+    serializer_class = BlogPostSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_class = BlogFilter
-    pagination_class = BlogPagination
+    filterset_class = BlogPostFilter
+    pagination_class = ApiDefaultPagination
 
     def get_queryset(self):
-        queryset = Blog.objects.filter(logic_delete=False).order_by('-id')
+        queryset = BlogPost.objects.order_by('-id')
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -37,22 +33,11 @@ class BlogView(ModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-class Recycle(ListAPIView):
-    serializer_class = BlogSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = BlogFilter
-    pagination_class = BlogPagination
-
-    def get_queryset(self):
-        queryset = Blog.objects.filter(logic_delete=True).order_by('-id')
-        return queryset
-
-
 class BlogDetailView(ModelViewSet):
-    serializer_class = BlogDetailSerializer
+    serializer_class = BlogPostDetailSerializer
 
     def get_queryset(self):
-        queryset = Blog.objects.filter(logic_delete=False).order_by('-id')
+        queryset = BlogPost.objects.filter().order_by('-id')
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
@@ -84,7 +69,6 @@ class BlogDetailView(ModelViewSet):
         return JsonResponse({
             'message': 'success'
         })
-
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated, IsAdmin])
@@ -126,15 +110,3 @@ class BlogDetailView(ModelViewSet):
 #         return JsonResponse({
 #             'message': 'success'
 #         })
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdmin])
-def destroy_blog(request, blog_id):
-    # 物理删除
-    instance = Blog.objects.get(id=blog_id)
-    instance.content.delete(save=False)
-    instance.delete()
-    return JsonResponse({
-        'message': 'success'
-    })

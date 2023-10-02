@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {guestApi, userApi} from "boot/axios";
-import axios from "axios";
 
 export const useLoginStore = defineStore("LoginStore", {
     actions: {
@@ -22,13 +21,29 @@ export const useLoginStore = defineStore("LoginStore", {
         }).then((res) => {
           localStorage.setItem("accessToken", res.data.access);
           localStorage.setItem("refreshToken", res.data.refresh);
-          this.getPermission();
         });
+      },
+      register: function (form) {
+        return new Promise((resolve, reject) => {
+          guestApi.post("/user/register/", form,{
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            ).then((res) => {
+            if (res.data.has('message')) {
+              resolve(res.data.get('message'))
+              localStorage.setItem("accessToken", res.data.access);
+              localStorage.setItem("refreshToken", res.data.refresh);
+            }else if (res.data.has('error')) {
+              resolve(res.data.get('error'))
+            }
+          })
+        })
       },
       logout: function () {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        this.permission = [];
       },
       checkLogged: function () {
         return new Promise((resolve, reject) => {

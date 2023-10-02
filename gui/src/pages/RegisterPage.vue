@@ -1,11 +1,28 @@
 <script setup>
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-const username = ref("");
-const password = ref("");
-const password2 = ref("");
+import {guestApi, userApi} from "boot/axios";
+import {useLoginStore} from "stores/LoginStore";
+const loginstore=useLoginStore();
 const router = useRouter();
-const email = ref("");
+const form=ref({
+  nickname:'',
+  password:'',
+  password2:'',
+  email:null,
+  telephone:null,
+  avatar:null,
+})
+const register=()=>{
+  loginstore.logout();
+  loginstore.register(form.value).then((res)=>{
+    if(res==='success'){
+      router.push('/login');
+    }
+  }).catch((err)=>{
+    console.log(err);
+  })
+}
 </script>
 <template>
   <q-page class="flex-center flex">
@@ -13,8 +30,8 @@ const email = ref("");
       <q-card-section>
         <q-form @submit="register">
           <q-input
-            v-model="username"
-            label="Username"
+            v-model="form.nickname"
+            label="昵称"
             lazy-rules
             :rules="[(val) => !!val || 'Please enter your username']"
           >
@@ -23,10 +40,9 @@ const email = ref("");
             </template>
           </q-input>
           <q-input
-            v-model="password"
-            label="Password"
+            v-model="form.password"
+            label="密码"
             lazy-rules
-            type="password"
             :rules="[(val) => !!val || 'Please enter your password']"
           >
             <template #before>
@@ -34,27 +50,47 @@ const email = ref("");
             </template>
           </q-input>
           <q-input
-            v-model="password2"
-            label="Password Again"
+            v-model="form.password2"
+            label="确认密码"
             lazy-rules
-            type="password"
-            :rules="[(val) => !!val || 'Please enter your password again']"
+            :rules="[
+              (val) => !!val || 'Please confirm your password',
+              (val) => val === form.password || 'The two passwords do not match',
+            ]"
           >
             <template #before>
-              <q-icon name="check_circle" />
+              <q-icon name="lock" />
             </template>
           </q-input>
           <q-input
-            v-model="email"
+            v-model="form.email"
             label="Email"
             lazy-rules
-            type="email"
-            :rules="[(val) => !!val || 'Please enter your email']"
           >
             <template #before>
               <q-icon name="email" />
             </template>
           </q-input>
+          <q-input
+            v-model="form.telephone"
+            label="Telephone"
+            lazy-rules
+          >
+            <template #before>
+              <q-icon name="phone" />
+            </template>
+          </q-input>
+          <q-file
+            v-model="form.avatar"
+            label="Avatar"
+            lazy-rules
+            accept="image/*"
+          >
+            <template #prepend>
+              <q-icon name="image" />
+            </template>
+          </q-file>
+          <q-separator />
           <div class="justify-center flex-center flex">
             <q-btn type="submit" label="Register"  />
           </div>

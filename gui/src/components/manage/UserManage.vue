@@ -1,116 +1,197 @@
 <script setup>
+import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
 import {userApi} from "boot/axios";
 
-const columns = ref([
-  {
-    name: 'id',
-    label: 'ID',
-    field: 'id',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'nickname',
-    label: '昵称',
-    field: 'nickname',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'avatar',
-    label: '头像',
-    field: 'avatar',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'created_at',
-    label: '创建时间',
-    field: 'created_at',
-    align: 'left',
-    format: (val) => new Date(val).toLocaleString(),
-    sortable: true
-  },
-  {
-    name: 'updated_at',
-    label: '更新时间',
-    field: 'updated_at',
-    align: 'left',
-    format: (val) => new Date(val).toLocaleString(),
-    sortable: true
-  },
-  {
-    name: 'logic_delete',
-    label: '逻辑删除',
-    field: 'logic_delete',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'description',
-    label: '描述',
-    field: 'description',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'email',
-    label: '邮箱',
-    field: 'email',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'telephone',
-    label: '电话',
-    field: 'telephone',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'operation',
-    label: '操作',
-    field: 'operation',
-    align: 'left',
-    sortable: true
-  },
-])
-const rows = ref([])
-onMounted(() => {
-  userApi.get("/user/rest/").then((res) => {
-    rows.value = res.data.results
+const $q = useQuasar();
+const data = ref([])
+const loading = ref(false)
+const loadData = () => {
+  loading.value = true
+  console.log(TableParams.pagination.value)
+  userApi.get("/user/rest/", {
+      params: {
+        page: TableParams.pagination.value.page,
+        page_size: TableParams.pagination.value.rowsPerPage,
+      }
+    }
+  ).then((res) => {
+    data.value = res.data.results
+    TableParams.pagination.value.rowsNumber = res.data.count
+    console.log(res.data)
   })
+  loading.value = false
+}
+const TableParams = {
+  loading: ref(false),
+  columns: [
+    {
+      name: 'id',
+      label: 'ID',
+      field: 'id',
+      align: 'center',
+    },
+    {
+      name:'nickname',
+      label:'昵称',
+      field:'nickname',
+      align:'center',
+    },
+    {
+      name:'avatar',
+      label:'头像',
+      field:'avatar',
+      align:'center',
+    },
+    {
+      name:'email',
+      label:'邮箱',
+      field:'email',
+      align:'center',
+    },
+    {
+      name:'telephone',
+      label:'电话',
+      field:'telephone',
+      align:'center',
+    },
+    {
+      name:'description',
+      label:'描述',
+      field:'description',
+      align:'center',
+    },
+    {
+      name:'created_at',
+      label:'创建时间',
+      field:'created_at',
+      format: (val) => {
+        return new Date().toLocaleString()
+      },
+      align:'center',
+    },
+    {
+      name:'updated_at',
+      label:'更新时间',
+      field:'updated_at',
+      align:'center',
+      format: (val) => {
+        return new Date().toLocaleString()
+      },
+    },
+    {
+      name: 'operation',
+      label: '操作',
+      field: 'operation',
+      align: 'center',
+    }
+  ],
+  pagination: ref({
+    sortBy: 'id',
+    descending: false,
+    page: 1,
+    rowsNumber: 0,
+    rowsPerPage: 7,
+  }),
+  onRequest: function (props) {
+    console.log(props)
+    const {page, rowsPerPage} = props.pagination;
+    TableParams.pagination.value.page = page;
+    TableParams.pagination.value.rowsPerPage = rowsPerPage;
+    loadData();
+  }
+}
+//delete
+function deleteById(id){
+  $q.notify({
+    message: '删除中',
+    color: 'warning',
+    textColor: 'black',
+    icon: 'warning',
+    position: 'center',
+    actions: [
+      {
+        label: '取消',
+        color: 'black',
+        handler: () => {
+          $q.notify({
+            message: '取消删除',
+            color: 'negative',
+            icon: 'close',
+            position: 'top',
+            timeout: 1000,
+          })
+        }
+      },
+      {
+        label: '确定',
+        color: 'red',
+        handler: () => {
+          deleteByIdConfirm(id)
+        }
+      }
+    ]
+  })
+}
+function deleteByIdConfirm(id){
+  userApi.delete(`/user/rest/${id}/`).then((res) => {
+    console.log(res)
+    $q.notify({
+      message: '删除成功',
+      color: 'positive',
+      icon: 'check',
+      position: 'top',
+      timeout: 1000,
+    })
+    loadData()
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+onMounted(() => {
+  loadData();
 })
 </script>
 
 <template>
-  <q-table
-    :columns="columns"
-    :rows="rows"
-    row-key="id"
-    binary-state-sort
-    separator="cell"
-  >
-    <template #body-cell-operation="props">
-      <q-td :props="props">
-        <q-btn
-          dense
-          flat
-          round
-          icon="edit"
-          color="primary"
-        />
-        <q-btn
-          dense
-          flat
-          round
-          icon="delete"
-          color="negative"
-        />
-      </q-td>
-    </template>
-  </q-table>
+  <q-card-section>
+    <q-table
+      :columns="TableParams.columns"
+      :rows="data"
+      v-model:pagination="TableParams.pagination.value"
+      @request="TableParams.onRequest"
+      row-key="id"
+      :loading="TableParams.loading.value"
+      binary-state-sort
+      :separator="'cell'"
+      :rows-per-page-options="[7, 10, 15]"
+      :visible-columns="['id','nickname','email','telephone','avatar','description','created_at','updated_at','operation']"
+    >
+      <template #body-cell-avatar="props">
+        <q-td :props="props">
+          <img v-if="props.row.avatar" :src="`${props.row.avatar}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
+          <div v-else>无</div>
+        </q-td>
+      </template>
+      <template #body-cell-url="props">
+        <q-td :props="props">
+          <a :href="props.row.url" target="_blank">{{props.row.url}}</a>
+        </q-td>
+      </template>
+      <template #body-cell-operation="props">
+        <q-td :props="props">
+          <q-btn
+            dense
+            round
+            icon="delete"
+            class="q-mx-sm"
+            color="negative"
+            @click="deleteById(props.row.id)"
+          />
+        </q-td>
+      </template>
+    </q-table>
+  </q-card-section>
 </template>
 
 <style scoped>

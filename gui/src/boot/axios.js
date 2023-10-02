@@ -14,6 +14,7 @@ const baseAxiosConfig = {
     'Content-Type': 'application/json;charset=UTF-8'
   }
 }
+const baseMediaURL = process.env.NODE_ENV === 'production' ? 'http://8.130.84.162:8080' : 'http://localhost:8090';
 const guestApi = axios.create(baseAxiosConfig);
 const userApi = axios.create(baseAxiosConfig);
 userApi.interceptors.request.use(
@@ -55,4 +56,4 @@ export default boot(({app}) => {
   //       so you can easily perform requests against your app's API
 })
 
-export {guestApi, userApi}
+export {guestApi, userApi, baseMediaURL}

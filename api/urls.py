@@ -19,11 +19,8 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('blog/destroy/<int:blog_id>/', blog.destroy_blog),
-    path('blog/recycle/', blog.Recycle.as_view()),
     path('comment/blog/<int:blog_id>/', comment.CommentListByBlog.as_view()),
     path('comment/user/', comment.CommentListByUser.as_view()),
-    path('comment/recycle/', comment.Recycle.as_view()),
     path('comment/rest/', comment.CommentView.as_view({
         'get': 'list',
         'post': 'create'
@@ -33,31 +30,35 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('user/register/', user.register),
+    path('user/register/', user.RegisterView.as_view({
+        'post': 'create'
+    })),
     path('user/login/', TokenObtainPairView.as_view()),
     path('user/refresh/', TokenRefreshView.as_view()),
     path('user/verify/', TokenVerifyView.as_view()),
     path('user/permission/', user.permission),
-    path('user/rest/', user.UserView.as_view()),
-    path('user/rest/<int:user_id>/', user.UserDetailView.as_view({
+    path('user/self/', user.UserSelfView.as_view({
         'get': 'retrieve',
-        'put': 'update',
+        'patch': 'update',
+    })),
+    path('user/rest/', user.UserView.as_view()),
+    path('user/rest/<int:id>/', user.UserDetailView.as_view({
         'delete': 'destroy'
     })),
     path('friend/rest/', friend.FriendView.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('friend/rest/<int:friend_id>/', friend.FriendDetailView.as_view({
-        'put': 'update',
+    path('friend/rest/<int:id>/', friend.FriendDetailView.as_view({
+        'patch': 'update',
         'delete': 'destroy'
     })),
     path('tag/rest/', tag.TagView.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('tag/rest/<int:tag_id>/', tag.TagDetailView.as_view({
-        'put': 'update',
+    path('tag/rest/<int:id>/', tag.TagDetailView.as_view({
+        'patch': 'update',
         'delete': 'destroy'
     })),
     path('maze/create', maze.create_maze),

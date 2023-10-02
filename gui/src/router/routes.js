@@ -8,6 +8,7 @@ const routes = [
     component: () => import(`layouts/MainLayout${platform}.vue`),
     children: [
       {path: "", component: () => import("pages/IndexPage.vue")},
+      {path: "friend", component: () => import("pages/FriendPage.vue")},
       {path: "game", component: () => import("pages/GamePage.vue")},
       {
         path: "blog", component: () => import(`pages/BlogPage${platform}.vue`),
@@ -66,7 +67,7 @@ const routes = [
           {
             path: 'blog',
             name: 'BlogManage',
-            component: () => import("components/manage/BlogManage.vue"),
+            component: () => import("components/manage/BlogPostManage.vue"),
           },
           {
             path: 'user',

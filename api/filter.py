@@ -1,11 +1,9 @@
 from django.db.models import Q
 from django_filters import rest_framework
-from django_filters.widgets import CSVWidget
-
-from api.models import Blog, BlogUser
+from api.models import BlogPost, BlogUser
 
 
-class UserFilter(rest_framework.FilterSet):
+class BlogUserFilter(rest_framework.FilterSet):
     keyword = rest_framework.CharFilter(method='search', label='关键字')
 
     class Meta:
@@ -19,12 +17,12 @@ class UserFilter(rest_framework.FilterSet):
                 telephone__icontains=value))
 
 
-class BlogFilter(rest_framework.FilterSet):
+class BlogPostFilter(rest_framework.FilterSet):
     keyword = rest_framework.CharFilter(method='search', label='关键字')
     tags = rest_framework.CharFilter(field_name='tags__name', lookup_expr='in')
 
     class Meta:
-        model = Blog
+        model = BlogPost
         fields = ['keyword', 'tags']
 
     @staticmethod

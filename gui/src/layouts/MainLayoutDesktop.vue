@@ -2,10 +2,11 @@
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
-import {computed, nextTick, onMounted, onUnmounted, provide, ref, watch} from "vue";
+import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
+import {useMainLayoutStore} from "stores/MainLayoutStore";
 
-const rightDrawerOpen = ref(false);
+const mainLayoutStore = useMainLayoutStore();
 const loginStore = useLoginStore();
 const login = () => {
   router.push("/login");
@@ -37,6 +38,7 @@ onMounted(() => {
   toggleLog();
 });
 const isLogged = ref(computed(() => loginStore.isLogged));
+const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
 provide('isLogged', isLogged);
 const keyword = ref("");
 provide('keyword', keyword);
@@ -61,9 +63,9 @@ const reload = () => {
   })
 }
 const isInputKeyword = ref(false);
-watch(rightDrawerOpen, () => {
+watch(isRightDrawerOpen, () => {
   if (isLogged.value === false) {
-    rightDrawerOpen.value = false;
+    mainLayoutStore.isRightDrawerOpen.value = false;
     setTimeout(
       () => {
         $q.notify({
@@ -78,14 +80,47 @@ watch(rightDrawerOpen, () => {
       }, 200
     )
   } else {
-    userApi.get('/user/rest/').then((res) => {
-      username.value = res.data.username;
-      email.value = res.data.email;
+    userApi.get('/user/self/').then((res) => {
+      console.log(res);
+      userDetail.value.username = res.data.username;
+      userDetail.value.avatar = res.data.avatar;
+      userDetail.value.description = res.data.description;
+      userDetail.value.nickname = res.data.nickname;
     })
   }
 })
-const username = ref("");
-const email = ref("");
+const userDetail = ref({
+  username: "",
+  avatar: null,
+  description: "",
+});
+const toggleRightDrawer = () => {
+  if (isLogged.value) {
+    mainLayoutStore.isRightDrawerOpen = !mainLayoutStore.isRightDrawerOpen
+  } else {
+    $q.notify({
+      message: '请先登录',
+      icon: 'warning',
+      color: 'red',
+      position: 'top',
+    })
+    login()
+  }
+}
+const exit = () => {
+  mainLayoutStore.isRightDrawerOpen = false;
+  $q.notify({
+    message: '确定要退出登录吗？',
+    color: 'white',
+    icon: 'warning',
+    textColor: 'black',
+    position: 'center',
+    actions: [
+      {label: '取消', color: 'black'},
+      {label: '确定', color: 'primary', handler: () => {logout()}}
+    ]
+  })
+}
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -109,27 +144,16 @@ const email = ref("");
             <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
           </template>
         </q-input>
-        <q-btn flat icon="account_circle" @click="()=>{
-          if (isLogged) {
-            rightDrawerOpen = !rightDrawerOpen
-          } else {
-            $q.notify({
-              message: '请先登录',
-              icon: 'warning',
-              color: 'red',
-              position: 'top',
-            })
-            login()
-          }
-        }" class="q-ml-md"
+        <q-btn flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
                label="帐号"/>
       </q-toolbar>
     </q-header>
     <q-drawer
-      v-model="rightDrawerOpen"
+      v-model="isRightDrawerOpen"
       :width="300"
       side="right"
       elevated
+      overlay
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
@@ -157,20 +181,7 @@ const email = ref("");
               Comment statistics
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="()=>{
-            rightDrawerOpen = false
-            $q.notify({
-              message: '确定要退出登录吗？',
-              color: 'white',
-              icon: 'warning',
-              textColor: 'black',
-              position: 'center',
-              actions: [
-                {label: '取消', color: 'black'},
-                {label: '确定', color: 'primary', handler: () => {logout()}}
-                ]
-            })
-          }" exact>
+          <q-item clickable v-ripple @click="exit" exact>
             <q-item-section avatar>
               <q-icon name="exit_to_app"/>
             </q-item-section>
@@ -184,11 +195,14 @@ const email = ref("");
         <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
           <q-avatar size="100px">
             <img alt="avatar"
-                 src="https://avatars.githubusercontent.com/u/106670529?s=400&u=1285065547ee37395586d36887a3d7a7b340d112&v=4">
+                 :src="userDetail.avatar ? userDetail.avatar : 'https://cdn.quasar.dev/img/avatar.png'">
           </q-avatar>
           <div class="text-right q-ma-md">
-            <div class="text-h6 text-weight-bold">{{ username }}</div>
-            <div class="text-subtitle2 q-mt-md">{{ email }}</div>
+            <div class="text-h6 text-weight-bold">{{
+                userDetail.nickname ? userDetail.nickname : userDetail.username
+              }}
+            </div>
+            <div class="text-subtitle2 q-mt-md">{{ userDetail.description }}</div>
           </div>
         </div>
       </q-img>

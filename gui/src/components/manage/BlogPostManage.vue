@@ -9,7 +9,7 @@ const loading = ref(false)
 const loadData = () => {
   loading.value = true
   console.log(TableParams.pagination.value)
-  userApi.get("/tag/rest/", {
+  userApi.get("//rest/", {
       params: {
         page: TableParams.pagination.value.page,
         page_size: TableParams.pagination.value.rowsPerPage,
@@ -20,10 +20,9 @@ const loadData = () => {
     TableParams.pagination.value.rowsNumber = res.data.count
     console.log(res.data)
   })
-
   loading.value = false
 }
-//table
+
 const TableParams = {
   loading: ref(false),
   columns: [
@@ -34,10 +33,28 @@ const TableParams = {
       align: 'center',
     },
     {
-      name: 'name',
-      label: '标签名称',
-      field: 'name',
-      align: 'center',
+      name:'nickname',
+      label:'昵称',
+      field:'nickname',
+      align:'center',
+    },
+    {
+      name:'avatar',
+      label:'头像',
+      field:'avatar',
+      align:'center',
+    },
+    {
+      name:'description',
+      label:'个人简介',
+      field:'description',
+      align:'center',
+    },
+    {
+      name:'url',
+      label:'个人主页',
+      field:'url',
+      align:'center',
     },
     {
       name: 'created_at',
@@ -81,16 +98,26 @@ const TableParams = {
 }
 const CreateFormParams = {
   form: ref({
-    name: ""
+    nickname:"",
+    avatar:null,
+    description:"",
+    url:"",
   }),
   isVisible: ref(false),
   reset: function () {
     CreateFormParams.form.value = {
-      name: ""
+      nickname:"",
+      avatar:null,
+      description:"",
+      url:"",
     }
   },
   submit: function () {
-    userApi.post("/tag/rest/", CreateFormParams.form.value).then((res) => {
+    userApi.post("/friend/rest/", CreateFormParams.form.value,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then((res) => {
       console.log(res)
       $q.notify({
         message: '添加成功',
@@ -124,26 +151,41 @@ const CreateFormParams = {
 }
 //update
 const UpdateFormParams={
+  isImgChange:ref(false),
   canUpdate:function (){
     return JSON.stringify(UpdateFormParams.form.value)===JSON.stringify(UpdateFormParams.formCopy.value)
   },
+  avatar:ref(null),
   formCopy:ref({
     id:"",
-    name:""
+    nickname:"",
+    avatar:null,
+    description:"",
+    url:"",
   }),
   form:ref({
     id:"",
-    name:""
+    nickname:"",
+    avatar:null,
+    description:"",
+    url:"",
   }),
   isVisible:ref(false),
   reset:function(){
     UpdateFormParams.form.value={
       id:"",
-      name:"",
+    nickname:"",
+    description:"",
+    url:"",
     }
   },
   submit:function(){
-    userApi.patch(`/tag/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value).then((res)=>{
+    userApi.patch(`/friend/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    ).then((res)=>{
       console.log(res)
       $q.notify({
         message: '修改成功',
@@ -170,14 +212,21 @@ const UpdateFormParams={
   },
   open:function(row){
     this.isVisible.value=true;
-    const {id,name}=row
+    const {id,nickname,avatar,description,url}=row;
+    UpdateFormParams.avatar.value=avatar;
     UpdateFormParams.form.value={
       id:id,
-      name:name,
+      nickname:nickname,
+      avatar:null,
+      description:description,
+      url:url,
     };
     UpdateFormParams.formCopy.value={
       id:id,
-      name:name,
+      nickname:nickname,
+      avatar:null,
+      description:description,
+      url:url,
     };
   },
   close:function(){
@@ -218,7 +267,7 @@ function deleteById(id){
 
 }
 function deleteByIdConfirm(id){
-  userApi.delete(`/tag/rest/${id}/`).then((res) => {
+  userApi.delete(`/friend/rest/${id}/`).then((res) => {
     console.log(res)
     $q.notify({
       message: '删除成功',
@@ -244,10 +293,33 @@ onMounted(() => {
       <q-card-section>
         <q-form @submit="UpdateFormParams.submit" @reset="UpdateFormParams.reset">
           <q-input
-            v-model="UpdateFormParams.form.value.name"
-            label="名称"
+            v-model="UpdateFormParams.form.value.nickname"
+            label="昵称"
             lazy-rules
-            :rules="[val => !!val || '请输入名称']"
+            :rules="[val => !!val || '请输入昵称']"
+          />
+<!--          图片预览-->
+          <q-file
+            v-model="UpdateFormParams.form.value.avatar"
+            label="头像"
+            lazy-rules
+            :multiple="false"
+            accept="image/*"
+          >
+            <template #prepend>
+              <img v-if="UpdateFormParams.form.value.avatar === null" :src="`${UpdateFormParams.avatar.value}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
+            </template>
+          </q-file>
+          <q-input
+            v-model="UpdateFormParams.form.value.description"
+            label="个人简介"
+            lazy-rules
+          />
+          <q-input
+            v-model="UpdateFormParams.form.value.url"
+            label="个人主页"
+            lazy-rules
+            :rules="[val => !!val || '请输入个人主页']"
           />
           <q-card-actions align="right">
             <q-btn
@@ -289,10 +361,30 @@ onMounted(() => {
       <q-card-section>
         <q-form @submit="CreateFormParams.submit" @reset="CreateFormParams.reset">
           <q-input
-            v-model="CreateFormParams.form.value.name"
-            label="名称"
+            v-model="CreateFormParams.form.value.nickname"
+            label="昵称"
             lazy-rules
-            :rules="[val => !!val || '请输入名称']"
+            :rules="[val => !!val || '请输入昵称']"
+          />
+          <q-file
+            v-model="CreateFormParams.form.value.avatar"
+            label="头像"
+            lazy-rules
+            :rules="[val => !!val || '请选择头像']"
+            :multiple="false"
+            accept="image/*"
+          >
+          </q-file>
+          <q-input
+            v-model="CreateFormParams.form.value.description"
+            label="个人简介"
+            lazy-rules
+          />
+          <q-input
+            v-model="CreateFormParams.form.value.url"
+            label="个人主页"
+            lazy-rules
+            :rules="[val => !!val || '请输入个人主页']"
           />
           <q-card-actions align="right">
             <q-btn
@@ -338,8 +430,18 @@ onMounted(() => {
       binary-state-sort
       :separator="'cell'"
       :rows-per-page-options="[7, 10, 15]"
-      :visible-columns="['name', 'created_at', 'updated_at', 'operation']"
+      :visible-columns="['nickname','avatar','description','url','created_at','updated_at','operation']"
     >
+      <template #body-cell-avatar="props">
+        <q-td :props="props">
+          <img :src="`${props.row.avatar}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
+        </q-td>
+      </template>
+      <template #body-cell-url="props">
+        <q-td :props="props">
+          <a :href="props.row.url" target="_blank">{{props.row.url}}</a>
+        </q-td>
+      </template>
       <template #body-cell-operation="props">
         <q-td :props="props">
           <q-btn
@@ -362,11 +464,10 @@ onMounted(() => {
       </template>
       <template #bottom-row>
         <q-tr @click="CreateFormParams.open()" class="cursor-pointer">
-          <q-td colspan="5" class="text-center">
+          <q-td colspan="100" class="text-center">
             <q-icon name="add"/>添加
           </q-td>
         </q-tr>
-
       </template>
     </q-table>
   </q-card-section>
