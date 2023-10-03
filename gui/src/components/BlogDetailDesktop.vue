@@ -4,6 +4,7 @@ import {MdPreview} from "md-editor-v3";
 import {useRoute, useRouter} from "vue-router";
 import {guestApi, userApi} from "boot/axios";
 import "md-editor-v3/lib/preview.css";
+import axios from "axios";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +14,7 @@ const views = ref(0);
 const id = "preview-only";
 const blog_id = ref(0);
 const comments = ref([]);
+const tags = ref([]);
 const loadData = () => {
   blog_id.value = parseInt(route.params.id);
   guestApi.get(`/blog/rest/`).then((res) => {
@@ -20,22 +22,29 @@ const loadData = () => {
   });
   guestApi.get(`/blog/rest/${blog_id.value}/`).then((res) => {
     if (res) {
+      console.log(res.data);
       title.value = res.data.title;
       description.value = res.data.description;
       content.value = res.data.content;
+      tags.value = res.data.tags.map((item) => {
+        return item.name;
+      });
+      axios.get(content.value).then((res) => {
+        content.value = res.data;
+      });
       views.value = res.data.views;
       createdAtTime.value = res.data.created_at;
       nextId.value = res.data.next_id;
       prevId.value = res.data.prev_id;
     }
   });
-  guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-    console.log(res.data);
-    comments.value = res.data;
-    comments.value.forEach((item) => {
-      item.created_at = item.created_at.split("T")[0];
-    });
-  });
+  // guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
+  //   console.log(res.data);
+  //   comments.value = res.data;
+  //   comments.value.forEach((item) => {
+  //     item.created_at = item.created_at.split("T")[0];
+  //   });
+  // });
 };
 const blogList = ref([]);
 const nextId = ref(0);
@@ -111,7 +120,11 @@ const showComment = ref(false);
           <div class="col-9 q-ma-xs">
             <div class="text-h5">
               {{ title }}
+              <q-chip class="q-ma-xs" color="primary" text-color="white" v-for="(tag,index) in tags" :key="index">
+              {{ tag }}
+            </q-chip>
             </div>
+
           </div>
           <q-space/>
           <div class="col-auto">

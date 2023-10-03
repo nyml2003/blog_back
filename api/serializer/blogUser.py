@@ -2,7 +2,7 @@ import re
 from django.contrib.auth import get_user_model
 from api.models import BlogUser
 from rest_framework import serializers
-from utils.blog.user import generate_unique_username, check_email
+from utils.blog.user import generate_unique_username, check_email, check_telephone
 from django.contrib.auth.models import Group
 
 
@@ -82,25 +82,29 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs.pop('password2'):
             raise serializers.ValidationError("密码不匹配")
-        if not attrs.has('email') and not attrs.has('telephone'):
+        if 'email' not in attrs and 'telephone' not in attrs:
             raise serializers.ValidationError("电子邮件和电话不能同时为空")
         if 'email' in attrs:
             email = attrs['email']
             if check_email(email):
-                pass
+                if get_user_model().objects.filter(email=email).exists():
+                    raise serializers.ValidationError("电子邮件已经被注册")
             else:
                 raise serializers.ValidationError("电子邮件格式不正确")
         # 检查telephone
         if 'telephone' in attrs:
             telephone = attrs['telephone']
-            if re.match(r'^1[3456789]\d{9}$', telephone):
-                pass
+            if check_telephone(telephone):
+                if get_user_model().objects.filter(telephone=telephone).exists():
+                    raise serializers.ValidationError("电话已经被注册")
             else:
                 raise serializers.ValidationError("电话格式不正确")
         return attrs
 
     def create(self, validated_data):
         validated_data['username'] = generate_unique_username()
+        if 'avatar' in validated_data:
+            validated_data['avatar'].name = validated_data['username'] + '.' + validated_data['avatar'].name.split('.')[1]
         user_group = Group.objects.get(name='NormalUserGroup')
         user = get_user_model().objects.create_user(**validated_data)
         user.groups.add(user_group)

@@ -127,10 +127,10 @@ const exit = () => {
     <q-header reveal>
       <q-toolbar class="bg-white text-black justify-center" v-if="!isInputKeyword">
         <q-tabs inline-label>
-          <q-route-tab icon="home" to="/" exact/>
-          <q-route-tab icon="group" to="/friend"/>
-          <q-route-tab icon="menu_book" to="/blog"/>
-          <q-route-tab icon="videogame_asset" to="/game" exact/>
+          <q-route-tab icon="home" to="/" exact label="简介"/>
+          <q-route-tab icon="group" to="/friend" exact label="友链"/>
+          <q-route-tab icon="menu_book" to="/blog" exact label="博文列表"/>
+          <q-route-tab icon="videogame_asset" to="/game" exact label="游戏"/>
         </q-tabs>
         <q-input
           ref="input"

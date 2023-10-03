@@ -2,10 +2,10 @@
 import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
 import {userApi} from "boot/axios";
-
 const $q = useQuasar();
 const data = ref([])
 const loading = ref(false)
+
 const loadData = () => {
   loading.value = true
   console.log(TableParams.pagination.value)
@@ -80,14 +80,18 @@ const TableParams = {
   }
 }
 const CreateFormParams = {
+  canCreate: function () {
+    return JSON.stringify(CreateFormParams.form.value) === JSON.stringify(CreateFormParams.nullForm)
+  },
+  nullForm: {
+    name: ""
+  },
   form: ref({
     name: ""
   }),
   isVisible: ref(false),
   reset: function () {
-    CreateFormParams.form.value = {
-      name: ""
-    }
+    CreateFormParams.form.value = JSON.parse(JSON.stringify(CreateFormParams.nullForm))
   },
   submit: function () {
     userApi.post("/tag/rest/", CreateFormParams.form.value).then((res) => {
@@ -137,10 +141,7 @@ const UpdateFormParams={
   }),
   isVisible:ref(false),
   reset:function(){
-    UpdateFormParams.form.value={
-      id:"",
-      name:"",
-    }
+    UpdateFormParams.form.value=JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
   },
   submit:function(){
     userApi.patch(`/tag/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value).then((res)=>{
@@ -175,10 +176,7 @@ const UpdateFormParams={
       id:id,
       name:name,
     };
-    UpdateFormParams.formCopy.value={
-      id:id,
-      name:name,
-    };
+    UpdateFormParams.formCopy.value=JSON.parse(JSON.stringify(UpdateFormParams.form.value))
   },
   close:function(){
     this.isVisible.value=false;
@@ -239,7 +237,7 @@ onMounted(() => {
 
 <template>
 <!--  update-->
-  <q-dialog v-model="UpdateFormParams.isVisible.value">
+  <q-dialog v-model="UpdateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="UpdateFormParams.submit" @reset="UpdateFormParams.reset">
@@ -284,7 +282,7 @@ onMounted(() => {
     </q-card>
   </q-dialog>
   <!--  create-->
-  <q-dialog v-model="CreateFormParams.isVisible.value">
+  <q-dialog v-model="CreateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="CreateFormParams.submit" @reset="CreateFormParams.reset">

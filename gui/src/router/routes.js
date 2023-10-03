@@ -21,9 +21,9 @@ const routes = [
         component: () => import(`components/BlogDetail${platform}.vue`),
       },
       {
-        path: 'blog/edit/:id',
+        path: 'blog/edit',
+        props: true,
         name: 'BlogEdit',
-        meta: {requireAuth: true, permission: 'change_blog'},
         component: () => import("components/BlogEdit.vue"),
       },
       {

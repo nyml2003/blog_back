@@ -27,31 +27,36 @@ const {blogs} = defineProps({
             "
       >
         <q-item-section>
-          <!--            <q-item-label class="text-h6">-->
-          <!--              <div class="text-subtitle2 text-grey">-->
-          <!--                Last visited:{{ blog.created_at }}-->
-          <!--              </div>-->
-          <!--              {{ blog.title }}-->
-          <!--              <q-chip-->
-          <!--                size="sm"-->
-          <!--                label="置顶"-->
-          <!--                color="primary"-->
-          <!--                outline-->
-          <!--              />-->
-          <!--            </q-item-label>-->
-          <!--            <q-item-label caption>{{ blog.description }}</q-item-label>-->
-          <q-card class="q-mx-md cursor-pointer card_blog" @click="() => {
-                          router.push({
-                            name: 'BlogDetail',
-                            params: { id: blog.id },
-                          });
-                        }">
-            <q-card-section>
-              <q-item-label class="text-h6 q-my-md">{{ blog.title }}</q-item-label>
-              <q-separator/>
-              <q-item-label caption class="q-my-md">{{ blog.description }}</q-item-label>
+          <q-card class="q-mx-md cursor-pointer card_blog">
+            <q-card-section class="q-py-none">
+              <div class="row">
+                <div class="col text-h6 flex items-center">
+                  {{ blog.title }}
+                  <q-chip v-for="(tag,index) in blog.tags" :key="index" class="q-ma-xs" color="primary" size="sm" text-color="white">
+                    {{ tag.name }}
+                  </q-chip>
+                </div>
+              <div class="text-caption col-auto">
+                <div class="row">{{ blog.updated_at }}</div>
+                  <div class="row justify-end">
+                    <q-avatar class="q-mr-sm" :size="'xs'">
+                      <img src="https://avatars.githubusercontent.com/u/106670529?v=4">
+                    </q-avatar>
+                    <div class="text-caption flex-center flex">
+                      风唤长河
+                    </div>
+                  </div>
+                  <div class="row justify-end">
+                    <q-icon name="remove_red_eye" :size="'xs'"/>
+                    <div class="text-caption"> {{ blog.views }}</div>
+                  </div>
+                </div>
+              </div>
             </q-card-section>
+            <q-card-section class="q-py-none">
 
+              <div class="text-caption text-grey">{{ blog.description }}</div>
+            </q-card-section>
           </q-card>
         </q-item-section>
       </q-item>

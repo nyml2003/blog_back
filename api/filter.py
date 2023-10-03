@@ -19,12 +19,26 @@ class BlogUserFilter(rest_framework.FilterSet):
 
 class BlogPostFilter(rest_framework.FilterSet):
     keyword = rest_framework.CharFilter(method='search', label='关键字')
-    tags = rest_framework.CharFilter(field_name='tags__name', lookup_expr='in')
+    tags = rest_framework.CharFilter(method='searchTag', label='标签')
+    order = rest_framework.OrderingFilter(
+        fields=(
+            ('id', 'id'),
+            ('views', 'views'),
+            ('created_at', 'created_at'),
+            ('updated_at', 'updated_at'),
+        ),)
 
     class Meta:
         model = BlogPost
-        fields = ['keyword', 'tags']
+        fields = ['keyword', 'tags', 'id', 'views', 'created_at', 'updated_at']
 
     @staticmethod
     def search(queryset, name, value):
         return queryset.filter(Q(title__icontains=value) | Q(description__icontains=value))
+
+    @staticmethod
+    def searchTag(queryset, name, value):
+        if value:
+            tags = value.split(',')
+            return queryset.filter(tags__in=tags)
+        return queryset

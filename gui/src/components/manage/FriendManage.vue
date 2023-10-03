@@ -97,6 +97,15 @@ const TableParams = {
   }
 }
 const CreateFormParams = {
+  canCreate: function () {
+    return JSON.stringify(CreateFormParams.form.value) === JSON.stringify(CreateFormParams.nullForm)
+  },
+  nullForm: {
+    nickname: "",
+    avatar: null,
+    description: "",
+    url: "",
+  },
   form: ref({
     nickname:"",
     avatar:null,
@@ -105,12 +114,7 @@ const CreateFormParams = {
   }),
   isVisible: ref(false),
   reset: function () {
-    CreateFormParams.form.value = {
-      nickname:"",
-      avatar:null,
-      description:"",
-      url:"",
-    }
+    CreateFormParams.form.value = JSON.parse(JSON.stringify(CreateFormParams.nullForm))
   },
   submit: function () {
     userApi.post("/friend/rest/", CreateFormParams.form.value,{
@@ -172,12 +176,7 @@ const UpdateFormParams={
   }),
   isVisible:ref(false),
   reset:function(){
-    UpdateFormParams.form.value={
-      id:"",
-    nickname:"",
-    description:"",
-    url:"",
-    }
+    UpdateFormParams.form.value=JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
   },
   submit:function(){
     userApi.patch(`/friend/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value,{
@@ -221,13 +220,7 @@ const UpdateFormParams={
       description:description,
       url:url,
     };
-    UpdateFormParams.formCopy.value={
-      id:id,
-      nickname:nickname,
-      avatar:null,
-      description:description,
-      url:url,
-    };
+    UpdateFormParams.formCopy.value=JSON.parse(JSON.stringify(UpdateFormParams.form.value))
   },
   close:function(){
     this.isVisible.value=false;
@@ -288,7 +281,7 @@ onMounted(() => {
 
 <template>
 <!--  update-->
-  <q-dialog v-model="UpdateFormParams.isVisible.value">
+  <q-dialog v-model="UpdateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="UpdateFormParams.submit" @reset="UpdateFormParams.reset">
@@ -356,7 +349,7 @@ onMounted(() => {
     </q-card>
   </q-dialog>
   <!--  create-->
-  <q-dialog v-model="CreateFormParams.isVisible.value">
+  <q-dialog v-model="CreateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="CreateFormParams.submit" @reset="CreateFormParams.reset">
@@ -402,6 +395,7 @@ onMounted(() => {
               icon="save"
               color="primary"
               type="submit"
+              :disable="CreateFormParams.canCreate()"
             >
               保存
             </q-btn>

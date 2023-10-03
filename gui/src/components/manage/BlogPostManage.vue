@@ -1,15 +1,32 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
-import {userApi} from "boot/axios";
-
+import {guestApi, userApi} from "boot/axios";
+import {useRouter} from "vue-router";
+const router = useRouter();
+const goEdit = (id)=>{
+    router.push({
+      path: '/blog/edit/',
+      query: {
+        id: id
+      }
+  })
+}
 const $q = useQuasar();
 const data = ref([])
 const loading = ref(false)
+const tags = ref([])
 const loadData = () => {
   loading.value = true
-  console.log(TableParams.pagination.value)
-  userApi.get("//rest/", {
+  guestApi.get("/tag/rest/").then((res) => {
+    tags.value = res.data.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      }
+    })
+  })
+  userApi.get("/blog/rest/", {
       params: {
         page: TableParams.pagination.value.page,
         page_size: TableParams.pagination.value.rowsPerPage,
@@ -18,11 +35,9 @@ const loadData = () => {
   ).then((res) => {
     data.value = res.data.results
     TableParams.pagination.value.rowsNumber = res.data.count
-    console.log(res.data)
   })
   loading.value = false
 }
-
 const TableParams = {
   loading: ref(false),
   columns: [
@@ -33,28 +48,31 @@ const TableParams = {
       align: 'center',
     },
     {
-      name:'nickname',
-      label:'昵称',
-      field:'nickname',
-      align:'center',
+      name: 'title',
+      label: '标题',
+      field: 'title',
+      align: 'center',
     },
     {
-      name:'avatar',
-      label:'头像',
-      field:'avatar',
-      align:'center',
+      name: 'description',
+      label: '摘要',
+      field: 'description',
+      align: 'center',
+      format: (val) => {
+        return val.length > 15 ? val.substring(0, 15) + "..." : val
+      },
     },
     {
-      name:'description',
-      label:'个人简介',
-      field:'description',
-      align:'center',
+      name: 'tags',
+      label: '标签',
+      field: 'tags',
+      align: 'center',
     },
     {
-      name:'url',
-      label:'个人主页',
-      field:'url',
-      align:'center',
+      name: 'views',
+      label: '浏览量',
+      field: 'views',
+      align: 'center',
     },
     {
       name: 'created_at',
@@ -89,7 +107,6 @@ const TableParams = {
     rowsPerPage: 7,
   }),
   onRequest: function (props) {
-    console.log(props)
     const {page, rowsPerPage} = props.pagination;
     TableParams.pagination.value.page = page;
     TableParams.pagination.value.rowsPerPage = rowsPerPage;
@@ -97,28 +114,36 @@ const TableParams = {
   }
 }
 const CreateFormParams = {
+  canCreate: function () {
+    return JSON.stringify(CreateFormParams.form.value) === JSON.stringify(CreateFormParams.nullForm)
+  },
+  nullForm: {
+    title: "",
+    description: "",
+    content: null,
+    tags: [],
+  },
   form: ref({
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+    title: "",
+    description: "",
+    content: null,
+    tags: [],
   }),
   isVisible: ref(false),
   reset: function () {
     CreateFormParams.form.value = {
-      nickname:"",
-      avatar:null,
-      description:"",
-      url:"",
+      title: "",
+      description: "",
+      content: null,
+      tags: [],
     }
   },
   submit: function () {
-    userApi.post("/friend/rest/", CreateFormParams.form.value,{
+    userApi.post("/blog/rest/", CreateFormParams.form.value, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }).then((res) => {
-      console.log(res)
       $q.notify({
         message: '添加成功',
         color: 'positive',
@@ -130,7 +155,6 @@ const CreateFormParams = {
       CreateFormParams.close()
       loadData()
     }).catch((err) => {
-      console.log(err.response.data)
       $q.notify({
         message: `添加失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -150,43 +174,38 @@ const CreateFormParams = {
   },
 }
 //update
-const UpdateFormParams={
-  isImgChange:ref(false),
-  canUpdate:function (){
-    return JSON.stringify(UpdateFormParams.form.value)===JSON.stringify(UpdateFormParams.formCopy.value)
+const UpdateFormParams = {
+  canUpdate: function () {
+    return JSON.stringify(UpdateFormParams.form.value) === JSON.stringify(UpdateFormParams.formCopy.value) && UpdateFormParams.content.value === null
   },
-  avatar:ref(null),
-  formCopy:ref({
-    id:"",
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+  content: ref(null),
+  formCopy: ref({
+    id: "",
+    title: "",
+    description: "",
+    tags: [],
   }),
-  form:ref({
-    id:"",
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+  form: ref({
+    id: "",
+    title: "",
+    description: "",
+    tags: [],
   }),
-  isVisible:ref(false),
-  reset:function(){
-    UpdateFormParams.form.value={
-      id:"",
-    nickname:"",
-    description:"",
-    url:"",
-    }
+  isVisible: ref(false),
+  reset: function () {
+    UpdateFormParams.form.value = JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
   },
-  submit:function(){
-    userApi.patch(`/friend/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value,{
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+  submit: function () {
+    userApi.patch(`/blog/rest/${UpdateFormParams.form.value.id}/`, {
+      title: UpdateFormParams.form.value.title,
+      description: UpdateFormParams.form.value.description,
+      tags: UpdateFormParams.form.value.tags,
+      content: UpdateFormParams.content.value
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
-    ).then((res)=>{
-      console.log(res)
+    }).then((res) => {
       $q.notify({
         message: '修改成功',
         color: 'positive',
@@ -197,8 +216,7 @@ const UpdateFormParams={
       UpdateFormParams.reset()
       UpdateFormParams.close()
       loadData()
-    }).catch((err)=>{
-      console.log(err.response.data)
+    }).catch((err) => {
       $q.notify({
         message: `修改失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -208,33 +226,28 @@ const UpdateFormParams={
       })
       UpdateFormParams.reset()
       UpdateFormParams.close()
-    })
+    });
   },
-  open:function(row){
-    this.isVisible.value=true;
-    const {id,nickname,avatar,description,url}=row;
-    UpdateFormParams.avatar.value=avatar;
-    UpdateFormParams.form.value={
-      id:id,
-      nickname:nickname,
-      avatar:null,
-      description:description,
-      url:url,
+  open: function (row) {
+    this.isVisible.value = true;
+    const {id, title, description, tags} = row;
+    UpdateFormParams.form.value = {
+      id: id,
+      title: title,
+      description: description,
+      tags: tags.map((item) => {
+        return item.id
+      }),
     };
-    UpdateFormParams.formCopy.value={
-      id:id,
-      nickname:nickname,
-      avatar:null,
-      description:description,
-      url:url,
-    };
+    UpdateFormParams.formCopy.value = JSON.parse(JSON.stringify(UpdateFormParams.form.value))
   },
-  close:function(){
-    this.isVisible.value=false;
+  close: function () {
+    this.isVisible.value = false;
   }
 }
+
 //delete
-function deleteById(id){
+function deleteById(id) {
   $q.notify({
     message: '删除中',
     color: 'warning',
@@ -266,9 +279,9 @@ function deleteById(id){
   })
 
 }
-function deleteByIdConfirm(id){
-  userApi.delete(`/friend/rest/${id}/`).then((res) => {
-    console.log(res)
+
+function deleteByIdConfirm(id) {
+  userApi.delete(`/blog/rest/${id}/`).then((res) => {
     $q.notify({
       message: '删除成功',
       color: 'positive',
@@ -281,46 +294,54 @@ function deleteByIdConfirm(id){
     console.log(err)
   })
 }
+
 onMounted(() => {
   loadData();
 })
 </script>
 
 <template>
-<!--  update-->
-  <q-dialog v-model="UpdateFormParams.isVisible.value">
+  <!--  update-->
+  <q-dialog v-model="UpdateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="UpdateFormParams.submit" @reset="UpdateFormParams.reset">
           <q-input
-            v-model="UpdateFormParams.form.value.nickname"
-            label="昵称"
+            v-model="UpdateFormParams.form.value.title"
+            label="标题"
             lazy-rules
-            :rules="[val => !!val || '请输入昵称']"
+            :rules="[val => !!val || '请输入标题']"
           />
-<!--          图片预览-->
-          <q-file
-            v-model="UpdateFormParams.form.value.avatar"
-            label="头像"
-            lazy-rules
-            :multiple="false"
-            accept="image/*"
-          >
-            <template #prepend>
-              <img v-if="UpdateFormParams.form.value.avatar === null" :src="`${UpdateFormParams.avatar.value}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
-            </template>
-          </q-file>
           <q-input
             v-model="UpdateFormParams.form.value.description"
-            label="个人简介"
+            label="摘要"
             lazy-rules
+            type="textarea"
+            autogrow
           />
-          <q-input
-            v-model="UpdateFormParams.form.value.url"
-            label="个人主页"
+          <q-select
+            v-model="UpdateFormParams.form.value.tags"
+            label="标签"
+            dense
             lazy-rules
-            :rules="[val => !!val || '请输入个人主页']"
+            :options="tags"
+            multiple
+            use-chips
+            map-options
+            emit-value
+            input-debounce="0"
+            :rules="[val => !!val || '请选择标签',
+            val => val.length > 0 || '至少选择一项']"
           />
+          <q-file
+            v-model="UpdateFormParams.content.value"
+            label="内容"
+            lazy-rules
+            :multiple="false"
+            accept=".md"
+          >
+          </q-file>
+
           <q-card-actions align="right">
             <q-btn
               flat
@@ -350,42 +371,58 @@ onMounted(() => {
             >
               重置
             </q-btn>
+            <q-btn
+              flat
+              dense
+              icon="edit"
+              color="primary"
+              @click="goEdit(UpdateFormParams.form.value.id)">
+              编辑
+            </q-btn>
           </q-card-actions>
         </q-form>
       </q-card-section>
     </q-card>
   </q-dialog>
   <!--  create-->
-  <q-dialog v-model="CreateFormParams.isVisible.value">
+  <q-dialog v-model="CreateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
         <q-form @submit="CreateFormParams.submit" @reset="CreateFormParams.reset">
           <q-input
-            v-model="CreateFormParams.form.value.nickname"
-            label="昵称"
+            v-model="CreateFormParams.form.value.title"
+            label="标题"
             lazy-rules
-            :rules="[val => !!val || '请输入昵称']"
+            :rules="[val => !!val || '请输入标题']"
           />
-          <q-file
-            v-model="CreateFormParams.form.value.avatar"
-            label="头像"
+
+          <q-select
+            v-model="CreateFormParams.form.value.tags"
+            label="标签"
+            dense
             lazy-rules
-            :rules="[val => !!val || '请选择头像']"
-            :multiple="false"
-            accept="image/*"
-          >
-          </q-file>
+            :options="tags"
+            multiple
+            use-chips
+            map-options
+            emit-value
+            input-debounce="0"
+            :rules="[val => !!val || '请选择标签',
+            val => val.length > 0 || '至少选择一项']"
+          />
           <q-input
             v-model="CreateFormParams.form.value.description"
-            label="个人简介"
+            label="摘要"
             lazy-rules
           />
-          <q-input
-            v-model="CreateFormParams.form.value.url"
-            label="个人主页"
+          <q-file
+            v-model="CreateFormParams.form.value.content"
+            label="内容"
             lazy-rules
-            :rules="[val => !!val || '请输入个人主页']"
-          />
+            :multiple="false"
+            accept=".md"
+          >
+          </q-file>
           <q-card-actions align="right">
             <q-btn
               flat
@@ -402,6 +439,7 @@ onMounted(() => {
               icon="save"
               color="primary"
               type="submit"
+              :disable="CreateFormParams.canCreate()"
             >
               保存
             </q-btn>
@@ -413,6 +451,14 @@ onMounted(() => {
               type="reset"
             >
               重置
+            </q-btn>
+            <q-btn
+           flat
+          dense
+          icon="edit"
+          color="primary"
+          @click="goEdit(null)">
+          编辑
             </q-btn>
           </q-card-actions>
         </q-form>
@@ -430,16 +476,18 @@ onMounted(() => {
       binary-state-sort
       :separator="'cell'"
       :rows-per-page-options="[7, 10, 15]"
-      :visible-columns="['nickname','avatar','description','url','created_at','updated_at','operation']"
+      :visible-columns="['id', 'title', 'description', 'created_at', 'updated_at', 'tags', 'views', 'operation']"
     >
-      <template #body-cell-avatar="props">
+      <template #body-cell-tags="props">
         <q-td :props="props">
-          <img :src="`${props.row.avatar}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
-        </q-td>
-      </template>
-      <template #body-cell-url="props">
-        <q-td :props="props">
-          <a :href="props.row.url" target="_blank">{{props.row.url}}</a>
+          <q-chip
+            v-for="(tag,index) in props.row.tags"
+            :key="index"
+            :label="tag.name"
+            color="primary"
+            dense
+            outline
+          />
         </q-td>
       </template>
       <template #body-cell-operation="props">
@@ -465,9 +513,20 @@ onMounted(() => {
       <template #bottom-row>
         <q-tr @click="CreateFormParams.open()" class="cursor-pointer">
           <q-td colspan="100" class="text-center">
-            <q-icon name="add"/>添加
+            <q-icon name="add"/>
+            添加
           </q-td>
         </q-tr>
+      </template>
+      <template #top-right>
+        <q-btn
+          flat
+          round
+          dense
+          icon="refresh"
+          color="primary"
+          @click="loadData"
+        >刷新</q-btn>
       </template>
     </q-table>
   </q-card-section>

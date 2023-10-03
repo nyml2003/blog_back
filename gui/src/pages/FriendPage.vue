@@ -87,12 +87,13 @@ onMounted(() => {
             <q-card-section>
               <div class="absolute-top bg_friend" style="height: 150px">
                 <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
-                  <q-avatar size="90px" class="q-ma-md">
+                  <q-avatar size="60px" class="q-ma-md" style="left: 20px; top: 20px">
                     <img alt="avatar"
                          :src="rows[(row - 1) * itemPerRow + col - 1].avatar">
                   </q-avatar>
                   <div class="text-right q-ma-md">
-                    <div class="text-h6 text-weight-bold q-mt-md"> {{ rows[(row - 1) * itemPerRow + col - 1].nickname }}</div>
+                    <div class="text-h6 text-weight-bold q-mt-md text-white"> {{ rows[(row - 1) * itemPerRow + col - 1].nickname }}</div>
+                    <div class="text-subtitle2 text-black"> {{ rows[(row - 1) * itemPerRow + col - 1].description }}</div>
                   </div>
                 </div>
               </div>

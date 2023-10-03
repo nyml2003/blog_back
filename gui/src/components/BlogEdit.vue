@@ -1,24 +1,28 @@
 <script setup>
 import { ref,onMounted } from "vue";
-import { userApi} from "boot/axios";
+import  {baseMediaURL,userApi} from "boot/axios";
 import { MdEditor } from "md-editor-v3";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import "md-editor-v3/lib/style.css";
+import axios from "axios";
 const blog_id = ref(0);
 const title = ref("");
 const description = ref("");
 const content = ref("");
 const loadData = () => {
-  blog_id.value = parseInt(route.params.id);
-  userApi.get("/blog/rest/" + route.params.id + "/").then((res) => {
+  blog_id.value = parseInt(route.query.id);
+  userApi.get("/blog/rest/" + blog_id.value + "/").then((res) => {
     title.value = res.data.title;
     description.value = res.data.description;
-    content.value = res.data.content;
+    const content_url = res.data.content;
+    axios.get(content_url).then((res) => {
+      content.value = res.data;
+    });
   });
 };
 onMounted(() => {
-  loadData();
+  if (route.query.id) loadData();
 });
 const upload = () => {
   userApi
@@ -35,18 +39,35 @@ const update = () => {
       description: description.value,
       content: content.value,
     })
+};
+const onUploadImg = async (files, callback) => {
+  const res = await Promise.all(
+    files.map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData();
+        form.append('file', file);
 
+        userApi
+          .post('/img/upload/', form, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then((res) => rev(res))
+          .catch((error) => rej(error));
+      });
+    })
+  );
+  callback(res.map((item) => `${baseMediaURL}${item.data.url}`));
 };
 </script>
 <template>
-  <q-page class="flex justify-end items-start">
+  <q-page class="flex flex-center">
     <q-card class="q-pa-md q-ma-lg" style="width: 80vw">
       <q-card-section>
-        <div class="text-h6">
           <q-input v-model="title" dense outlined class="text-h6">
-            <template #before> 标题 </template>
+            <template #before ><div class="text-weight-bold">标题</div>   </template>
           </q-input>
-        </div>
       </q-card-section>
       <q-separator />
       <q-card-section>
@@ -63,20 +84,9 @@ const update = () => {
       <q-separator />
       <q-card-section>
         <div class="text-h6">正文</div>
-        <MdEditor v-model="content" />
+        <MdEditor v-model="content" @uploadImg="onUploadImg" @save=""
       </q-card-section>
       <q-separator />
-
-      <q-card-actions align="right">
-        <q-btn label="取消" flat /><q-btn
-          label="更新"
-          color="warning"
-          flat
-          @click="update"
-          v-if="blog_id"
-        />
-        <q-btn label="上传" color="primary" flat @click="upload" v-else />
-      </q-card-actions>
     </q-card>
   </q-page>
 </template>

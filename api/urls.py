@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import blog, maze, comment, user, friend, tag
+from .views import blog, maze, comment, user, friend, tag, img
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,20 +14,20 @@ urlpatterns = [
         'get': 'list',
         'post': 'create'
     })),
-    path('blog/rest/<int:blog_id>/', blog.BlogDetailView.as_view({
+    path('blog/rest/<int:id>/', blog.BlogDetailView.as_view({
         'get': 'retrieve',
-        'put': 'update',
+        'patch': 'update',
         'delete': 'destroy'
     })),
-    path('comment/blog/<int:blog_id>/', comment.CommentListByBlog.as_view()),
+    path('comment/blog/<int:id>/', comment.CommentListByBlog.as_view()),
     path('comment/user/', comment.CommentListByUser.as_view()),
     path('comment/rest/', comment.CommentView.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('comment/rest/<int:comment_id>/', comment.CommentDetailView.as_view({
+    path('comment/rest/<int:id>/', comment.CommentDetailView.as_view({
         'get': 'retrieve',
-        'put': 'update',
+        'patch': 'update',
         'delete': 'destroy'
     })),
     path('user/register/', user.RegisterView.as_view({
@@ -62,4 +62,5 @@ urlpatterns = [
         'delete': 'destroy'
     })),
     path('maze/create', maze.create_maze),
+    path('img/upload/', img.upload)
 ]

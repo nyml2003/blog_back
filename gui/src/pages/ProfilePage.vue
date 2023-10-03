@@ -73,7 +73,6 @@ const test=()=>{
 
 <template>
 <q-page class="flex flex-center">
-  <q-btn flat round dense icon="arrow_back" @click="test"/>
  <q-card class="q-ma-md" style="max-width: 400px" >
    <q-card-section class="q-pa-md">
      <div class="text-h6">个人信息</div>
