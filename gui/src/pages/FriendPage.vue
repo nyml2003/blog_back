@@ -2,8 +2,6 @@
 import {guestApi} from "boot/axios";
 import {onMounted, ref} from "vue";
 
-const itemPerRow = ref(3);
-const rowNumber = ref(0);
 const columns = [
   {
     name: 'id',
@@ -60,18 +58,16 @@ const columns = [
     align: 'center',
   }
 ];
-const rows = ref([]);
+const friends = ref([]);
 const loadData = () => {
   guestApi.get("/friend/rest/").then((res) => {
-    rows.value = res.data;
-    rowNumber.value = Math.ceil(rows.value.length / itemPerRow.value);
-    console.log(rows.value)
-    console.log(rowNumber.value)
+    friends.value = res.data;
+    console.log(friends.value)
   });
 }
 const toFriendDetail = (id) => {
   console.log(id)
-  window.location.href = rows.value[id].url;
+  window.location.href = friends.value[id].url;
 }
 onMounted(() => {
   loadData();
@@ -80,29 +76,26 @@ onMounted(() => {
 
 <template>
   <q-page class="flex items-start justify-center">
-    <div class="q-pa-md" style="width: 1000px">
-      <div class="row q-ma-md no-wrap" v-for="row in rowNumber" :key="row">
-        <div class="col-md-4 q-ma-sm" style="height: 150px" v-for="col in itemPerRow" :key="col">
-          <q-card v-if="(row - 1) * itemPerRow + col - 1 < rows.length" class="card_friend cursor-pointer" @click="toFriendDetail((row - 1) * itemPerRow + col - 1)">
-            <q-card-section>
-              <div class="absolute-top bg_friend" style="height: 150px">
-                <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
-                  <q-avatar size="60px" class="q-ma-md" style="left: 20px; top: 20px">
-                    <img alt="avatar"
-                         :src="rows[(row - 1) * itemPerRow + col - 1].avatar">
-                  </q-avatar>
-                  <div class="text-right q-ma-md">
-                    <div class="text-h6 text-weight-bold q-mt-md text-white"> {{ rows[(row - 1) * itemPerRow + col - 1].nickname }}</div>
-                    <div class="text-subtitle2 text-black"> {{ rows[(row - 1) * itemPerRow + col - 1].description }}</div>
-                  </div>
-                </div>
-              </div>
-            </q-card-section>
+    <q-card class="bg-white q-ma-md FriendCard">
+      <div class="text-h5 q-ma-md text-weight-bolder text-center">
+        友链列表
+        </div>
+      <div class="FriendCard">
+
+      <div class="FriendContainer q-ma-md">
+        <div class="FriendItem flex flex-center" v-for="index in friends.length" :key="index">
+          <q-card class="q-ma-md card_friend cursor-pointer" :class="`bg-friend-${index%7}`" style="width: 300px; height: 150px;"
+                  @click="toFriendDetail(index-1)">
+            <q-avatar class="q-ma-sm" style="width: 100px; height: 100px; border-radius: 50%;">
+              <img :src="friends[index-1].avatar">
+            </q-avatar>
+            <div class="q-ma-md bg-friend-text-0 text-white absolute-bottom-right text-weight-bolder text-h5">{{ friends[index - 1].nickname }}</div>
           </q-card>
-          <q-card v-else class="invisible"/>
         </div>
       </div>
-    </div>
+      </div>
+    </q-card>
+
   </q-page>
 </template>
 
@@ -115,7 +108,60 @@ onMounted(() => {
   transform: scale(1.05);
   transition: all 0.3s ease-in-out;
 }
-.bg_friend {
-   background-image: linear-gradient(to bottom right, #d834c2, #2088dd);
+
+.bg-friend-0 {
+  background-image: linear-gradient(to bottom right, #a7d4f7, #d8a7f7);
+}
+
+.bg-friend-1 {
+  background-image: linear-gradient(to bottom right, #d834c2, #f7a8b8);
+}
+
+.bg-friend-2 {
+  background-image: linear-gradient(to bottom right, #f7a8b8, #fbc2a7);
+}
+
+.bg-friend-3 {
+  background-image: linear-gradient(to bottom right, #fbc2a7, #f7e3a7);
+}
+
+.bg-friend-4 {
+  background-image: linear-gradient(to bottom right, #f7e3a7, #a7f7c4);
+}
+
+.bg-friend-5 {
+  background-image: linear-gradient(to bottom right, #a7f7c4, #a7f7f2);
+}
+
+.bg-friend-6 {
+  background-image: linear-gradient(to bottom right, #a7f7f2, #a7d4f7);
+}
+.bg-friend-text-0{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to bottom right, #444444, #666666);
+}
+
+.FriendContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.FriendItem {
+  flex-basis: 33.33%;
+}
+
+.FriendCard{
+  max-width: 1200px;
+  flex-direction: column;
+}
+
+@media (max-width: 1200px) {
+  .FriendItem {
+    flex-basis: 100%;
+  }
+  .FriendCard{
+    width: 90%;
+  }
 }
 </style>

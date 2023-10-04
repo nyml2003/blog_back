@@ -60,7 +60,7 @@
 <!--const toolbarRef = ref(null);-->
 <!--</script>-->
 <!--<template>-->
-<!--  <q-layout view="hHr LpR ffr" class="non-selectable des bg-grey-3" v-if="$q.platform.is.mobile === true">-->
+<!--  <q-layout view="hHr LpR ffr" class="non-selectable des bg-grey-3" v-if="$q.platform.is.Mobile === true">-->
 <!--    <q-header elevated>-->
 <!--    </q-header>-->
 <!--    <q-drawer-->

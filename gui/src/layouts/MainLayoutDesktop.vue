@@ -124,14 +124,15 @@ const exit = () => {
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
-    <q-header reveal>
-      <q-toolbar class="bg-white text-black justify-center" v-if="!isInputKeyword">
+    <q-header elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
+      <q-toolbar class=" text-black justify-center" v-if="!isInputKeyword">
         <q-tabs inline-label>
           <q-route-tab icon="home" to="/" exact label="简介"/>
           <q-route-tab icon="group" to="/friend" exact label="友链"/>
           <q-route-tab icon="menu_book" to="/blog" exact label="博文列表"/>
           <q-route-tab icon="videogame_asset" to="/game" exact label="游戏"/>
         </q-tabs>
+        <div class="q-mx-md"/>
         <q-input
           ref="input"
           v-model="keywordCopy"

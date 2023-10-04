@@ -1,7 +1,6 @@
 pyenv
 .DS_Store
 .thumbs.db
-db.sqlite3
 node_modules
 # Quasar core related directories
 .quasar
@@ -33,7 +32,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-/media/
 
 # local .env files
 .env.local*

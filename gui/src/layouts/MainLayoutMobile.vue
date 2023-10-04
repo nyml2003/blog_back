@@ -27,7 +27,6 @@ const toggleLog = () => {
   loginStore.checkLogged().then((res) => {
     if (res === 'token valid') {
       loginStore.isLogged = true;
-      loginStore.getPermission();
     } else {
       loginStore.logout();
       loginStore.isLogged = false;
@@ -195,9 +194,8 @@ const email = ref("");
 
       <router-view v-if="isRouteActive"/>
     </q-page-container>
-
-    <q-footer ref="toolbarRef" reveal>
-      <q-toolbar class="bg-white text-black justify-between" v-if="!isInputKeyword">
+    <q-footer reveal ref="toolbarRef" elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
+      <q-toolbar class="text-black justify-between" v-if="!isInputKeyword">
         <q-tabs inline-label>
           <q-route-tab icon="home" to="/" exact/>
           <q-route-tab icon="group" to="/friend"/>
@@ -208,7 +206,7 @@ const email = ref("");
           <q-route-tab icon="videogame_asset" to="/game" exact/>
         </q-tabs>
       </q-toolbar>
-      <q-toolbar v-else class="bg-white text-black justify-center">
+      <q-toolbar v-else class=" text-black justify-center">
         <q-input
           ref="input"
           v-model="keywordCopy"

@@ -11,14 +11,14 @@ const routes = [
       {path: "friend", component: () => import("pages/FriendPage.vue")},
       {path: "game", component: () => import("pages/GamePage.vue")},
       {
-        path: "blog", component: () => import(`pages/BlogPage${platform}.vue`),
+        path: "blog", component: () => import(`pages/${platform}/BlogPage${platform}.vue`),
       },
       {path: "test", component: () => import("components/BlogDetail.vue")},
       {path: 'edit', component: () => import("components/BlogEdit.vue")},
       {
         path: 'blog/:id',
         name: 'BlogDetail',
-        component: () => import(`components/BlogDetail${platform}.vue`),
+        component: () => import(`components/${platform}/BlogDetail${platform}.vue`),
       },
       {
         path: 'blog/edit',
