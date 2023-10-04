@@ -12,8 +12,8 @@
         "devBack:linux": "source pyenv/bin/activate && python manage.py runserver 8090",
         "devFront": "pnpm -C gui run dev",
         "build": "run-script-os",
-        "build:windows":"echo 'building...' && pnpm -C gui run build",
-        "build:linux":"echo 'building...' && pnpm -C gui run build && source pyenv/bin/activate && python manage.py collectstatic && sudo systemctl restart nginx && uwsgi --ini uwsgi.ini",
+        "build:windows":"echo 'building...' && pnpm -C gui run build && pyenv\\Scripts\\activate.bat  && python manage.py collectstatic",
+        "build:linux":"echo 'building...' && pnpm -C gui run build && sudo systemctl restart nginx && uwsgi --ini uwsgi.ini",
         "updatePythonRequirement":"pyenv\\Scripts\\activate.bat  && pip freeze > requirements.txt"
     }
 }
