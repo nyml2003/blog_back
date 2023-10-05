@@ -14,7 +14,7 @@ class CommentListByBlog(ListAPIView):
 
     def get_queryset(self):
         blog_id = self.kwargs['blog_id']
-        return Comment.objects.filter(parent_blog_id=blog_id, logic_delete=False).order_by('-id')
+        return Comment.objects.filter(parent_blog_id=blog_id, logic_delete=False).order_by('-updated_at')
 
 
 class CommentListByUser(ListAPIView):
@@ -24,17 +24,8 @@ class CommentListByUser(ListAPIView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return Comment.objects.filter(user_id=user_id, logic_delete=False).order_by('-id')
+        return Comment.objects.filter(user_id=user_id, logic_delete=False).order_by('-updated_at')
 
-
-class Recycle(ListAPIView):
-    serializer_class = CommentUserSerializer
-    pagination_class = ApiDefaultPagination
-    permission_classes = [IsAuthenticated, IsAdmin]
-
-    def get_queryset(self):
-        user_id = self.request.user.id
-        return Comment.objects.filter(user_id=user_id, logic_delete=True).order_by('-id')
 
 
 class CommentView(ModelViewSet):
@@ -63,7 +54,7 @@ class CommentView(ModelViewSet):
 
 
 class CommentDetailView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin, IsUser]
     pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 
@@ -87,7 +78,7 @@ class CommentDetailView(ModelViewSet):
             return JsonResponse({'error': 'comment not found'}, safe=False)
         if comment.user_id != request.user.id:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-        content = request.FILES.get('content')
+        content = request.POST.get('content')
         if content is None:
             return JsonResponse({'error': 'content cannot be null'}, safe=False)
         comment.content = content
@@ -101,6 +92,5 @@ class CommentDetailView(ModelViewSet):
             return JsonResponse({'error': 'comment not found'}, safe=False)
         if comment.user_id != request.user.id:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-        comment.logic_delete = True
         comment.save()
         return JsonResponse({'message': 'delete success'}, safe=False)

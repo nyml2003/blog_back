@@ -1,5 +1,5 @@
 <script setup>
-import { ref,onMounted } from "vue";
+import {ref, onMounted, reactive} from "vue";
 import  {baseMediaURL,userApi} from "boot/axios";
 import { MdEditor } from "md-editor-v3";
 import { useRoute } from "vue-router";
@@ -24,8 +24,9 @@ const loadData = () => {
     form.value.title = res.data.title;
     form.value.description = res.data.description;
     const content_url = res.data.content;
+    console.log(content_url)
     axios.get(content_url).then((res) => {
-      content.value = res.data;
+      content.value = res.data.toString();
     });
     form.value.tags= res.data.tags.map((item) => {
       return item.id;
@@ -163,7 +164,7 @@ const onSave=()=>{
       <q-separator />
       <q-card-section>
         <div class="text-h6">正文</div>
-        <MdEditor v-model="content" @uploadImg="onUploadImg" @save="onSave"/>
+        <MdEditor v-model="content" @uploadImg="onUploadImg" @save="onSave" />
       </q-card-section>
       <q-separator />
     </q-card>

@@ -1,0 +1,73 @@
+# 风唤长河的博客
+
+url:https://ventusvocatflumen.cn/
+
+1. **Ventus**：这是一个拉丁语单词，意思是“风”或“空气”
+
+2. **Vocat**：这是一个拉丁语单词，意思是“呼叫”或“召唤”¹。
+
+3. **Flumen**：这是一个拉丁语单词，意思是“河流”或“小溪”¹。
+
+**风唤长河**这个昵称化用自**大漠孤烟直，长河落日圆**
+
+# 技术栈
+
+## 前端
+代码主体在(项目目录)/gui下
+### 主要依赖(gui/package.json)
+
+- vue 3.3.4
+- vue-router
+- quasar
+- pinia
+- md-editor-v3
+- axios
+
+### 包管理器
+pnpm
+## 后端
+
+### 主要依赖(requirements.txt)
+- django 4.2.4
+- django-cors-headers
+- django-filter
+- djangorestframework
+
+## 部署
+
+**ip** 
+
+8.130.84.162
+
+**域名** 
+
+ventusvocatflumen.cn
+
+**证书**
+
+阿里云免费的ssl证书
+
+### 部署方案
+#### 打包
+用package.json的scripts脚本来减少工作量，根据系统切换执行的具体脚本
+
+init 下载前后端依赖
+
+devFront 前端开发环境
+
+devBack 后端开发环境
+
+因为服务器内存过小，故在本地打包，本地开发环境的系统为windows
+
+build:windows 打包前端
+
+build:linux 复制前端dist，重启nginx服务，按配置运行uwsgi
+
+#### 运行
+前端使用axios发送请求
+
+使用nginx进行请求分发
+
+uwsgi运行服务
+
+django后端处理请求

@@ -49,7 +49,6 @@ const test = () => {
 const search = () => {
   keyword.value = keywordCopy.value;
   keywordCopy.value = "";
-  isInputKeyword.value = false;
   reload();
   router.push({
     path: '/blog'
@@ -62,7 +61,6 @@ const reload = () => {
     isRouteActive.value = true;
   })
 }
-const isInputKeyword = ref(false);
 watch(isRightDrawerOpen, () => {
   if (isLogged.value === false) {
     mainLayoutStore.isRightDrawerOpen.value = false;
@@ -125,7 +123,7 @@ const exit = () => {
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
     <q-header elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
-      <q-toolbar class=" text-black justify-center" v-if="!isInputKeyword">
+      <q-toolbar class=" text-black justify-center">
         <q-tabs inline-label>
           <q-route-tab icon="home" to="/" exact label="简介"/>
           <q-route-tab icon="group" to="/friend" exact label="友链"/>
@@ -145,8 +143,12 @@ const exit = () => {
             <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
           </template>
         </q-input>
-        <q-btn flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
-               label="帐号"/>
+        <transition name="fade" mode="out-in">
+          <q-btn v-if="isLogged" flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
+                 label="帐号"/>
+          <q-btn v-else flat icon="account_circle" @click="login" class="q-ml-md"
+                 label="登录"/>
+        </transition>
       </q-toolbar>
     </q-header>
     <q-drawer
@@ -154,32 +156,23 @@ const exit = () => {
       :width="300"
       side="right"
       elevated
-      overlay
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
-          <q-item clickable v-ripple to="/user/profile" exact>
+          <q-item clickable v-ripple to="/user/profile/desktop" exact>
             <q-item-section avatar>
               <q-icon name="account_circle"/>
             </q-item-section>
             <q-item-section>
-              My Profile
+              个人中心
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple to="/user/comment" exact>
+          <q-item clickable v-ripple to="/admin" exact>
             <q-item-section avatar>
-              <q-icon name="comment"/>
+              <q-icon name="admin_panel_settings"/>
             </q-item-section>
             <q-item-section>
-              My Comments
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple to="/user/statistics" exact>
-            <q-item-section avatar>
-              <q-icon name="bar_chart"/>
-            </q-item-section>
-            <q-item-section>
-              Comment statistics
+              后台管理
             </q-item-section>
           </q-item>
           <q-item clickable v-ripple @click="exit" exact>
@@ -187,7 +180,7 @@ const exit = () => {
               <q-icon name="exit_to_app"/>
             </q-item-section>
             <q-item-section>
-              <div class="text-red text-weight-bold">Exit</div>
+              <div class="text-red text-weight-bold">注销</div>
             </q-item-section>
           </q-item>
         </q-list>
@@ -209,11 +202,20 @@ const exit = () => {
       </q-img>
     </q-drawer>
     <q-page-container>
-      <router-view v-if="isRouteActive"/>
+        <router-view v-if="isRouteActive"/>
     </q-page-container>
 
   </q-layout>
 </template>
+
 <style scoped>
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
+
 </style>
 

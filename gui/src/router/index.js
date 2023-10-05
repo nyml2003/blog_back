@@ -3,6 +3,8 @@ import {createMemoryHistory, createRouter, createWebHashHistory, createWebHistor
 import routes from "./routes";
 import {useLoginStore} from "stores/LoginStore";
 import {Notify} from "quasar";
+import {userApi} from "boot/axios";
+import {computed, ref} from "vue";
 // /*
 //  * If not building with SSR mode, you can
 //  * directly export the Router instantiation;
@@ -13,6 +15,8 @@ import {Notify} from "quasar";
 //  */
 //
 export default route(function (/* { store, ssrContext } */) {
+  const loginStore = useLoginStore();
+  const isLogged = ref(computed(() => loginStore.isLogged));
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === "history"
@@ -30,63 +34,44 @@ export default route(function (/* { store, ssrContext } */) {
     ),
   });
   Router.beforeEach((to, from, next) => {
-    if (to.meta.requireAuth === true) {
-      const loginStore = useLoginStore();
-      console.log(loginStore.isLogged)
-      if (loginStore.isLogged === undefined || loginStore.isLogged === null) {
-        next({
-          path: '/'
-        })
-      }
-      else if (loginStore.isLogged) {
-        if (to.meta.permission){
-          loginStore.checkPermission(to.meta.permission).then((res) => {
-          if (res === 'no permission') {
-            Notify.create({
-              message: '您没有权限',
-              color: 'red',
-              icon: 'warning',
-              position: 'top'
-            })
-            next({
-              path: '/'
-            })
-          } else {
-            next()
-          }
-        })
-        }else next()
-      } else {
-        console.log(loginStore.isLogged)
-        Notify.create({
-          message: '请先登录',
-          color: 'red',
-          icon: 'warning',
-          position: 'top'
-        })
-        next({
-          path: '/login'
-        })
-        }
-    } else if (to.meta.requireAuth === false) {
-      const loginStore = useLoginStore();
-      if (loginStore.isLogged) {
-        Notify.create({
-          message: '您已登录',
-          color: 'green',
-          icon: 'check',
-          position: 'top'
-        })
-        next({
-          path: '/'
-        })
-      } else {
-        next()
-      }
-    } else {
+    if (!to.meta.hasOwnProperty('requireAuth')) {
       next();
+      return;
     }
-  })
+    if (to.meta.requireAuth !== isLogged.value) {
+      Notify.create({
+        message: '访问的页面和登录状态不匹配',
+        color: 'red',
+        icon: 'error',
+        position: 'top'
+      })
+      next({
+        path: '/'
+      })
+      return;
+    }
+    if (to.meta.hasOwnProperty('group')) {
+      userApi.post('/user/group/', {group: to.meta.group}).then((res) => {
+        console.log(res.data)
+        if (res.data.hasOwnProperty('error')) {
+          Notify.create({
+            message: res.data.get('error'),
+            color: 'red',
+            icon: 'error',
+            position: 'top'
+          })
+          next({
+            path: '/'
+          })
+          return;
+        }
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
+    next();
+    return;
+  });
   return Router;
 });
 

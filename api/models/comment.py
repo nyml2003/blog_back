@@ -8,7 +8,7 @@ class Comment(models.Model):
     user = models.ForeignKey(BlogUser, on_delete=models.CASCADE)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     parent_blog = models.ForeignKey(BlogPost, on_delete=models.CASCADE, null=True, blank=True)
-    content = models.FileField(upload_to='comment', null=True, blank=True)
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

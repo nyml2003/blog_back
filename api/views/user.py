@@ -40,28 +40,28 @@ class RegisterView(ModelViewSet):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def permission(request):
+@permission_classes([IsAuthenticated, IsUser])
+def group(request):
     """
     检查用户有无某页面的访问权限
     :param request:
     body:
     {
-        "method": "get",
-        "permission": "can_view_admin_backend"
+        "group": "NormalAdminGroup"
     }
     :return:
     """
     if request.method == 'POST':
         json_data = json.loads(request.body)
         user = request.user
-        _permission = json_data.get('permission')
-        if _permission is None:
-            return JsonResponse({'error': 'permission cannot be null'}, safe=False)
-        if user.has_perm(_permission):
+        _group = json_data.get('group')
+        if _group is None:
+            return JsonResponse({'error': 'group cannot be null'}, safe=False)
+        if user.groups.filter(name=_group).exists():
             return JsonResponse({'message': 'permission granted'}, safe=False)
         else:
             return JsonResponse({'error': 'permission denied'}, safe=False)
+
 
 
 class UserView(ListAPIView):

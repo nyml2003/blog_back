@@ -29,6 +29,7 @@ const loadData = () => {
       tags.value = res.data.tags.map((item) => {
         return item.name;
       });
+      
       axios.get(content.value).then((res) => {
         content.value = res.data;
       });

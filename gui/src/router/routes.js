@@ -13,8 +13,6 @@ const routes = [
       {
         path: "blog", component: () => import(`pages/${platform}/BlogPage${platform}.vue`),
       },
-      {path: "test", component: () => import("components/BlogDetail.vue")},
-      {path: 'edit', component: () => import("components/BlogEdit.vue")},
       {
         path: 'blog/:id',
         name: 'BlogDetail',
@@ -42,9 +40,14 @@ const routes = [
         meta: {requireAuth: true},
         children: [
           {
-            path: 'profile',
-            name: 'Profile',
-            component: () => import("pages/ProfilePage.vue")
+            path: 'profile/desktop',
+            name: 'ProfileDesktop',
+            component: () => import("pages/ProfilePageDesktop.vue")
+          },
+          {
+            path: 'profile/mobile',
+            name: 'ProfileMobile',
+            component: () => import("pages/ProfilePageMobile.vue")
           },
           {
             path: 'comment',
@@ -57,36 +60,43 @@ const routes = [
   },
   {
     path: "/admin",
+    meta: {requireAuth: true, group: 'NormalAdminGroup'},
     component: () => import("layouts/AdminLayout.vue"),
     children: [
       {
         path: 'manage',
         name: 'Manage',
+        meta: {requireAuth: true, group: 'NormalAdminGroup'},
         component: () => import("pages/ManagePage.vue"),
         children: [
           {
             path: 'blog',
             name: 'BlogManage',
+            meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/BlogPostManage.vue"),
           },
           {
             path: 'user',
             name: 'UserManage',
+            meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/UserManage.vue"),
           },
           {
             path: 'comment',
             name: 'CommentManage',
+            meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/CommentManage.vue"),
           },
           {
             path: 'tag',
             name: 'TagManage',
+            meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/TagManage.vue"),
           },
           {
             path: 'friend',
             name: 'FriendManage',
+            meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/FriendManage.vue"),
           }]
       }

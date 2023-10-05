@@ -36,7 +36,7 @@ urlpatterns = [
     path('user/login/', TokenObtainPairView.as_view()),
     path('user/refresh/', TokenRefreshView.as_view()),
     path('user/verify/', TokenVerifyView.as_view()),
-    path('user/permission/', user.permission),
+    path('user/group/', user.group),
     path('user/self/', user.UserSelfView.as_view({
         'get': 'retrieve',
         'patch': 'update',
