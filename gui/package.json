@@ -1,8 +1,8 @@
 {
-  "name": "ventusblog",
-  "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "风唤长河的博客",
+  "name": "ventus",
+  "version": "0.0.2",
+  "description": "风唤长河的web学习载体",
+  "productName": "风唤长河",
   "author": "nyml2003 <2492181618@qq.com>",
   "private": true,
   "scripts": {
