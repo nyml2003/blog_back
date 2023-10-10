@@ -63,7 +63,6 @@ def group(request):
             return JsonResponse({'error': 'permission denied'}, safe=False)
 
 
-
 class UserView(ListAPIView):
     queryset = BlogUser.objects.all().order_by('id')
     serializer_class = BlogUserListSerializer
@@ -79,12 +78,14 @@ class UserSelfView(ModelViewSet):
 
     def get_object(self):
         return self.request.user
+
     def get_queryset(self):
         return BlogUser.objects.filter(id=self.request.user.id)
 
     def retrieve(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(user)
+        print(serializer.data)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):

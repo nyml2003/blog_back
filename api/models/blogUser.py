@@ -10,8 +10,3 @@ class BlogUser(AbstractUser):
     description = models.TextField(null=True, blank=True)  # 个人简介
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def save(self, *args, **kwargs):
-        if self.avatar:
-            self.avatar.name = self.username + '.' + self.avatar.name.split('.')[-1]
-        super().save(*args, **kwargs)

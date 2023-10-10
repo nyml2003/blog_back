@@ -1,1 +1,0 @@
-"use strict";(globalThis["webpackChunkventus"]=globalThis["webpackChunkventus"]||[]).push([[1816],{1816:(e,n,u)=>{function s(e,n){return" 1 "}u.r(n),u.d(n,{default:()=>c});var t=u(5291);const r={},a=(0,t.Z)(r,[["render",s]]),c=a}}]);

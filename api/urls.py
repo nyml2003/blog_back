@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import blog, maze, comment, user, friend, tag, img
+from .views import blog, maze, comment, user, friend, tag, img, statistics
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -41,6 +41,8 @@ urlpatterns = [
         'get': 'retrieve',
         'patch': 'update',
     })),
+    path('user/statistics/comment/', statistics.get_comment_info),
+    path('user/statistics/database_request/', statistics.get_database_request_count),
     path('user/rest/', user.UserView.as_view()),
     path('user/rest/<int:id>/', user.UserDetailView.as_view({
         'delete': 'destroy'

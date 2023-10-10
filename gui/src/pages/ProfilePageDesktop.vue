@@ -1,8 +1,11 @@
 <script setup>
-import {guestApi, userApi} from "boot/axios";
+import {userApi} from "boot/axios";
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
+import ProfileDetail from "components/ProfileDetail.vue";
+import {useQuasar} from "quasar";
 
+const $q = useQuasar();
 const router = useRouter();
 const tips = ref([
   "温馨提示，邮箱、电话、用户唯一标识均可用于登录",
@@ -16,12 +19,7 @@ const statistics = ref([
     field: "comment_count"
   },
   {
-    name: "发送媒体资源请求总数",
-    value: 0,
-    field: "media_request_count"
-  },
-  {
-    name: "发送请求总数",
+    name: "发送敏感请求总数",
     value: 0,
     field: "request_count"
   }
@@ -52,7 +50,16 @@ const loadData = () => {
         hour12: false,
       });
     });
+    comments.value.forEach((item) => {
+      item.isUpdate = false;
+    });
   });
+  userApi.get('/user/statistics/comment/').then((res) => {
+    statistics.value[0].value = res.data.count;
+  })
+  userApi.get('/user/statistics/database_request/').then((res) => {
+    statistics.value[1].value = res.data.count;
+  })
 }
 const comments = ref([]);
 onMounted(() => {
@@ -76,25 +83,58 @@ const toDetail = (blog_id) => {
     }
   })
 }
-const isUpdate = ref(false);
 const onSave = (id, content) => {
   userApi.patch(`/comment/rest/${id}/`, {
     content: content
   }).then((res) => {
     console.log(res);
-    isUpdate.value = false;
+    comments.value[comments.value.findIndex((item) => {
+      return item.id === id;
+    })].isUpdate = false;
     loadData();
   })
 }
-const onDelete = () => {
-  userApi.delete(`/comment/rest/`).then((res) => {
-    console.log(res);
-    loadData();
+const onDelete = (item) => {
+  console.log(item)
+  $q.notify({
+    message: '确定删除该评论吗？',
+    color: 'negative',
+    position: 'center',
+    icon: 'delete',
+    timeout: 2000,
+    actions: [
+      {
+        label: '确定',
+        color: 'white',
+        handler: () => {
+          userApi.delete(`/comment/rest/${item.id}/`).then((res) => {
+            $q.notify({
+              message: '删除成功',
+              color: 'positive',
+              position: 'top',
+              icon: 'delete',
+              timeout: 2000,
+            })
+            loadData();
+          })
+        }
+      },
+      {
+        label: '取消',
+        color: 'white',
+        handler: () => {
+        }
+      }
+    ]
   })
 };
+const isDetail = ref(false);
 </script>
 
 <template>
+  <q-dialog v-model="isDetail" persistent>
+    <ProfileDetail :isOpen="isDetail" :close="()=>{isDetail=false;loadData();}"/>
+  </q-dialog>
   <q-page class="flex items-start justify-center">
     <q-card class="q-mx-md q-mt-md q-mb-sm" style="min-width: 1000px">
 
@@ -131,10 +171,10 @@ const onDelete = () => {
         <img :src="userDetail.avatar"/>
       </q-avatar>
       <q-card-actions align="right">
-        <q-btn flat label="编辑个人资料" color="primary"/>
+        <q-btn flat label="编辑个人资料" color="primary" @click="isDetail=true"/>
       </q-card-actions>
     </q-card>
-    <div class="q-mx-md q-mb-md row" style="min-width: 1000px">
+    <div class="q-mx-md q-mb-md row" style="min-width: 1000px;min-height: 500px">
       <q-card class="q-mr-xs col">
         <q-list>
           <q-item v-for="item in comments" :key="item.id"
@@ -147,15 +187,16 @@ const onDelete = () => {
                   》的评论
                 </div>
                 <div class="text-subtitle2 text-grey">
-                  <q-btn flat dense round @click="onDelete" icon="delete" color="negative"/>
+                  <q-btn flat dense round @click="onDelete(item)" icon="delete" color="negative"/>
                   发布时间:{{ item.updated_at }}
                 </div>
               </div>
               <q-separator/>
-              <q-input type="textarea" :readonly="!isUpdate" v-model="item.content" autogrow>
+              <q-input type="textarea" :readonly="!item.isUpdate" v-model="item.content" autogrow>
                 <template #append>
-                  <q-btn flat dense round @click="isUpdate = !isUpdate" class="q-mr-xs" color="primary" icon="edit"
-                         v-if="!isUpdate"/>
+                  <q-btn flat dense round @click="item.isUpdate = !item.isUpdate" class="q-mr-xs" color="primary"
+                         icon="edit"
+                         v-if="!item.isUpdate"/>
                   <q-btn flat dense round @click="onSave(item.id,item.content)" icon="save" color="positive" v-else/>
                 </template>
               </q-input>
@@ -166,8 +207,11 @@ const onDelete = () => {
       </q-card>
       <q-card class="col-3">
         <q-list>
-          <q-item v-for="i in 10" :key="i">
-            312
+          <q-item v-for="item in statistics" :key="item.name">
+            <q-item-section>
+              <div class="text-h6 text-weight-bold">{{ item.name }}</div>
+              <div class="text-subtitle2 text-grey">{{ item.value }}</div>
+            </q-item-section>
           </q-item>
         </q-list>
       </q-card>

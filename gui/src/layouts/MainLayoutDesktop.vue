@@ -28,6 +28,7 @@ const toggleLog = () => {
   loginStore.checkLogged().then((res) => {
     if (res === 'token valid') {
       loginStore.isLogged = true;
+      loadUserDetail();
     } else {
       loginStore.logout();
       loginStore.isLogged = false;
@@ -36,10 +37,12 @@ const toggleLog = () => {
 };
 onMounted(() => {
   toggleLog();
-  if (loginStore.isLogged) {
+});
+watch(() => loginStore.isLogged, (newVal) => {
+  if (newVal) {
     loadUserDetail();
   }
-});
+})
 const isLogged = ref(computed(() => loginStore.isLogged));
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
 provide('isLogged', isLogged);

@@ -20,7 +20,7 @@ const loadData = () => {
         page_size: recordsPerPage.value,
         keyword: keyword.value,
         tags: tags.value.join(","),
-        order:order.value.value
+        order: order.value.value
       },
     })
     .then((res) => {
@@ -60,9 +60,9 @@ const maxPage = ref(0);
 const tags = ref([]);
 const tagOptions = ref([]);
 const isFilterDialogOpen = ref(false);
-const order=ref({
-  label:'按创建时间',
-  value:'created_at'
+const order = ref({
+  label: '按更新时间',
+  value: '-updated_at'
 });
 const resetFilter = () => {
   tags.value = [];
@@ -76,21 +76,21 @@ const resetFilter = () => {
       <q-card-section>
         <q-input v-model="keyword" label="关键字" dense autofocus/>
         <q-select
-            v-model="tags"
-            label="标签"
-            lazy-rules
-            :options="tagOptions"
-            borderless dense
-            multiple
-            use-chips
-            map-options
-            emit-value
-            map-option
-          >
+          v-model="tags"
+          label="标签"
+          lazy-rules
+          :options="tagOptions"
+          borderless dense
+          multiple
+          use-chips
+          map-options
+          emit-value
+          map-option
+        >
           <template #prepend>
             <q-icon name="label"/>
           </template>
-          </q-select>
+        </q-select>
         <q-select
           v-model="order"
           label="排序"

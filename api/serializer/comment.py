@@ -53,7 +53,7 @@ class CommentSerializer(CommentUserSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user', 'content', 'updated_at', 'parent_id', 'parent_name', 'parent_type', 'created_at']
+        fields = ['user', 'content', 'updated_at', 'parent_id', 'parent_name', 'parent_type', 'created_at', 'id']
 
     def get_user(self, obj):
         if obj.user.nickname is not None:

@@ -15,33 +15,33 @@ const login = () => {
 </script>
 <template>
   <q-page class="flex flex-center">
-    <q-card class="q-ma-md" style="max-width: 400px">
+    <q-card class="q-ma-md" style="min-width: 400px">
       <q-card-section>
         <q-form @submit="login">
           <q-input
             v-model="username"
-            label="Username"
+            label="昵称"
             lazy-rules
-            :rules="[(val) => !!val || 'Please enter your username']"
+            :rules="[(val) => !!val || '请输入昵称']"
           />
           <q-input
             v-model="password"
-            label="Password"
+            label="密码"
             lazy-rules
             type="password"
-            :rules="[(val) => !!val || 'Please enter your password']"
+            :rules="[(val) => !!val || '请输入密码']"
           />
           <div class="justify-center flex-center flex">
-            <q-btn type="submit" label="Login"  />
+            <q-btn type="submit" label="登录" color="primary" class="q-mt-md"/>
           </div>
 
         </q-form>
       </q-card-section>
       <q-separator/>
-      <q-card-section class="row">
-        <div class="text-h6">Don't have an account?</div>
+      <q-card-section class="row justify-center">
+        <div class="text-h6">没有账号？</div>
         <q-btn
-          label="Register"
+          label="注册"
           color="primary"
           @click="()=>{router.push('/register')}"
           flat

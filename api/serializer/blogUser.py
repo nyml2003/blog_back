@@ -46,17 +46,13 @@ class BlogUserSelfSerializer(serializers.ModelSerializer):
                 pass
             else:
                 raise serializers.ValidationError("电话格式不正确")
-        # 检查avatar
-        if 'avatar' in attrs:
-            avatar = attrs['avatar']
-            if avatar.size > 1024 * 1024 * 2:
-                raise serializers.ValidationError("头像大小不能超过2M")
-            attrs['avatar'].name = self.instance.username + '.' + attrs['avatar'].name.split('.')[-1]
         return attrs
 
     def update(self, instance, validated_data):
         if 'avatar' in validated_data:
+            instance.avatar.delete()
             instance.avatar = validated_data['avatar']
+            instance.avatar.name = instance.username + '.' + instance.avatar.name.split('.')[1]
         if 'nickname' in validated_data:
             instance.nickname = validated_data['nickname']
         if 'description' in validated_data:
@@ -104,7 +100,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['username'] = generate_unique_username()
         if 'avatar' in validated_data:
-            validated_data['avatar'].name = validated_data['username'] + '.' + validated_data['avatar'].name.split('.')[1]
+            validated_data['avatar'].name = validated_data['username'] + '.' + validated_data['avatar'].name.split('.')[
+                1]
         user_group = Group.objects.get(name='NormalUserGroup')
         user = get_user_model().objects.create_user(**validated_data)
         user.groups.add(user_group)

@@ -33,7 +33,7 @@ class CommentView(ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        return Comment.objects.filter(logic_delete=False).order_by('-id')
+        return Comment.objects.order_by('-id')
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -86,11 +86,11 @@ class CommentDetailView(ModelViewSet):
         return JsonResponse({'message': 'update success'}, safe=False)
 
     def destroy(self, request, *args, **kwargs):
-        comment_id = kwargs['comment_id']
+        comment_id = kwargs['id']
         comment = Comment.objects.get(id=comment_id)
         if comment is None:
             return JsonResponse({'error': 'comment not found'}, safe=False)
         if comment.user_id != request.user.id:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-        comment.save()
+        comment.delete()
         return JsonResponse({'message': 'delete success'}, safe=False)
