@@ -23,7 +23,7 @@ class CommentUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['content', 'updated_at', 'parent_id', 'parent_name', 'parent_type']
+        fields = ['content', 'updated_at', 'parent_id', 'parent_name', 'parent_type', 'id']
 
     def get_parent_id(self, obj):
         if obj.parent_blog is not None:
@@ -53,7 +53,7 @@ class CommentSerializer(CommentUserSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user', 'content', 'updated_at', 'parent_id', 'parent_name', 'parent_type']
+        fields = ['user', 'content', 'updated_at', 'parent_id', 'parent_name', 'parent_type', 'created_at']
 
     def get_user(self, obj):
         if obj.user.nickname is not None:

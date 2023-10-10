@@ -13,8 +13,8 @@ class CommentListByBlog(ListAPIView):
     serializer_class = CommentBlogSerializer
 
     def get_queryset(self):
-        blog_id = self.kwargs['blog_id']
-        return Comment.objects.filter(parent_blog_id=blog_id, logic_delete=False).order_by('-updated_at')
+        blog_id = self.kwargs['id']
+        return Comment.objects.filter(parent_blog_id=blog_id).order_by('-updated_at')
 
 
 class CommentListByUser(ListAPIView):
@@ -24,8 +24,7 @@ class CommentListByUser(ListAPIView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return Comment.objects.filter(user_id=user_id, logic_delete=False).order_by('-updated_at')
-
+        return Comment.objects.filter(user_id=user_id).order_by('-updated_at')
 
 
 class CommentView(ModelViewSet):
@@ -40,11 +39,12 @@ class CommentView(ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        content = request.FILES.get('content')
+        print(request.data)
+        content = request.data.get('content')
         if content is None:
             return JsonResponse({'error': 'content cannot be null'}, safe=False)
-        parent_blog_id = request.POST.get('parent_blog_id')
-        parent_comment_id = request.POST.get('parent_comment_id')
+        parent_blog_id = request.data.get('blog_id')
+        parent_comment_id = request.data.get('comment_id')
         if parent_blog_id is None and parent_comment_id is None:
             return JsonResponse({'error': 'parent_blog_id or parent_comment_id cannot be null'}, safe=False)
         user = request.user
@@ -62,7 +62,7 @@ class CommentDetailView(ModelViewSet):
         return Comment.objects.filter(logic_delete=False).order_by('-id')
 
     def retrieve(self, request, *args, **kwargs):
-        comment_id = kwargs['comment_id']
+        comment_id = kwargs['id']
         comment = Comment.objects.get(id=comment_id)
         if comment is None:
             return JsonResponse({'error': 'comment not found'}, safe=False)
@@ -72,13 +72,13 @@ class CommentDetailView(ModelViewSet):
         return JsonResponse(serializer.data, safe=False)
 
     def update(self, request, *args, **kwargs):
-        comment_id = kwargs['comment_id']
+        comment_id = kwargs['id']
         comment = Comment.objects.get(id=comment_id)
         if comment is None:
             return JsonResponse({'error': 'comment not found'}, safe=False)
         if comment.user_id != request.user.id:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-        content = request.POST.get('content')
+        content = request.data.get('content')
         if content is None:
             return JsonResponse({'error': 'content cannot be null'}, safe=False)
         comment.content = content

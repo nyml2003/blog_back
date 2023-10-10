@@ -1,5 +1,5 @@
 <script setup>
-import {useQuasar} from "quasar";
+import {debounce, throttle, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
 import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
@@ -36,6 +36,9 @@ const toggleLog = () => {
 };
 onMounted(() => {
   toggleLog();
+  if (loginStore.isLogged) {
+    loadUserDetail();
+  }
 });
 const isLogged = ref(computed(() => loginStore.isLogged));
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
@@ -61,32 +64,15 @@ const reload = () => {
     isRouteActive.value = true;
   })
 }
-watch(isRightDrawerOpen, () => {
-  if (isLogged.value === false) {
-    mainLayoutStore.isRightDrawerOpen.value = false;
-    setTimeout(
-      () => {
-        $q.notify({
-          message: '请先登录',
-          icon: 'warning',
-          color: 'red',
-          position: 'top',
-        })
-        router.push({
-          path: '/login'
-        })
-      }, 200
-    )
-  } else {
-    userApi.get('/user/self/').then((res) => {
-      console.log(res);
-      userDetail.value.username = res.data.username;
-      userDetail.value.avatar = res.data.avatar;
-      userDetail.value.description = res.data.description;
-      userDetail.value.nickname = res.data.nickname;
-    })
-  }
-})
+const loadUserDetail = () => {
+  userApi.get('/user/self/').then((res) => {
+    console.log(res);
+    userDetail.value.username = res.data.username;
+    userDetail.value.avatar = res.data.avatar;
+    userDetail.value.description = res.data.description;
+    userDetail.value.nickname = res.data.nickname;
+  })
+}
 const userDetail = ref({
   username: "",
   avatar: null,
@@ -115,10 +101,16 @@ const exit = () => {
     position: 'center',
     actions: [
       {label: '取消', color: 'black'},
-      {label: '确定', color: 'primary', handler: () => {logout()}}
+      {
+        label: '确定', color: 'primary', handler: () => {
+          logout()
+        }
+      }
     ]
   })
 }
+
+
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -143,6 +135,7 @@ const exit = () => {
             <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
           </template>
         </q-input>
+        <q-space/>
         <transition name="fade" mode="out-in">
           <q-btn v-if="isLogged" flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
                  label="帐号"/>
@@ -156,6 +149,13 @@ const exit = () => {
       :width="300"
       side="right"
       elevated
+      @click.capture="()=>{mainLayoutStore.isRightDrawerOpen = false}"
+      bordered
+      content-class="bg-grey-3"
+      @mouseout="()=>{mainLayoutStore.isRightDrawerOpen = false}"
+      @mouseover="()=>{mainLayoutStore.isRightDrawerOpen = true}"
+      overlay
+      mini-to-overlay
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
@@ -189,7 +189,7 @@ const exit = () => {
         <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
           <q-avatar size="100px">
             <img alt="avatar"
-                 :src="userDetail.avatar ? userDetail.avatar : 'https://cdn.quasar.dev/img/avatar.png'">
+                 :src="userDetail.avatar ">
           </q-avatar>
           <div class="text-right q-ma-md">
             <div class="text-h6 text-weight-bold">{{
@@ -202,20 +202,20 @@ const exit = () => {
       </q-img>
     </q-drawer>
     <q-page-container>
-        <router-view v-if="isRouteActive"/>
+      <router-view v-if="isRouteActive"/>
     </q-page-container>
 
   </q-layout>
 </template>
 
 <style scoped>
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.5s;
-  }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
 
-  .fade-enter, .fade-leave-to {
-    opacity: 0;
-  }
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 
 </style>
 

@@ -29,7 +29,7 @@ const loadData = () => {
       tags.value = res.data.tags.map((item) => {
         return item.name;
       });
-      
+
       axios.get(content.value).then((res) => {
         content.value = res.data;
       });
@@ -39,13 +39,15 @@ const loadData = () => {
       prevId.value = res.data.prev_id;
     }
   });
-  // guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-  //   console.log(res.data);
-  //   comments.value = res.data;
-  //   comments.value.forEach((item) => {
-  //     item.created_at = item.created_at.split("T")[0];
-  //   });
-  // });
+  guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
+    console.log(res.data);
+    comments.value = res.data;
+    comments.value.forEach((item) => {
+      item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
+        hour12: false,
+      });
+    });
+  });
 };
 const blogList = ref([]);
 const nextId = ref(0);
@@ -81,8 +83,9 @@ onMounted(() => {
 const content = ref("");
 const comment = ref("");
 const submitComment = () => {
+  console.log(comment.value)
   userApi
-    .post(`/comment/create/`, {
+    .post(`/comment/rest/`, {
       blog_id: blog_id.value,
       content: comment.value
     }).then((res) => {
@@ -122,8 +125,8 @@ const showComment = ref(false);
             <div class="text-h5">
               {{ title }}
               <q-chip class="q-ma-xs" color="primary" text-color="white" v-for="(tag,index) in tags" :key="index">
-              {{ tag }}
-            </q-chip>
+                {{ tag }}
+              </q-chip>
             </div>
 
           </div>
@@ -180,10 +183,10 @@ const showComment = ref(false);
             <q-item-section>
               <div class="row justify-between flex-center">
                 <div class=" text-h6">
-                  {{ item.username }}
+                  {{ item.name }}
                 </div>
                 <div class="text-subtitle2 text-grey">
-                  发布时间:{{ item.created_at }}
+                  发布时间:{{ item.updated_at }}
                 </div>
               </div>
               <q-separator/>
