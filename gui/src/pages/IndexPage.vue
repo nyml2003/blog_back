@@ -26,6 +26,7 @@
 
 <script setup>
 import {useQuasar} from "quasar";
+import RecordShow from "components/RecordShow.vue";
 
 const $q = useQuasar();
 
@@ -33,20 +34,20 @@ const $q = useQuasar();
 
 <style scoped>
 .overlay-desktop {
-  position: fixed;
-  top: 50px;
+  position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100%);
   background-color: rgba(0, 0, 0, 0.5);
 }
 
 .overlay-mobile {
-  position: fixed;
-  bottom: 50px;
+  position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100%);
   background-color: rgba(0, 0, 0, 0.5);
 }
 

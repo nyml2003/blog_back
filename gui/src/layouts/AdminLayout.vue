@@ -2,6 +2,7 @@
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
+import RecordShow from "components/RecordShow.vue";
 
 const $q = useQuasar();
 const miniState = ref(false);
@@ -56,7 +57,10 @@ const leftDrawerOpen = ref(true);
     <q-page-container>
       <router-view/>
     </q-page-container>
-
+    <div class="flex flex-center bg-grey-3" style="height: 50px">
+      <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
+    </div>
   </q-layout>
 </template>
 

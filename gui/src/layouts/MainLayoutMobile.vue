@@ -4,6 +4,7 @@ import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
 import {computed, nextTick, onMounted, onUnmounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
+import RecordShow from "components/RecordShow.vue";
 
 const rightDrawerOpen = ref(false);
 const loginStore = useLoginStore();
@@ -194,6 +195,10 @@ const email = ref("");
 
       <router-view v-if="isRouteActive"/>
     </q-page-container>
+    <div class="flex flex-center bg-grey-3" style="height: 200px">
+      <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
+    </div>
     <q-footer reveal ref="toolbarRef" elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
       <q-toolbar class="text-black justify-between" v-if="!isInputKeyword">
         <q-tabs inline-label>

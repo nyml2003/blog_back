@@ -1,10 +1,11 @@
 <script setup>
-import {debounce, throttle, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
 import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
 import {useMainLayoutStore} from "stores/MainLayoutStore";
+import RecordShow from "components/RecordShow.vue";
 
 const mainLayoutStore = useMainLayoutStore();
 const loginStore = useLoginStore();
@@ -207,7 +208,10 @@ const exit = () => {
     <q-page-container>
       <router-view v-if="isRouteActive"/>
     </q-page-container>
-
+    <div class="flex flex-center bg-grey-3" style="height: 50px">
+      <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
+    </div>
   </q-layout>
 </template>
 
