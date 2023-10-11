@@ -22,7 +22,6 @@ const loadData = () => {
   });
   guestApi.get(`/blog/rest/${blog_id.value}/`).then((res) => {
     if (res) {
-      console.log(res.data);
       title.value = res.data.title;
       description.value = res.data.description;
       content.value = res.data.content;
@@ -40,7 +39,6 @@ const loadData = () => {
     }
   });
   guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-    console.log(res.data);
     comments.value = res.data;
     comments.value.forEach((item) => {
       item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
@@ -89,7 +87,6 @@ const submitComment = () => {
       blog_id: blog_id.value,
       content: comment.value
     }).then((res) => {
-    console.log(res);
     comment.value = "";
     loadData();
   });

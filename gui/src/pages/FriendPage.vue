@@ -62,12 +62,11 @@ const friends = ref([]);
 const loadData = () => {
   guestApi.get("/friend/rest/").then((res) => {
     friends.value = res.data;
-    console.log(friends.value)
   });
 }
 const toFriendDetail = (id) => {
   console.log(id)
-  window.location.href = friends.value[id].url;
+  window.open(friends.value[id].url)
 }
 onMounted(() => {
   loadData();
@@ -79,20 +78,23 @@ onMounted(() => {
     <q-card class="bg-white q-ma-md FriendCard">
       <div class="text-h5 q-ma-md text-weight-bolder text-center">
         友链列表
-        </div>
+      </div>
       <div class="FriendCard">
 
-      <div class="FriendContainer q-ma-md">
-        <div class="FriendItem flex flex-center" v-for="index in friends.length" :key="index">
-          <q-card class="q-ma-md card_friend cursor-pointer" :class="`bg-friend-${index%7}`" style="width: 300px; height: 150px;"
-                  @click="toFriendDetail(index-1)">
-            <q-avatar class="q-ma-sm" style="width: 100px; height: 100px; border-radius: 50%;">
-              <img :src="friends[index-1].avatar">
-            </q-avatar>
-            <div class="q-ma-md bg-friend-text-0 text-white absolute-bottom-right text-weight-bolder text-h5">{{ friends[index - 1].nickname }}</div>
-          </q-card>
+        <div class="FriendContainer q-ma-md">
+          <div class="FriendItem flex flex-center" v-for="index in friends.length" :key="index">
+            <q-card class="q-ma-md card_friend cursor-pointer" :class="`bg-friend-${index%7}`"
+                    style="width: 300px; height: 150px;"
+                    @click="toFriendDetail(index-1)">
+              <q-avatar class="q-ma-md" style="width: 100px; height: 100px; border-radius: 50%;">
+                <img :src="friends[index-1].avatar">
+              </q-avatar>
+              <div class="q-ma-md bg-friend-text-0 text-white absolute-bottom-right text-weight-bolder text-h5">
+                {{ friends[index - 1].nickname }}
+              </div>
+            </q-card>
+          </div>
         </div>
-      </div>
       </div>
     </q-card>
 
@@ -136,7 +138,8 @@ onMounted(() => {
 .bg-friend-6 {
   background-image: linear-gradient(to bottom right, #a7f7f2, #a7d4f7);
 }
-.bg-friend-text-0{
+
+.bg-friend-text-0 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(to bottom right, #444444, #666666);
@@ -151,7 +154,7 @@ onMounted(() => {
   flex-basis: 33.33%;
 }
 
-.FriendCard{
+.FriendCard {
   max-width: 1200px;
   flex-direction: column;
 }
@@ -160,7 +163,8 @@ onMounted(() => {
   .FriendItem {
     flex-basis: 100%;
   }
-  .FriendCard{
+
+  .FriendCard {
     width: 90%;
   }
 }

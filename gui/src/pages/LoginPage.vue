@@ -2,15 +2,31 @@
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
+import {useQuasar} from "quasar";
 
+const $q = useQuasar();
 const loginStore = useLoginStore();
 const router = useRouter();
 const username = ref("");
 const password = ref("");
 const login = () => {
-  loginStore.login(username.value, password.value);
-  loginStore.isLogged = true;
-  router.push("/");
+  loginStore.login(username.value, password.value).then((res) => {
+    if (res === 'success') {
+      router.push("/");
+      loginStore.isLogged = true;
+    } else {
+      $q.notify({
+        message: res,
+        color: 'negative',
+        icon: 'report_problem',
+        position: 'top',
+        timeout: 2000,
+      })
+    }
+  }).catch((err) => {
+    console.log(err);
+  })
+
 }
 </script>
 <template>
@@ -20,9 +36,11 @@ const login = () => {
         <q-form @submit="login">
           <q-input
             v-model="username"
-            label="昵称"
+            label="用户唯一标识"
             lazy-rules
-            :rules="[(val) => !!val || '请输入昵称']"
+            :rules="[(val) => !!val || '请输入用户唯一标识']"
+            hint="邮箱、手机号码、用户名(注册时由系统生成）均可"
+            hide-hint
           />
           <q-input
             v-model="password"

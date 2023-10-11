@@ -2,7 +2,7 @@
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
-import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
+import {computed, nextTick, onMounted, provide, ref} from "vue";
 import {userApi} from "boot/axios";
 import {useMainLayoutStore} from "stores/MainLayoutStore";
 import RecordShow from "components/RecordShow.vue";
@@ -20,11 +20,6 @@ const logout = () => {
 const router = useRouter();
 const $q = useQuasar();
 
-const toggleDarkMode = () => {
-  const dark = $q.dark.isActive;
-  $q.dark.set(!dark);
-  localStorage.setItem("dark", !dark);
-};
 const toggleLog = () => {
   loginStore.checkLogged().then((res) => {
     if (res === 'token valid') {
@@ -39,20 +34,11 @@ const toggleLog = () => {
 onMounted(() => {
   toggleLog();
 });
-watch(() => loginStore.isLogged, (newVal) => {
-  if (newVal) {
-    loadUserDetail();
-  }
-})
-const isLogged = ref(computed(() => loginStore.isLogged));
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
-provide('isLogged', isLogged);
 const keyword = ref("");
 provide('keyword', keyword);
+provide('toggleLog', toggleLog);
 const keywordCopy = ref("");
-const test = () => {
-  console.log(loginStore.isLogged);
-}
 const search = () => {
   keyword.value = keywordCopy.value;
   keywordCopy.value = "";
@@ -70,7 +56,6 @@ const reload = () => {
 }
 const loadUserDetail = () => {
   userApi.get('/user/self/').then((res) => {
-    console.log(res);
     userDetail.value.username = res.data.username;
     userDetail.value.avatar = res.data.avatar;
     userDetail.value.description = res.data.description;
@@ -83,7 +68,7 @@ const userDetail = ref({
   description: "",
 });
 const toggleRightDrawer = () => {
-  if (isLogged.value) {
+  if (loginStore.isLogged) {
     mainLayoutStore.isRightDrawerOpen = !mainLayoutStore.isRightDrawerOpen
   } else {
     $q.notify({
@@ -114,7 +99,10 @@ const exit = () => {
   })
 }
 
-
+function test() {
+  console.log('test')
+  loginStore.isLogged = !loginStore.isLogged
+}
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -133,7 +121,7 @@ const exit = () => {
           color="primary"
           dense
           outlined
-          placeholder="Search"
+          placeholder="搜索"
         >
           <template #prepend>
             <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
@@ -141,7 +129,7 @@ const exit = () => {
         </q-input>
         <q-space/>
         <transition name="fade" mode="out-in">
-          <q-btn v-if="isLogged" flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
+          <q-btn v-if="loginStore.isLogged" flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
                  label="帐号"/>
           <q-btn v-else flat icon="account_circle" @click="login" class="q-ml-md"
                  label="登录"/>

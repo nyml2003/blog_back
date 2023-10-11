@@ -18,7 +18,6 @@ const loadData = () => {
   ).then((res) => {
     data.value = res.data.results
     TableParams.pagination.value.rowsNumber = res.data.count
-    console.log(res.data)
   })
   loading.value = false
 }
@@ -33,28 +32,28 @@ const TableParams = {
       align: 'center',
     },
     {
-      name:'nickname',
-      label:'昵称',
-      field:'nickname',
-      align:'center',
+      name: 'nickname',
+      label: '昵称',
+      field: 'nickname',
+      align: 'center',
     },
     {
-      name:'avatar',
-      label:'头像',
-      field:'avatar',
-      align:'center',
+      name: 'avatar',
+      label: '头像',
+      field: 'avatar',
+      align: 'center',
     },
     {
-      name:'description',
-      label:'个人简介',
-      field:'description',
-      align:'center',
+      name: 'description',
+      label: '个人简介',
+      field: 'description',
+      align: 'center',
     },
     {
-      name:'url',
-      label:'个人主页',
-      field:'url',
-      align:'center',
+      name: 'url',
+      label: '个人主页',
+      field: 'url',
+      align: 'center',
     },
     {
       name: 'created_at',
@@ -89,7 +88,6 @@ const TableParams = {
     rowsPerPage: 7,
   }),
   onRequest: function (props) {
-    console.log(props)
     const {page, rowsPerPage} = props.pagination;
     TableParams.pagination.value.page = page;
     TableParams.pagination.value.rowsPerPage = rowsPerPage;
@@ -107,22 +105,21 @@ const CreateFormParams = {
     url: "",
   },
   form: ref({
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+    nickname: "",
+    avatar: null,
+    description: "",
+    url: "",
   }),
   isVisible: ref(false),
   reset: function () {
     CreateFormParams.form.value = JSON.parse(JSON.stringify(CreateFormParams.nullForm))
   },
   submit: function () {
-    userApi.post("/friend/rest/", CreateFormParams.form.value,{
+    userApi.post("/friend/rest/", CreateFormParams.form.value, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }).then((res) => {
-      console.log(res)
       $q.notify({
         message: '添加成功',
         color: 'positive',
@@ -134,7 +131,6 @@ const CreateFormParams = {
       CreateFormParams.close()
       loadData()
     }).catch((err) => {
-      console.log(err.response.data)
       $q.notify({
         message: `添加失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -154,38 +150,37 @@ const CreateFormParams = {
   },
 }
 //update
-const UpdateFormParams={
-  isImgChange:ref(false),
-  canUpdate:function (){
-    return JSON.stringify(UpdateFormParams.form.value)===JSON.stringify(UpdateFormParams.formCopy.value)
+const UpdateFormParams = {
+  isImgChange: ref(false),
+  canUpdate: function () {
+    return JSON.stringify(UpdateFormParams.form.value) === JSON.stringify(UpdateFormParams.formCopy.value)
   },
-  avatar:ref(null),
-  formCopy:ref({
-    id:"",
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+  avatar: ref(null),
+  formCopy: ref({
+    id: "",
+    nickname: "",
+    avatar: null,
+    description: "",
+    url: "",
   }),
-  form:ref({
-    id:"",
-    nickname:"",
-    avatar:null,
-    description:"",
-    url:"",
+  form: ref({
+    id: "",
+    nickname: "",
+    avatar: null,
+    description: "",
+    url: "",
   }),
-  isVisible:ref(false),
-  reset:function(){
-    UpdateFormParams.form.value=JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
+  isVisible: ref(false),
+  reset: function () {
+    UpdateFormParams.form.value = JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
   },
-  submit:function(){
-    userApi.patch(`/friend/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value,{
+  submit: function () {
+    userApi.patch(`/friend/rest/${UpdateFormParams.form.value.id}/`, UpdateFormParams.form.value, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }
-    ).then((res)=>{
-      console.log(res)
+    ).then((res) => {
       $q.notify({
         message: '修改成功',
         color: 'positive',
@@ -196,8 +191,7 @@ const UpdateFormParams={
       UpdateFormParams.reset()
       UpdateFormParams.close()
       loadData()
-    }).catch((err)=>{
-      console.log(err.response.data)
+    }).catch((err) => {
       $q.notify({
         message: `修改失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -209,25 +203,26 @@ const UpdateFormParams={
       UpdateFormParams.close()
     })
   },
-  open:function(row){
-    this.isVisible.value=true;
-    const {id,nickname,avatar,description,url}=row;
-    UpdateFormParams.avatar.value=avatar;
-    UpdateFormParams.form.value={
-      id:id,
-      nickname:nickname,
-      avatar:null,
-      description:description,
-      url:url,
+  open: function (row) {
+    this.isVisible.value = true;
+    const {id, nickname, avatar, description, url} = row;
+    UpdateFormParams.avatar.value = avatar;
+    UpdateFormParams.form.value = {
+      id: id,
+      nickname: nickname,
+      avatar: null,
+      description: description,
+      url: url,
     };
-    UpdateFormParams.formCopy.value=JSON.parse(JSON.stringify(UpdateFormParams.form.value))
+    UpdateFormParams.formCopy.value = JSON.parse(JSON.stringify(UpdateFormParams.form.value))
   },
-  close:function(){
-    this.isVisible.value=false;
+  close: function () {
+    this.isVisible.value = false;
   }
 }
+
 //delete
-function deleteById(id){
+function deleteById(id) {
   $q.notify({
     message: '删除中',
     color: 'warning',
@@ -259,9 +254,9 @@ function deleteById(id){
   })
 
 }
-function deleteByIdConfirm(id){
+
+function deleteByIdConfirm(id) {
   userApi.delete(`/friend/rest/${id}/`).then((res) => {
-    console.log(res)
     $q.notify({
       message: '删除成功',
       color: 'positive',
@@ -274,13 +269,14 @@ function deleteByIdConfirm(id){
     console.log(err)
   })
 }
+
 onMounted(() => {
   loadData();
 })
 </script>
 
 <template>
-<!--  update-->
+  <!--  update-->
   <q-dialog v-model="UpdateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
@@ -291,7 +287,7 @@ onMounted(() => {
             lazy-rules
             :rules="[val => !!val || '请输入昵称']"
           />
-<!--          图片预览-->
+          <!--          图片预览-->
           <q-file
             v-model="UpdateFormParams.form.value.avatar"
             label="头像"
@@ -300,7 +296,8 @@ onMounted(() => {
             accept="image/*"
           >
             <template #prepend>
-              <img v-if="UpdateFormParams.form.value.avatar === null" :src="`${UpdateFormParams.avatar.value}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
+              <img v-if="UpdateFormParams.form.value.avatar === null" :src="`${UpdateFormParams.avatar.value}`"
+                   style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
             </template>
           </q-file>
           <q-input
@@ -433,7 +430,7 @@ onMounted(() => {
       </template>
       <template #body-cell-url="props">
         <q-td :props="props">
-          <a :href="props.row.url" target="_blank">{{props.row.url}}</a>
+          <a :href="props.row.url" target="_blank">{{ props.row.url }}</a>
         </q-td>
       </template>
       <template #body-cell-operation="props">
@@ -459,7 +456,8 @@ onMounted(() => {
       <template #bottom-row>
         <q-tr @click="CreateFormParams.open()" class="cursor-pointer">
           <q-td colspan="100" class="text-center">
-            <q-icon name="add"/>添加
+            <q-icon name="add"/>
+            添加
           </q-td>
         </q-tr>
       </template>

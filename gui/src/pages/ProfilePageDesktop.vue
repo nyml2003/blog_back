@@ -43,7 +43,6 @@ const loadData = () => {
     console.log(err);
   })
   userApi.get(`/comment/user/`).then((res) => {
-    console.log(res.data);
     comments.value = res.data;
     comments.value.forEach((item) => {
       item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {

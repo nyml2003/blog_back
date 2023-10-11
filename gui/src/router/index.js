@@ -52,7 +52,6 @@ export default route(function (/* { store, ssrContext } */) {
     }
     if (to.meta.hasOwnProperty('group')) {
       userApi.post('/user/group/', {group: to.meta.group}).then((res) => {
-        console.log(res.data)
         if (res.data.hasOwnProperty('error')) {
           Notify.create({
             message: res.data.get('error'),

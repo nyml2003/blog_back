@@ -1,8 +1,8 @@
 <script setup>
-import { useQuasar } from "quasar";
-import { ref, onMounted } from "vue";
-import { initFullMapCanvas, drawVisibleMapArea } from "src/utils/drawGameMap";
-import { guestApi} from "boot/axios";
+import {useQuasar} from "quasar";
+import {ref, onMounted} from "vue";
+import {initFullMapCanvas, drawVisibleMapArea} from "src/utils/drawGameMap";
+import {guestApi} from "boot/axios";
 
 const $q = useQuasar();
 const keyCodeMap = new Map([
@@ -30,17 +30,17 @@ const handleKeyboardInput = (keyCode) => {
       hero.value.orientation = direction + 1 + nextFoot.value;
       switch (
         map.value[hero.value.posx + coordinateDelta[0]][
-          hero.value.posy + coordinateDelta[1]
-        ]
-      ) {
+        hero.value.posy + coordinateDelta[1]
+          ]
+        ) {
         case 0:
           hero.value.posx += coordinateDelta[0];
           hero.value.posy += coordinateDelta[1];
           switch (
             map.value[hero.value.posx + coordinateDelta[0]][
-              hero.value.posy + coordinateDelta[1]
-            ]
-          ) {
+            hero.value.posy + coordinateDelta[1]
+              ]
+            ) {
             case 3:
               $q.notify({
                 message: "你捡到了一个精灵球",
@@ -127,7 +127,6 @@ const getMaze = async () => {
   await guestApi
     .get(`/maze/create?row=${rowInput.value}&col=${colInput.value}`)
     .then((res) => {
-      console.log(res);
       map.value = res.data.maze;
       start_pos.value = res.data.start_pos;
       end_pos.value = res.data.end_pos;
@@ -148,7 +147,7 @@ onMounted(() => {
   getMaze();
   responseCanvas();
 });
-const handleSwipe = ({ evt, ...newInfo }) => {
+const handleSwipe = ({evt, ...newInfo}) => {
   console.log(newInfo);
   const direction2KeyCode = new Map([
     ["left", 65],
@@ -156,9 +155,9 @@ const handleSwipe = ({ evt, ...newInfo }) => {
     ["up", 87],
     ["down", 83],
   ]);
-  gamekeydown({ keyCode: direction2KeyCode.get(newInfo.direction) });
+  gamekeydown({keyCode: direction2KeyCode.get(newInfo.direction)});
   setTimeout(() => {
-    gamekeyup({ keyCode: direction2KeyCode.get(newInfo.direction) });
+    gamekeyup({keyCode: direction2KeyCode.get(newInfo.direction)});
   }, newInfo.duration * 3);
 };
 //canvas的绘制
@@ -177,7 +176,7 @@ const responseCanvas = () => {
     v-touch-swipe.mouse="handleSwipe"
     ref="mask"
   >
-  <!-- 占据剩余部分 -->
+    <!-- 占据剩余部分 -->
     <q-card class="q-ma-md" style="width: 50vh; height: 50vh">
       <canvas ref="canvas" style="width: 100%; height: 100%"></canvas>
     </q-card>

@@ -15,28 +15,45 @@ export const useLoginStore = defineStore("LoginStore", {
         })
       },
       login: function (username, password) {
-        guestApi.post("/user/login/", {
-          username: username,
-          password: password,
-        }).then((res) => {
-          localStorage.setItem("accessToken", res.data.access);
-          localStorage.setItem("refreshToken", res.data.refresh);
-        });
-      },
-      register: function (form) {
         return new Promise((resolve, reject) => {
-          guestApi.post("/user/register/", form,{
+          guestApi.post("/user/login/", {
+            username: username,
+            password: password,
+          }).then((res) => {
+            localStorage.setItem("accessToken", res.data.access);
+            localStorage.setItem("refreshToken", res.data.refresh);
+            resolve('success')
+          }).catch((err) => {
+            if (err.response.status === 401) {
+              if (err.response.data.detail === "No active account found with the given credentials") {
+                resolve('不存在该用户或密码错误')
+              }
+            }
+          })
+        })
+      },
+      register(form) {
+        return new Promise((resolve, reject) => {
+          guestApi.post("/user/register/", form, {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
             }
-            ).then((res) => {
-            if (res.data.has('message')) {
-              resolve(res.data.get('message'))
+          ).then((res) => {
+            if (res.data.hasOwnProperty('message')) {
               localStorage.setItem("accessToken", res.data.access);
               localStorage.setItem("refreshToken", res.data.refresh);
-            }else if (res.data.has('error')) {
-              resolve(res.data.get('error'))
+              this.isLogged = true
+              resolve(res.data.message)
+            } else if (res.data.hasOwnProperty('error')) {
+              resolve(res.data.error)
+            }
+          }).catch((err) => {
+            if (err.response.data.hasOwnProperty('non_field_errors')) {
+              resolve(err.response.data.non_field_errors[0])
+            }
+            if (err.response.data.hasOwnProperty('email')) {
+              resolve('邮箱不合法')
             }
           })
         })

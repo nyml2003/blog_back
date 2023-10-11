@@ -29,9 +29,9 @@ class RegisterView(ModelViewSet):
         user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         data = {
-            'message': 'register success',
-            'access_token': '123',  # 这里应该是你的实际access_token
-            'refresh_token': str(RefreshToken.for_user(user))
+            'message': 'success',
+            'access': '123',  # 这里应该是你的实际access_token
+            'refresh': str(RefreshToken.for_user(user))
         }
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 

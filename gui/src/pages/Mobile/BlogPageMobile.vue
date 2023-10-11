@@ -23,7 +23,6 @@ const loadData = () => {
       },
     })
     .then((res) => {
-      console.log(res);
       keyword.value = "";
       maxPage.value = recordsPerPage.value
         ? Math.ceil(res.data.count / recordsPerPage.value)
@@ -55,42 +54,42 @@ const tags = ref([]);
   <q-page class="flex justify-center items-start">
     <q-card class="q-ma-md" style="width: 100%">
       <div v-for="id in 2" :key="id">
-      <q-card-actions class="justify-center" >
-        <q-btn
-          v-if="maxPage>1"
-          :disable="currentPage===1"
-          class="q-mx-sm"
-          dense
-          flat
-          icon="arrow_left"
-          round
-          @click="currentPage--;loadData();"
-        />
-        <q-select
-          v-if="maxPage>1"
-          v-model="currentPage"
-          :options="pageJumpOptions"
-          borderless
-          dense
-          @update:model-value="loadData"
-        >
-          <template #before>
-            <div class="text-caption q-mx-md">跳转到:</div>
-          </template>
-        </q-select>
-        <q-btn
-          v-if="maxPage>1"
-          :disable="currentPage===maxPage"
-          class="q-mx-sm"
-          dense
-          flat
-          icon="arrow_right"
-          round
-          @click="currentPage++;loadData();"
-        />
-      </q-card-actions>
-      <BlogOutline :blogs="blogs" v-if="id ===1"></BlogOutline>
-        </div>
+        <q-card-actions class="justify-center">
+          <q-btn
+            v-if="maxPage>1"
+            :disable="currentPage===1"
+            class="q-mx-sm"
+            dense
+            flat
+            icon="arrow_left"
+            round
+            @click="currentPage--;loadData();"
+          />
+          <q-select
+            v-if="maxPage>1"
+            v-model="currentPage"
+            :options="pageJumpOptions"
+            borderless
+            dense
+            @update:model-value="loadData"
+          >
+            <template #before>
+              <div class="text-caption q-mx-md">跳转到:</div>
+            </template>
+          </q-select>
+          <q-btn
+            v-if="maxPage>1"
+            :disable="currentPage===maxPage"
+            class="q-mx-sm"
+            dense
+            flat
+            icon="arrow_right"
+            round
+            @click="currentPage++;loadData();"
+          />
+        </q-card-actions>
+        <BlogOutline :blogs="blogs" v-if="id ===1"></BlogOutline>
+      </div>
     </q-card>
 
   </q-page>

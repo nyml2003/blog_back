@@ -24,7 +24,6 @@ const loadData = () => {
       },
     })
     .then((res) => {
-      console.log(res);
       keyword.value = "";
       maxPage.value = recordsPerPage.value
         ? Math.ceil(res.data.count / recordsPerPage.value)
@@ -37,7 +36,7 @@ const loadData = () => {
       pageJumpOptions.value = (() => {
         let options = [];
         for (let i = 1; i <= maxPage.value; i++) {
-          if (i % 5 === 1 || i === 1 || i === maxPage.value) {
+          if (i % 3 === 1 || i === 1 || i === maxPage.value) {
             options.push(i);
           }
         }
@@ -135,6 +134,9 @@ const resetFilter = () => {
             <template #before>
               <div class="text-caption q-mx-md">跳转到:</div>
             </template>
+            <template #append>
+              <div style="font-size:14px">/{{ maxPage }}</div>
+            </template>
           </q-select>
           <q-btn
             v-if="maxPage>1"
@@ -153,7 +155,7 @@ const resetFilter = () => {
                       loadData();
                     }">
             <template #before>
-              <div class="text-caption q-mx-md">每页显示:</div>
+              <div class="text-caption q-mx-md">每页最多显示:</div>
             </template>
           </q-select>
           <q-btn

@@ -18,7 +18,6 @@ const loadData = () => {
   ).then((res) => {
     data.value = res.data.results
     TableParams.pagination.value.rowsNumber = res.data.count
-    console.log(res.data)
   })
   loading.value = false
 }
@@ -32,49 +31,49 @@ const TableParams = {
       align: 'center',
     },
     {
-      name:'nickname',
-      label:'昵称',
-      field:'nickname',
-      align:'center',
+      name: 'nickname',
+      label: '昵称',
+      field: 'nickname',
+      align: 'center',
     },
     {
-      name:'avatar',
-      label:'头像',
-      field:'avatar',
-      align:'center',
+      name: 'avatar',
+      label: '头像',
+      field: 'avatar',
+      align: 'center',
     },
     {
-      name:'email',
-      label:'邮箱',
-      field:'email',
-      align:'center',
+      name: 'email',
+      label: '邮箱',
+      field: 'email',
+      align: 'center',
     },
     {
-      name:'telephone',
-      label:'电话',
-      field:'telephone',
-      align:'center',
+      name: 'telephone',
+      label: '电话',
+      field: 'telephone',
+      align: 'center',
     },
     {
-      name:'description',
-      label:'描述',
-      field:'description',
-      align:'center',
+      name: 'description',
+      label: '描述',
+      field: 'description',
+      align: 'center',
     },
     {
-      name:'created_at',
-      label:'创建时间',
-      field:'created_at',
+      name: 'created_at',
+      label: '创建时间',
+      field: 'created_at',
       format: (val) => {
         return new Date().toLocaleString()
       },
-      align:'center',
+      align: 'center',
     },
     {
-      name:'updated_at',
-      label:'更新时间',
-      field:'updated_at',
-      align:'center',
+      name: 'updated_at',
+      label: '更新时间',
+      field: 'updated_at',
+      align: 'center',
       format: (val) => {
         return new Date().toLocaleString()
       },
@@ -94,15 +93,15 @@ const TableParams = {
     rowsPerPage: 7,
   }),
   onRequest: function (props) {
-    console.log(props)
     const {page, rowsPerPage} = props.pagination;
     TableParams.pagination.value.page = page;
     TableParams.pagination.value.rowsPerPage = rowsPerPage;
     loadData();
   }
 }
+
 //delete
-function deleteById(id){
+function deleteById(id) {
   $q.notify({
     message: '删除中',
     color: 'warning',
@@ -133,9 +132,9 @@ function deleteById(id){
     ]
   })
 }
-function deleteByIdConfirm(id){
+
+function deleteByIdConfirm(id) {
   userApi.delete(`/user/rest/${id}/`).then((res) => {
-    console.log(res)
     $q.notify({
       message: '删除成功',
       color: 'positive',
@@ -148,6 +147,7 @@ function deleteByIdConfirm(id){
     console.log(err)
   })
 }
+
 onMounted(() => {
   loadData();
 })
@@ -169,13 +169,14 @@ onMounted(() => {
     >
       <template #body-cell-avatar="props">
         <q-td :props="props">
-          <img v-if="props.row.avatar" :src="`${props.row.avatar}`" style="width: 50px;height: 50px;border-radius: 50%" alt="图片加载失败"/>
+          <img v-if="props.row.avatar" :src="`${props.row.avatar}`" style="width: 50px;height: 50px;border-radius: 50%"
+               alt="图片加载失败"/>
           <div v-else>无</div>
         </q-td>
       </template>
       <template #body-cell-url="props">
         <q-td :props="props">
-          <a :href="props.row.url" target="_blank">{{props.row.url}}</a>
+          <a :href="props.row.url" target="_blank">{{ props.row.url }}</a>
         </q-td>
       </template>
       <template #body-cell-operation="props">

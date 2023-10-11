@@ -2,6 +2,7 @@
 import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
 import {userApi} from "boot/axios";
+
 const $q = useQuasar();
 const data = ref([])
 const loading = ref(false)
@@ -18,7 +19,6 @@ const loadData = () => {
   ).then((res) => {
     data.value = res.data.results
     TableParams.pagination.value.rowsNumber = res.data.count
-    console.log(res.data)
   })
 
   loading.value = false
@@ -72,7 +72,6 @@ const TableParams = {
     rowsPerPage: 7,
   }),
   onRequest: function (props) {
-    console.log(props)
     const {page, rowsPerPage} = props.pagination;
     TableParams.pagination.value.page = page;
     TableParams.pagination.value.rowsPerPage = rowsPerPage;
@@ -95,7 +94,6 @@ const CreateFormParams = {
   },
   submit: function () {
     userApi.post("/tag/rest/", CreateFormParams.form.value).then((res) => {
-      console.log(res)
       $q.notify({
         message: '添加成功',
         color: 'positive',
@@ -107,7 +105,6 @@ const CreateFormParams = {
       CreateFormParams.close()
       loadData()
     }).catch((err) => {
-      console.log(err.response.data)
       $q.notify({
         message: `添加失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -127,25 +124,24 @@ const CreateFormParams = {
   },
 }
 //update
-const UpdateFormParams={
-  canUpdate:function (){
-    return JSON.stringify(UpdateFormParams.form.value)===JSON.stringify(UpdateFormParams.formCopy.value)
+const UpdateFormParams = {
+  canUpdate: function () {
+    return JSON.stringify(UpdateFormParams.form.value) === JSON.stringify(UpdateFormParams.formCopy.value)
   },
-  formCopy:ref({
-    id:"",
-    name:""
+  formCopy: ref({
+    id: "",
+    name: ""
   }),
-  form:ref({
-    id:"",
-    name:""
+  form: ref({
+    id: "",
+    name: ""
   }),
-  isVisible:ref(false),
-  reset:function(){
-    UpdateFormParams.form.value=JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
+  isVisible: ref(false),
+  reset: function () {
+    UpdateFormParams.form.value = JSON.parse(JSON.stringify(UpdateFormParams.formCopy.value))
   },
-  submit:function(){
-    userApi.patch(`/tag/rest/${UpdateFormParams.form.value.id}/`,UpdateFormParams.form.value).then((res)=>{
-      console.log(res)
+  submit: function () {
+    userApi.patch(`/tag/rest/${UpdateFormParams.form.value.id}/`, UpdateFormParams.form.value).then((res) => {
       $q.notify({
         message: '修改成功',
         color: 'positive',
@@ -156,8 +152,7 @@ const UpdateFormParams={
       UpdateFormParams.reset()
       UpdateFormParams.close()
       loadData()
-    }).catch((err)=>{
-      console.log(err.response.data)
+    }).catch((err) => {
       $q.notify({
         message: `修改失败,原因:${err.response.data.name}`,
         color: 'negative',
@@ -169,21 +164,22 @@ const UpdateFormParams={
       UpdateFormParams.close()
     })
   },
-  open:function(row){
-    this.isVisible.value=true;
-    const {id,name}=row
-    UpdateFormParams.form.value={
-      id:id,
-      name:name,
+  open: function (row) {
+    this.isVisible.value = true;
+    const {id, name} = row
+    UpdateFormParams.form.value = {
+      id: id,
+      name: name,
     };
-    UpdateFormParams.formCopy.value=JSON.parse(JSON.stringify(UpdateFormParams.form.value))
+    UpdateFormParams.formCopy.value = JSON.parse(JSON.stringify(UpdateFormParams.form.value))
   },
-  close:function(){
-    this.isVisible.value=false;
+  close: function () {
+    this.isVisible.value = false;
   }
 }
+
 //delete
-function deleteById(id){
+function deleteById(id) {
   $q.notify({
     message: '删除中',
     color: 'warning',
@@ -215,9 +211,9 @@ function deleteById(id){
   })
 
 }
-function deleteByIdConfirm(id){
+
+function deleteByIdConfirm(id) {
   userApi.delete(`/tag/rest/${id}/`).then((res) => {
-    console.log(res)
     $q.notify({
       message: '删除成功',
       color: 'positive',
@@ -230,13 +226,14 @@ function deleteByIdConfirm(id){
     console.log(err)
   })
 }
+
 onMounted(() => {
   loadData();
 })
 </script>
 
 <template>
-<!--  update-->
+  <!--  update-->
   <q-dialog v-model="UpdateFormParams.isVisible.value" persistent>
     <q-card>
       <q-card-section>
@@ -361,7 +358,8 @@ onMounted(() => {
       <template #bottom-row>
         <q-tr @click="CreateFormParams.open()" class="cursor-pointer">
           <q-td colspan="5" class="text-center">
-            <q-icon name="add"/>添加
+            <q-icon name="add"/>
+            添加
           </q-td>
         </q-tr>
 

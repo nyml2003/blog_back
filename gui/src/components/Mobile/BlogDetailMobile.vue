@@ -79,7 +79,6 @@ const submitComment = () => {
       blog_id: blog_id.value,
       content: comment.value
     }).then((res) => {
-    console.log(res);
     comment.value = "";
     loadData();
   });

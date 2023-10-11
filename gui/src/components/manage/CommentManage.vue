@@ -18,7 +18,6 @@ const loadData = () => {
   ).then((res) => {
     data.value = res.data.results
     TableParams.pagination.value.rowsNumber = res.data.count
-    console.log(res.data)
   })
   loading.value = false
 }
@@ -94,7 +93,6 @@ const TableParams = {
     rowsPerPage: 7,
   }),
   onRequest: function (props) {
-    console.log(props)
     const {page, rowsPerPage} = props.pagination;
     TableParams.pagination.value.page = page;
     TableParams.pagination.value.rowsPerPage = rowsPerPage;
@@ -137,7 +135,6 @@ function deleteById(id) {
 
 function deleteByIdConfirm(id) {
   userApi.delete(`/comment/rest/${id}/`).then((res) => {
-    console.log(res)
     $q.notify({
       message: '删除成功',
       color: 'positive',

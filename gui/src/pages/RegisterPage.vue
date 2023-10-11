@@ -1,43 +1,53 @@
 <script setup>
-import {ref, watch} from "vue";
+import {inject, ref, watch} from "vue";
 import {useRouter} from "vue-router";
-import {guestApi, userApi} from "boot/axios";
 import {useLoginStore} from "stores/LoginStore";
+import {useQuasar} from "quasar";
 
-const loginstore = useLoginStore();
+const $q = useQuasar();
+const loginStore = useLoginStore();
 const router = useRouter();
 const form = ref({
   nickname: '',
   password: '',
   password2: '',
-  email: null,
-  telephone: null,
+  email: '',
+  telephone: '',
   avatar: null,
 })
+const toggleLog = inject('toggleLog');
 const register = () => {
-  loginstore.logout();
-  loginstore.register(form.value).then((res) => {
+  loginStore.logout();
+  Object.entries(form.value).forEach(([key, value]) => {
+    if (value === '') {
+      delete form.value[key];
+    }
+  })
+  loginStore.register(form.value).then((res) => {
     if (res === 'success') {
-      router.push('/login');
+      router.push("/");
+      setTimeout(() => {
+        router.go(0);
+      }, 1000);
+      loginStore.isLogged = true;
+    } else {
+      $q.notify({
+        message: res.toString(),
+        color: 'negative',
+        icon: 'report_problem',
+        position: 'top',
+        timeout: 2000,
+      })
     }
   }).catch((err) => {
     console.log(err);
   })
 }
 const password2Error = ref(false);
-watch(form.value.password2, (val) => {
-  if (val !== form.value.password) {
-    password2Error.value = true;
-  } else {
-    password2Error.value = false;
-  }
-})
-watch(form.value.password, (val) => {
-  if (val !== form.value.password2) {
-    password2Error.value = true;
-  } else {
-    password2Error.value = false;
-  }
+const emailOrTelephoneError = ref(false);
+watch(form.value, () => {
+  password2Error.value = form.value.password !== form.value.password2;
+  emailOrTelephoneError.value = !(form.value.email || form.value.telephone);
 })
 </script>
 <template>
@@ -73,7 +83,7 @@ watch(form.value.password, (val) => {
             lazy-rules
             :rules="[(val) => !!val || '请确认密码']"
             :error="password2Error"
-            
+            :error-message="password2Error ? '两次密码不一致' : ''"
           >
             <template #before>
               <q-icon name="lock"/>
@@ -83,6 +93,9 @@ watch(form.value.password, (val) => {
             v-model="form.email"
             label="Email"
             lazy-rules
+            :rules="[(val) => !val || /.+@.+/.test(val) || '请输入正确的邮箱']"
+            :error="emailOrTelephoneError"
+            :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''"
           >
             <template #before>
               <q-icon name="email"/>
@@ -92,6 +105,9 @@ watch(form.value.password, (val) => {
             v-model="form.telephone"
             label="电话(11位数字)"
             lazy-rules
+            :rules="[(val) => !val || (val.length === 11 && /^\d+$/.test(val)) || '请输入正确的电话号码']"
+            :error="emailOrTelephoneError"
+            :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''"
           >
             <template #before>
               <q-icon name="phone"/>
@@ -109,10 +125,7 @@ watch(form.value.password, (val) => {
           </q-file>
           <q-separator/>
           <div class="justify-center flex-center flex">
-            <q-btn type="submit" label="注册" color="primary" class="q-mt-md" @click="register"/>
-          </div>
-          <div class="justify-center  flex text-subtitle2 text-grey-8 q-mt-md">
-            手机号和邮箱至少填写一项
+            <q-btn type="submit" label="注册" color="primary" class="q-mt-md"/>
           </div>
         </q-form>
       </q-card-section>
