@@ -36,21 +36,24 @@ const routes = [
       },
       {
         path: "/user",
-        meta: {requireAuth: true},
+        meta: {requireAuth: true, group: 'NormalUserGroup'},
         children: [
           {
             path: 'profile/desktop',
             name: 'ProfileDesktop',
+            meta: {requireAuth: true, group: 'NormalUserGroup'},
             component: () => import("pages/ProfilePageDesktop.vue")
           },
           {
             path: 'profile/mobile',
             name: 'ProfileMobile',
+            meta: {requireAuth: true, group: 'NormalUserGroup'},
             component: () => import("pages/ProfilePageMobile.vue")
           },
           {
             path: 'comment',
             name: 'Comment',
+            meta: {requireAuth: true, group: 'NormalUserGroup'},
             component: () => import("pages/CommentPage.vue")
           }
         ]
@@ -60,12 +63,20 @@ const routes = [
   {
     path: "/admin",
     meta: {requireAuth: true, group: 'NormalAdminGroup'},
+    redirect: '/admin/index',
     component: () => import("layouts/AdminLayout.vue"),
     children: [
+      {
+        path: 'index',
+        name: 'AdminIndex',
+        meta: {requireAuth: true, group: 'NormalAdminGroup'},
+        component: () => import("pages/AdminPage.vue"),
+      },
       {
         path: 'manage',
         name: 'Manage',
         meta: {requireAuth: true, group: 'NormalAdminGroup'},
+        redirect: '/admin/manage/blog',
         component: () => import("pages/ManagePage.vue"),
         children: [
           {

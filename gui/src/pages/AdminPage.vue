@@ -1,19 +1,11 @@
 <template>
   <q-page class="flex flex-center bg-image">
-    <div :class="`overlay-${$q.platform.is.desktop ? 'desktop' : 'mobile'}`">
+    <div :class="`overlay-desktop`">
       <div class="text-center q-ma-sm text">
         <div class="text-h1 text-weight-bolder bg-text-0">
-          风唤长河
+          管理后台
         </div>
         <div class="text-h6 text-weight-bolder q-ma-md bg-text-1">
-          <div v-if="$q.platform.is.mobile">
-            <div class="row">
-              间歇性踌躇满志
-            </div>
-            <div class="row">
-              持续性混吃等死
-            </div>
-          </div>
           <div v-if="$q.platform.is.desktop" class="row justify-center">
             间歇性踌躇满志，持续性混吃等死
           </div>
@@ -24,9 +16,6 @@
 </template>
 
 <script setup>
-import {useQuasar} from "quasar";
-
-const $q = useQuasar();
 
 </script>
 
@@ -40,14 +29,7 @@ const $q = useQuasar();
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.overlay-mobile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: calc(100%);
-  background-color: rgba(0, 0, 0, 0.5);
-}
+
 
 .text {
   position: absolute;
@@ -70,7 +52,7 @@ const $q = useQuasar();
 }
 
 .bg-image {
-  background-image: url("src/assets/about/BG.jpg");
+  background-image: url("src/assets/about/BG2.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

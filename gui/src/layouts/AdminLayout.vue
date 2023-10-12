@@ -12,14 +12,15 @@ const leftDrawerOpen = ref(true);
 
 <template>
   <q-layout view="hHh lpR fFf" class="non-selectable">
-    <q-drawer v-model="leftDrawerOpen" side="left" bordered content-class="bg-grey-3"
+    <q-drawer v-model="leftDrawerOpen" side="left"
               :width="miniState ? 50 : 150"
               :mini="miniState"
               @mouseover="miniState = false"
-              @mouseout="miniState = true">
+              @mouseout="miniState = true"
+    >
       <q-scroll-area style="height: 100%">
         <q-list padding>
-          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
+          <q-item clickable v-ripple @click="router.push({path: '/'})">
             <q-item-section avatar>
               <q-icon name="home" size="md"/>
             </q-item-section>
@@ -33,22 +34,6 @@ const leftDrawerOpen = ref(true);
             </q-item-section>
             <q-item-section>
               <q-item-label>管理</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
-            <q-item-section avatar>
-              <q-icon name="forum" size="md"/>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>论坛</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple @click="router.push({path: '/blog'})">
-            <q-item-section avatar>
-              <q-icon name="settings" size="md"/>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>设置</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
