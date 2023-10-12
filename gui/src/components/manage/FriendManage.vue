@@ -16,9 +16,16 @@ const loadData = () => {
     }
   ).then((res) => {
     data.value = res.data.results
+    data.value.forEach((item) => {
+      item.homepage = item.url
+      fetchTitle(item.url).then((res) => {
+        item.homepage = res
+      })
+    });
+    loading.value = false
     TableParams.pagination.value.rowsNumber = res.data.count
   })
-  loading.value = false
+
 }
 
 const TableParams = {
@@ -47,6 +54,9 @@ const TableParams = {
       label: '个人简介',
       field: 'description',
       align: 'center',
+      format: (val) => {
+        return val.length > 10 ? val.substring(0, 10) + "..." : val
+      },
     },
     {
       name: 'url',
@@ -256,7 +266,13 @@ function deleteByIdConfirm(id) {
     console.log(err)
   })
 }
-
+async function fetchTitle(url) {
+  const response = await fetch(url);
+  const text = await response.text();
+  const domParser = new DOMParser();
+  const doc = domParser.parseFromString(text, 'text/html');
+  return doc.querySelector('title').textContent;
+}
 onMounted(() => {
   loadData();
 })
@@ -417,7 +433,15 @@ onMounted(() => {
       </template>
       <template #body-cell-url="props">
         <q-td :props="props">
-          <a :href="props.row.url" target="_blank">{{ props.row.url }}</a>
+          <a :href="props.row.url" target="_blank">  {{ props.row.homepage }}</a>
+        </q-td>
+      </template>
+      <template #body-cell-description="prop">
+        <q-td :props="prop">
+          <q-tooltip  self="center middle" anchor="center middle">
+              {{ prop.row.description ? prop.row.description : "暂无个人简介" }}
+          </q-tooltip>
+          {{ prop.row.description.length > 10 ? prop.row.description.substring(0, 10) + "..." : prop.row.description }}
         </q-td>
       </template>
       <template #body-cell-operation="props">

@@ -132,7 +132,7 @@ const isDetail = ref(false);
   <q-dialog v-model="isDetail" persistent>
     <ProfileDetail :isOpen="isDetail" :close="()=>{isDetail=false;loadData();}"/>
   </q-dialog>
-  <q-page class="flex items-start justify-center">
+  <q-page class="flex items-start content-start justify-center">
     <q-card class="q-mx-md q-mt-md q-mb-sm" style="min-width: 1000px">
 
       <q-card-section tag="div" style="height: 132px" class="bg-grey">

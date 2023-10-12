@@ -47,6 +47,7 @@ urlpatterns = [
     path('user/rest/<int:id>/', user.UserDetailView.as_view({
         'delete': 'destroy'
     })),
+    path('user/route/', user.routes),
     path('friend/rest/', friend.FriendView.as_view({
         'get': 'list',
         'post': 'create'

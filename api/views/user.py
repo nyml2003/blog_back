@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
@@ -62,6 +63,27 @@ def group(request):
         else:
             return JsonResponse({'error': 'permission denied'}, safe=False)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsUser])
+def routes(request):
+    if request.method == 'GET':
+        user = request.user
+        routes = []
+        for group in user.groups.all():
+            if group==Group.objects.get(name='NormalAdminGroup'):
+                routes.append({
+                    'path': '/admin',
+                    'name': '后台管理',
+                    'icon': 'admin_panel_settings',
+                })
+            if group==Group.objects.get(name='NormalUserGroup'):
+                routes.append({
+                    'path': '/user/profile/desktop',
+                    'name': '个人中心',
+                    'icon': 'person',
+                })
+        return JsonResponse(routes, safe=False)
 
 class UserView(ListAPIView):
     queryset = BlogUser.objects.all().order_by('id')

@@ -53,11 +53,11 @@ const search = () => {
 const isRouteActive = ref(true);
 const reload = () => {
   isRouteActive.value = false;
-    nextTick(() => {
-      isRouteActive.value = true;
-    })
+  nextTick(() => {
+    isRouteActive.value = true;
+  })
 }
-watch(()=> mainLayoutStore.isRightDrawerOpen, (val) => {
+watch(() => loginStore.isLogged, (val) => {
   if (val === true) {
     loadUserDetail();
   }
@@ -69,7 +69,12 @@ const loadUserDetail = () => {
     userDetail.value.description = res.data.description;
     userDetail.value.nickname = res.data.nickname;
   })
+  userApi.get('/user/route/').then((res) => {
+    console.log(res)
+    drawerItems.value = res.data;
+  })
 }
+const drawerItems=ref([])
 const userDetail = ref({
   username: "",
   avatar: null,
@@ -108,14 +113,14 @@ const exit = () => {
 }
 </script>
 <template>
-  <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
-    <q-header elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
+  <q-layout class="non-selectable bg-grey-3" view="hHr LpR ffr">
+    <q-header class="bg-transparent" elevated style="backdrop-filter: blur(10px)">
       <q-toolbar class=" text-black justify-center">
         <q-tabs inline-label>
-          <q-route-tab icon="home" to="/" exact label="简介"/>
-          <q-route-tab icon="group" to="/friend" exact label="友链"/>
-          <q-route-tab icon="menu_book" to="/blog" exact label="博文列表"/>
-          <q-route-tab icon="videogame_asset" to="/game" exact label="游戏"/>
+          <q-route-tab exact icon="home" label="首页" to="/"/>
+          <q-route-tab exact icon="group" label="友链" to="/friend"/>
+          <q-route-tab exact icon="menu_book" label="博文列表" to="/blog"/>
+          <q-route-tab exact icon="videogame_asset" label="游戏" to="/game"/>
         </q-tabs>
         <div class="q-mx-md"/>
         <q-input
@@ -127,50 +132,42 @@ const exit = () => {
           placeholder="搜索"
         >
           <template #prepend>
-            <q-btn round icon="search" color="primary" @click="search" size="sm"></q-btn>
+            <q-btn color="primary" icon="search" round size="sm" @click="search"></q-btn>
           </template>
         </q-input>
         <q-space/>
-        <transition name="fade" mode="out-in">
-          <q-btn v-if="loginStore.isLogged" flat icon="account_circle" @click="toggleRightDrawer" class="q-ml-md"
-                 label="帐号"/>
-          <q-btn v-else flat icon="account_circle" @click="login" class="q-ml-md"
-                 label="登录"/>
+        <transition mode="out-in" name="fade">
+          <q-btn v-if="loginStore.isLogged" class="q-ml-md" flat icon="account_circle" label="帐号"
+                 @click="toggleRightDrawer"/>
+          <q-btn v-else class="q-ml-md" flat icon="account_circle" label="登录"
+                 @click="login"/>
         </transition>
       </q-toolbar>
     </q-header>
     <q-drawer
       v-model="isRightDrawerOpen"
       :width="300"
-      side="right"
-      elevated
-      @click.capture="()=>{mainLayoutStore.isRightDrawerOpen = false}"
       bordered
       content-class="bg-grey-3"
+      elevated
+      mini-to-overlay
+      overlay
+      side="right"
       @mouseout="()=>{mainLayoutStore.isRightDrawerOpen = false}"
       @mouseover="()=>{mainLayoutStore.isRightDrawerOpen = true}"
-      overlay
-      mini-to-overlay
+      @click.capture="()=>{mainLayoutStore.isRightDrawerOpen = false}"
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
-          <q-item clickable v-ripple to="/user/profile/desktop" exact>
+          <q-item v-ripple clickable exact :to="item.path" v-for="item in drawerItems" :key="item.path">
             <q-item-section avatar>
-              <q-icon name="account_circle"/>
+              <q-icon :name="item.icon"/>
             </q-item-section>
             <q-item-section>
-              个人中心
+              {{ item.name}}
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple to="/admin" exact>
-            <q-item-section avatar>
-              <q-icon name="admin_panel_settings"/>
-            </q-item-section>
-            <q-item-section>
-              后台管理
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple @click="exit" exact>
+          <q-item v-ripple clickable exact @click="exit">
             <q-item-section avatar>
               <q-icon name="exit_to_app"/>
             </q-item-section>
@@ -182,9 +179,9 @@ const exit = () => {
       </q-scroll-area>
       <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
         <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
-          <q-avatar size="100px">
-            <img alt="avatar"
-                 :src="userDetail.avatar ">
+          <q-avatar size="80px">
+            <img :src="userDetail.avatar "
+                 alt="avatar">
           </q-avatar>
           <div class="text-right q-ma-md">
             <div class="text-h6 text-weight-bold">{{
@@ -198,11 +195,12 @@ const exit = () => {
     </q-drawer>
     <q-page-container>
       <router-view v-if="isRouteActive"/>
+      <q-footer class="flex flex-center bg-grey-3" style="height: 50px">
+        <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+        <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
+      </q-footer>
     </q-page-container>
-    <div class="flex flex-center bg-grey-3" style="height: 50px">
-      <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
-      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
-    </div>
+
   </q-layout>
 </template>
 

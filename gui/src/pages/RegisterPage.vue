@@ -15,11 +15,10 @@ const form = ref({
   telephone: '',
   avatar: null,
 })
-const toggleLog = inject('toggleLog');
 const register = () => {
   loginStore.logout();
   Object.entries(form.value).forEach(([key, value]) => {
-    if (value === '') {
+    if (value === '' || value === null || value === undefined) {
       delete form.value[key];
     }
   })
@@ -43,6 +42,16 @@ const register = () => {
     console.log(err);
   })
 }
+const reset = () => {
+  form.value={
+    nickname: '',
+    password: '',
+    password2: '',
+    email: '',
+    telephone: '',
+    avatar: null,
+  }
+}
 const password2Error = ref(false);
 const emailOrTelephoneError = ref(false);
 watch(form.value, () => {
@@ -54,11 +63,12 @@ watch(form.value, () => {
   <q-page class="flex-center flex non-selectable">
     <q-card class="q-ma-md" style="min-width: 400px">
       <q-card-section>
-        <q-form @submit="register">
+        <q-form @submit="register" @reset="reset">
           <q-input
             v-model="form.nickname"
             label="昵称"
             lazy-rules
+            clearable
             :rules="[(val) => !!val || '请输入昵称']"
           >
             <template #before>
@@ -70,6 +80,7 @@ watch(form.value, () => {
             label="密码"
             type="password"
             lazy-rules
+            clearable
             :rules="[(val) => !!val || '请输入密码']"
           >
             <template #before>
@@ -81,6 +92,7 @@ watch(form.value, () => {
             label="确认密码"
             type="password"
             lazy-rules
+            clearable
             :rules="[(val) => !!val || '请确认密码']"
             :error="password2Error"
             :error-message="password2Error ? '两次密码不一致' : ''"
@@ -93,6 +105,7 @@ watch(form.value, () => {
             v-model="form.email"
             label="Email"
             lazy-rules
+            clearable
             :rules="[(val) => !val || /.+@.+/.test(val) || '请输入正确的邮箱']"
             :error="emailOrTelephoneError"
             :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''"
@@ -105,6 +118,7 @@ watch(form.value, () => {
             v-model="form.telephone"
             label="电话(11位数字)"
             lazy-rules
+            clearable
             :rules="[(val) => !val || (val.length === 11 && /^\d+$/.test(val)) || '请输入正确的电话号码']"
             :error="emailOrTelephoneError"
             :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''"
@@ -117,7 +131,9 @@ watch(form.value, () => {
             v-model="form.avatar"
             label="头像(可选)"
             lazy-rules
+            clearable
             accept="image/*"
+            :rules="[val => !val || val.size < 1024 * 1024 * 2 || '文件大小不能超过2MB']"
           >
             <template #prepend>
               <q-icon name="image"/>
@@ -126,6 +142,7 @@ watch(form.value, () => {
           <q-separator/>
           <div class="justify-center flex-center flex">
             <q-btn type="submit" label="注册" color="primary" class="q-mt-md"/>
+            <q-btn type="reset" label="重置" color="negative" class="q-mt-md"/>
           </div>
         </q-form>
       </q-card-section>

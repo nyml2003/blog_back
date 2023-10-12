@@ -1,5 +1,5 @@
 <script setup>
-import {nextTick, onMounted, ref} from "vue";
+import {nextTick, onMounted, ref, watch} from "vue";
 import {userApi} from "boot/axios";
 
 import {checkSame} from "src/utils/normalLogic";
@@ -13,6 +13,7 @@ const loadData = () => {
     userDetail.value.nickname = res.data.nickname;
     userDetail.value.email = res.data.email;
     userDetail.value.avatar = res.data.avatar;
+    userReadonly.value.avatar = res.data.avatar;
     userReadonly.value.id = res.data.id;
     userReadonly.value.created_at = new Date(res.data.created_at).toLocaleString(
       "zh-CN",
@@ -45,6 +46,7 @@ const userReadonly = ref({
   created_at: Date(),
   updated_at: Date(),
   username: "",
+  avatar: null,
 });
 const userDetailCopy = ref({});
 onMounted(() => {
@@ -52,18 +54,28 @@ onMounted(() => {
 })
 const submit = () => {
   if (userDetail.value.avatar === userDetailCopy.value.avatar) {
-    userDetail.value.avatar = undefined;
+    delete userDetail.value.avatar;
   }
+  Object.entries(userDetail.value).forEach(([key, value]) => {
+    if (value === '' || value === null || value === undefined) {
+      delete userDetail.value[key];
+    }
+  })
   userApi.patch(`/user/self/`, userDetail.value, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   }).then((res) => {
     loadData();
+    props.close();
   }).catch((err) => {
     console.log(err);
   })
 }
+const emailOrTelephoneError = ref(false);
+watch(userDetail.value, () => {
+  emailOrTelephoneError.value = !(userDetail.value.email || userDetail.value.telephone);
+})
 </script>
 
 <template>
@@ -72,23 +84,27 @@ const submit = () => {
       <div class="text-h6">个人信息</div>
     </q-card-section>
     <q-form class="q-ma-md">
-      <q-input v-model="userDetail.nickname" label="昵称" lazy-rules :rules="[(val) => !!val || '请输入昵称']">
+      <q-input v-model="userDetail.nickname" label="昵称" lazy-rules clearable>
         <template #before>
           <q-icon name="account_circle"/>
         </template>
       </q-input>
-      <q-input v-model="userDetail.email" label="邮箱" lazy-rules :rules="[(val) => !!val || '请输入邮箱']">
+      <q-input v-model="userDetail.email" label="邮箱" lazy-rules :rules="[(val) => !val || /.+@.+/.test(val) || '请输入正确的邮箱']" clearable
+            :error="emailOrTelephoneError"
+            :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''">
         <template #before>
           <q-icon name="email"/>
         </template>
       </q-input>
-      <q-input v-model="userDetail.telephone" label="电话" lazy-rules :rules="[(val) => !!val || '请输入电话']">
+      <q-input v-model="userDetail.telephone" label="电话" lazy-rules  :rules="[(val) => !val || (val.length === 11 && /^\d+$/.test(val)) || '请输入正确的电话号码']"
+            :error="emailOrTelephoneError" clearable
+            :error-message="emailOrTelephoneError ? '手机号和邮箱至少填写一项' : ''">
         <template #before>
           <q-icon name="phone"/>
         </template>
       </q-input>
-      <q-input v-model="userDetail.description" label="个人简介" lazy-rules
-               :rules="[(val) => !!val || '请输入个人简介']">
+      <q-input v-model="userDetail.description" label="个人简介" lazy-rules clearable
+              >
         <template #before>
           <q-icon name="description"/>
         </template>
@@ -98,23 +114,23 @@ const submit = () => {
           <q-icon name="account_circle"/>
         </template>
       </q-input>
-      <q-file v-model="userDetail.avatar" label="头像" lazy-rules
-              accept="image/*">
+      <q-file v-model="userDetail.avatar" label="头像" lazy-rules clearable @clear="userDetail.avatar = userReadonly.avatar"
+              accept="image/*" :rules="[val => !val || !val.size || val.size < 1024 * 1024 * 2 || `文件大小不能超过2MB`]">
         <template #before>
           <q-avatar v-if="userDetail.avatar">
             <img :src="userDetail.avatar"/>
           </q-avatar>
-          <q-icon v-else name="account_circle"/>
+          <q-icon v-else name="avatar"/>
         </template>
       </q-file>
       <q-input v-model="userReadonly.created_at" label="创建时间" readonly>
         <template #before>
-          <q-icon name="account_circle"/>
+          <q-icon name="calendar_today"/>
         </template>
       </q-input>
       <q-input v-model="userReadonly.updated_at" label="更新时间" readonly>
         <template #before>
-          <q-icon name="account_circle"/>
+          <q-icon name="calendar_today"/>
         </template>
       </q-input>
       <q-card-actions align="right">

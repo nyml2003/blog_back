@@ -28,7 +28,7 @@ class CommentListByUser(ListAPIView):
 
 
 class CommentView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsUser]
     pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 
@@ -54,7 +54,7 @@ class CommentView(ModelViewSet):
 
 
 class CommentDetailView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdmin, IsUser]
+    permission_classes = [IsAuthenticated, IsUser]
     pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 
@@ -90,7 +90,9 @@ class CommentDetailView(ModelViewSet):
         comment = Comment.objects.get(id=comment_id)
         if comment is None:
             return JsonResponse({'error': 'comment not found'}, safe=False)
-        if comment.user_id != request.user.id:
+        if comment.user_id == request.user.id or request.user.groups.filter(name='NormalAdminGroup').exists():
+            comment.delete()
+            return JsonResponse({'message': 'delete success'}, safe=False)
+        else:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-        comment.delete()
-        return JsonResponse({'message': 'delete success'}, safe=False)
+

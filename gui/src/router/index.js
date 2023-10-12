@@ -77,7 +77,7 @@ export default route(function (/* { store, ssrContext } */) {
       }
     }
     next();
-    return;
+
   });
   Router.afterEach(() => {
     Loading.hide();

@@ -189,7 +189,6 @@ const email = ref("");
           v-if="!rightDrawerOpen"
         />
       </q-page-sticky>
-
       <router-view v-if="isRouteActive"/>
     </q-page-container>
     <div class="flex flex-center bg-grey-3" style="height: 200px">
