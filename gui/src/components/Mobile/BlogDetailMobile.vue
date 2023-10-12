@@ -32,13 +32,12 @@ const loadData = () => {
       prevId.value = res.data.prev_id;
     }
   });
-  // guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-  //   console.log(res.data);
-  //   comments.value = res.data;
-  //   comments.value.forEach((item) => {
-  //     item.created_at = item.created_at.split("T")[0];
-  //   });
-  // });
+  guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
+    comments.value = res.data;
+    comments.value.forEach((item) => {
+      item.created_at = item.created_at.split("T")[0];
+    });
+  });
 };
 const blogList = ref([]);
 const nextId = ref(0);
@@ -196,7 +195,7 @@ const showComment = ref(false);
                       textColor: 'black',
                       position: 'center',
                       actions: [
-                        { label: '取消', color: 'black', handler: () => {console.log('no')} },
+                        { label: '取消', color: 'black'},
                         { label: '确定', color: 'blue', handler: () => {submitComment()} }]
                     })
                   }"

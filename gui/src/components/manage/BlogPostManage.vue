@@ -155,13 +155,7 @@ const CreateFormParams = {
       CreateFormParams.close()
       loadData()
     }).catch((err) => {
-      $q.notify({
-        message: `添加失败,原因:${err.response.data.name}`,
-        color: 'negative',
-        icon: 'close',
-        position: 'top',
-        timeout: 1000,
-      })
+      console.log(err)
       CreateFormParams.reset()
       CreateFormParams.close()
     })
@@ -217,13 +211,7 @@ const UpdateFormParams = {
       UpdateFormParams.close()
       loadData()
     }).catch((err) => {
-      $q.notify({
-        message: `修改失败,原因:${err.response.data.name}`,
-        color: 'negative',
-        icon: 'close',
-        position: 'top',
-        timeout: 1000,
-      })
+      console.log(err)
       UpdateFormParams.reset()
       UpdateFormParams.close()
     });

@@ -1,7 +1,6 @@
 import {Platform} from "quasar";
 
 const platform = Platform.is.desktop ? 'Desktop' : 'Mobile';
-console.log('platform: ', platform);
 const routes = [
   {
     path: "/",

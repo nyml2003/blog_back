@@ -65,11 +65,7 @@ const submit = () => {
     console.log(err);
   })
 }
-const test = () => {
-  console.log(userDetailCopy.value);
-  console.log(userDetail.value);
-  console.log(JSON.stringify(userDetailCopy.value) === JSON.stringify(userDetail.value));
-}
+
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from api.models import Tag
@@ -10,6 +10,12 @@ from api.serializer import TagSerializer
 class TagView(ModelViewSet):
     serializer_class = TagSerializer
     pagination_class = ApiDefaultPagination
+    
+    
+    def get_permissions(self):
+        if self.action in ['create']:
+            return [IsAuthenticated(), IsAdmin()]
+        return []
 
     def get_queryset(self):
         return Tag.objects.order_by('-updated_at')
@@ -17,7 +23,6 @@ class TagView(ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    @permission_classes([IsAuthenticated, IsAdmin])
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 

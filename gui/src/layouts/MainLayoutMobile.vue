@@ -56,9 +56,6 @@ provide('isLogged', isLogged);
 const keyword = ref("");
 provide('keyword', keyword);
 const keywordCopy = ref("");
-const test = () => {
-  console.log(loginStore.isLogged);
-}
 const search = () => {
   keyword.value = keywordCopy.value;
   keywordCopy.value = "";

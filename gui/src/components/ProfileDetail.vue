@@ -1,16 +1,13 @@
 <script setup>
 import {nextTick, onMounted, ref} from "vue";
 import {userApi} from "boot/axios";
-import {useMainLayoutStore} from "stores/MainLayoutStore";
 
-const mainLayoutStore = useMainLayoutStore();
 import {checkSame} from "src/utils/normalLogic";
 
 const props = defineProps({
   isOpen: Boolean,
   close: Function,
 })
-console.log(props);
 const loadData = () => {
   userApi.get('/user/self/').then((res) => {
     userDetail.value.nickname = res.data.nickname;
@@ -62,7 +59,6 @@ const submit = () => {
       'Content-Type': 'multipart/form-data'
     }
   }).then((res) => {
-    console.log(res);
     loadData();
   }).catch((err) => {
     console.log(err);

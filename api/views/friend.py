@@ -1,7 +1,7 @@
 import os
 
 from django.http import JsonResponse
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from api.models import Friend
@@ -20,7 +20,11 @@ class FriendView(ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    @permission_classes([IsAuthenticated, IsAdmin])
+    def get_permissions(self):
+        if self.action in ['create']:
+            return [IsAuthenticated(), IsAdmin()]
+        return []
+
     def create(self, request, *args, **kwargs):
         request.data['avatar'].name = os.urandom(16).hex() + '.' + request.data['avatar'].name.split('.')[-1]
         return super().create(request, *args, **kwargs)
@@ -33,6 +37,11 @@ class FriendDetailView(ModelViewSet):
 
     def get_queryset(self):
         return Friend.objects.order_by('-updated_at')
+
+    def get_permissions(self):
+        if self.action in ['update', 'destroy']:
+            return [IsAuthenticated(), IsAdmin()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = Friend.objects.get(id=kwargs['id'])

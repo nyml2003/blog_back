@@ -60,15 +60,10 @@ const upload = () => {
       position: 'top',
       timeout: 1000,
     })
+    console.log(res)
     loadData()
   }).catch((err) => {
-    $q.notify({
-      message: `添加失败,原因:${err.response.data.name}`,
-      color: 'negative',
-      icon: 'close',
-      position: 'top',
-      timeout: 1000,
-    })
+    console.log(err)
     loadData()
   })
 };
@@ -88,13 +83,7 @@ const update = () => {
     })
     loadData()
   }).catch((err) => {
-    $q.notify({
-      message: `添加失败,原因:${err.response.data.name}`,
-      color: 'negative',
-      icon: 'close',
-      position: 'top',
-      timeout: 1000,
-    })
+    console.log(err)
     loadData()
   })
 };

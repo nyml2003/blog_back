@@ -86,7 +86,6 @@ const onSave = (id, content) => {
   userApi.patch(`/comment/rest/${id}/`, {
     content: content
   }).then((res) => {
-    console.log(res);
     comments.value[comments.value.findIndex((item) => {
       return item.id === id;
     })].isUpdate = false;
@@ -94,7 +93,6 @@ const onSave = (id, content) => {
   })
 }
 const onDelete = (item) => {
-  console.log(item)
   $q.notify({
     message: '确定删除该评论吗？',
     color: 'negative',

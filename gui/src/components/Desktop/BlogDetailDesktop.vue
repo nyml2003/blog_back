@@ -81,7 +81,6 @@ onMounted(() => {
 const content = ref("");
 const comment = ref("");
 const submitComment = () => {
-  console.log(comment.value)
   userApi
     .post(`/comment/rest/`, {
       blog_id: blog_id.value,
@@ -208,7 +207,7 @@ const showComment = ref(false);
                           textColor: 'black',
                           position: 'center',
                           actions: [
-                            { label: '取消', color: 'black', handler: () => {console.log('no')} },
+                            { label: '取消', color: 'black' },
                             { label: '确定', color: 'blue', handler: () => {submitComment()} }]
                         })
                       }"

@@ -28,7 +28,7 @@ class CommentListByUser(ListAPIView):
 
 
 class CommentView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsUser]
+    permission_classes = [IsAuthenticated, IsAdmin]
     pagination_class = ApiDefaultPagination
     serializer_class = CommentSerializer
 

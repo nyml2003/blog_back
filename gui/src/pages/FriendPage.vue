@@ -65,7 +65,6 @@ const loadData = () => {
   });
 }
 const toFriendDetail = (id) => {
-  console.log(id)
   window.open(friends.value[id].url)
 }
 onMounted(() => {

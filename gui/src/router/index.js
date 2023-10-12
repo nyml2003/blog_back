@@ -33,7 +33,7 @@ export default route(function (/* { store, ssrContext } */) {
       process.env.MODE === "ssr" ? void 0 : process.env.VUE_ROUTER_BASE
     ),
   });
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach(async (to, from, next) => {
     if (!to.meta.hasOwnProperty('requireAuth')) {
       next();
       return;
@@ -51,22 +51,28 @@ export default route(function (/* { store, ssrContext } */) {
       return;
     }
     if (to.meta.hasOwnProperty('group')) {
-      userApi.post('/user/group/', {group: to.meta.group}).then((res) => {
-        if (res.data.hasOwnProperty('error')) {
+      const res = await userApi.post('/user/group/', {group: to.meta.group});
+      if (res.data.hasOwnProperty('error')) {
+        if (res.data.error === 'permission denied') {
           Notify.create({
-            message: res.data.get('error'),
+            message: '权限不足',
             color: 'red',
             icon: 'error',
             position: 'top'
           })
-          next({
-            path: '/'
+        } else {
+          Notify.create({
+            message: '未知错误',
+            color: 'red',
+            icon: 'error',
+            position: 'top'
           })
-          return;
         }
-      }).catch((err) => {
-        console.log(err);
-      })
+        next({
+          path: '/'
+        })
+        return;
+      }
     }
     next();
     return;

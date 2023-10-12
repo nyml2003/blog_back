@@ -98,11 +98,6 @@ const exit = () => {
     ]
   })
 }
-
-function test() {
-  console.log('test')
-  loginStore.isLogged = !loginStore.isLogged
-}
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">

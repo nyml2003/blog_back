@@ -85,7 +85,6 @@ class UserSelfView(ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(user)
-        print(serializer.data)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):

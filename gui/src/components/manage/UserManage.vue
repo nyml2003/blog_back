@@ -8,7 +8,6 @@ const data = ref([])
 const loading = ref(false)
 const loadData = () => {
   loading.value = true
-  console.log(TableParams.pagination.value)
   userApi.get("/user/rest/", {
       params: {
         page: TableParams.pagination.value.page,

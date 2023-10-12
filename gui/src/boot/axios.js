@@ -1,5 +1,6 @@
 import {boot} from 'quasar/wrappers'
 import axios from 'axios'
+import {Notify} from "quasar";
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -43,6 +44,30 @@ userApi.interceptors.request.use(
     })
   }
 )
+
+userApi.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (error.response.status === 401) {
+      Notify.create({
+        message: '登录状态已过期',
+        color: 'red',
+        icon: 'error',
+        position: 'top'
+      })
+    }
+    else if (error.response.status === 403) {
+      Notify.create({
+        message: '权限不足',
+        color: 'red',
+        icon: 'error',
+        position: 'top'
+      })
+    }
+    return Promise.reject(error);
+  })
 
 export default boot(({app}) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

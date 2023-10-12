@@ -90,7 +90,6 @@ const handleKeyboardInput = (keyCode) => {
 };
 let isKeyDown = false;
 const gamekeydown = (event) => {
-  console.log("keydown");
   if (!isKeyDown) {
     isKeyDown = true;
     nextFoot.value = 1 - nextFoot.value;
@@ -98,7 +97,6 @@ const gamekeydown = (event) => {
   }
 };
 const gamekeyup = (event) => {
-  console.log("keyup");
   isKeyDown = false;
   if (keyCodeMap.has(event.keyCode))
     hero.value.orientation = keyCodeMap.get(event.keyCode);
@@ -148,7 +146,6 @@ onMounted(() => {
   responseCanvas();
 });
 const handleSwipe = ({evt, ...newInfo}) => {
-  console.log(newInfo);
   const direction2KeyCode = new Map([
     ["left", 65],
     ["right", 68],
