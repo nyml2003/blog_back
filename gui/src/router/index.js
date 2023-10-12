@@ -2,7 +2,7 @@ import {route} from "quasar/wrappers";
 import {createMemoryHistory, createRouter, createWebHashHistory, createWebHistory,} from "vue-router";
 import routes from "./routes";
 import {useLoginStore} from "stores/LoginStore";
-import {Notify} from "quasar";
+import {Notify,Loading} from "quasar";
 import {userApi} from "boot/axios";
 import {computed, ref} from "vue";
 // /*
@@ -14,6 +14,7 @@ import {computed, ref} from "vue";
 //  * with the Router instance.
 //  */
 //
+
 export default route(function (/* { store, ssrContext } */) {
   const loginStore = useLoginStore();
   const isLogged = ref(computed(() => loginStore.isLogged));
@@ -34,6 +35,7 @@ export default route(function (/* { store, ssrContext } */) {
     ),
   });
   Router.beforeEach(async (to, from, next) => {
+    Loading.show();
     if (!to.meta.hasOwnProperty('requireAuth')) {
       next();
       return;
@@ -77,6 +79,9 @@ export default route(function (/* { store, ssrContext } */) {
     next();
     return;
   });
+  Router.afterEach(() => {
+    Loading.hide();
+  })
   return Router;
 });
 

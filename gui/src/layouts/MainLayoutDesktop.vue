@@ -2,7 +2,7 @@
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useLoginStore} from "stores/LoginStore";
-import {computed, nextTick, onMounted, provide, ref} from "vue";
+import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
 import {useMainLayoutStore} from "stores/MainLayoutStore";
 import RecordShow from "components/RecordShow.vue";
@@ -25,13 +25,16 @@ const toggleLog = () => {
     if (res === 'token valid') {
       loginStore.isLogged = true;
       loadUserDetail();
+      $q.loading.hide();
     } else {
       loginStore.logout();
       loginStore.isLogged = false;
+      $q.loading.hide();
     }
   })
 };
 onMounted(() => {
+  $q.loading.show();
   toggleLog();
 });
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
@@ -50,10 +53,15 @@ const search = () => {
 const isRouteActive = ref(true);
 const reload = () => {
   isRouteActive.value = false;
-  nextTick(() => {
-    isRouteActive.value = true;
-  })
+    nextTick(() => {
+      isRouteActive.value = true;
+    })
 }
+watch(()=> mainLayoutStore.isRightDrawerOpen, (val) => {
+  if (val === true) {
+    loadUserDetail();
+  }
+})
 const loadUserDetail = () => {
   userApi.get('/user/self/').then((res) => {
     userDetail.value.username = res.data.username;
