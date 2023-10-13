@@ -33,9 +33,12 @@ const loadData = () => {
     }
   });
   guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
+    console.log(res)
     comments.value = res.data;
     comments.value.forEach((item) => {
-      item.created_at = item.created_at.split("T")[0];
+      item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
+        hour12: false,
+      });
     });
   });
 };
@@ -74,7 +77,7 @@ const content = ref("");
 const comment = ref("");
 const submitComment = () => {
   userApi
-    .post(`/comment/create/`, {
+    .post(`/comment/rest/`, {
       blog_id: blog_id.value,
       content: comment.value
     }).then((res) => {
@@ -167,10 +170,10 @@ const showComment = ref(false);
             <q-item-section>
               <div class="row justify-between flex-center">
                 <div class=" text-h6">
-                  {{ item.username }}
+                  {{ item.name }}
                 </div>
                 <div class="text-subtitle2 text-grey">
-                  发布时间:{{ item.created_at }}
+                  发布时间:{{ item.updated_at }}
                 </div>
               </div>
               <q-separator/>
