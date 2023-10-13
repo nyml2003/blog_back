@@ -42,20 +42,34 @@ const routes = [
             path: 'profile/desktop',
             name: 'ProfileDesktop',
             meta: {requireAuth: true, group: 'NormalUserGroup'},
-            component: () => import("pages/ProfilePageDesktop.vue")
+            component: () => import("pages/Desktop/ProfilePageDesktop.vue")
           },
           {
             path: 'profile/mobile',
             name: 'ProfileMobile',
             meta: {requireAuth: true, group: 'NormalUserGroup'},
-            component: () => import("pages/ProfilePageMobile.vue")
+            redirect: '/user/profile/mobile/info',
+            children: [
+              {
+                path: 'info',
+                name: 'ProfileMobileInfo',
+                meta: {requireAuth: true, group: 'NormalUserGroup'},
+                component: () => import("pages/mobile/ProfileMobileInfo.vue"),
+              },
+              {
+                path: 'comment',
+                name: 'ProfileMobileComment',
+                meta: {requireAuth: true, group: 'NormalUserGroup'},
+                component: () => import("pages/mobile/ProfileMobileComment.vue"),
+              },
+              {
+                path: 'statistics',
+                name: 'ProfileMobileStatistic',
+                meta: {requireAuth: true, group: 'NormalUserGroup'},
+                component: () => import("pages/mobile/ProfileMobileStatistic.vue"),
+              }
+            ]
           },
-          {
-            path: 'comment',
-            name: 'Comment',
-            meta: {requireAuth: true, group: 'NormalUserGroup'},
-            component: () => import("pages/CommentPage.vue")
-          }
         ]
       },
     ],

@@ -31,7 +31,7 @@ const login = () => {
 </script>
 <template>
   <q-page class="flex flex-center">
-    <q-card class="q-ma-md" style="min-width: 400px">
+    <q-card class="q-ma-md" style="min-width: 300px">
       <q-card-section>
         <q-form @submit="login">
           <q-input

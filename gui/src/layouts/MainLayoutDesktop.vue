@@ -69,12 +69,12 @@ const loadUserDetail = () => {
     userDetail.value.description = res.data.description;
     userDetail.value.nickname = res.data.nickname;
   })
-  userApi.get('/user/route/').then((res) => {
+  userApi.get('/user/route/desktop/').then((res) => {
     console.log(res)
     drawerItems.value = res.data;
   })
 }
-const drawerItems=ref([])
+const drawerItems = ref([])
 const userDetail = ref({
   username: "",
   avatar: null,
@@ -130,6 +130,9 @@ const exit = () => {
           dense
           outlined
           placeholder="搜索"
+          @blur="search"
+          @keyup.enter="search"
+
         >
           <template #prepend>
             <q-btn color="primary" icon="search" round size="sm" @click="search"></q-btn>
@@ -164,7 +167,7 @@ const exit = () => {
               <q-icon :name="item.icon"/>
             </q-item-section>
             <q-item-section>
-              {{ item.name}}
+              {{ item.name }}
             </q-item-section>
           </q-item>
           <q-item v-ripple clickable exact @click="exit">

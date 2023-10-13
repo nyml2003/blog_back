@@ -43,7 +43,7 @@ const register = () => {
   })
 }
 const reset = () => {
-  form.value={
+  form.value = {
     nickname: '',
     password: '',
     password2: '',
@@ -61,7 +61,7 @@ watch(form.value, () => {
 </script>
 <template>
   <q-page class="flex-center flex non-selectable">
-    <q-card class="q-ma-md" style="min-width: 400px">
+    <q-card class="q-ma-md" style="min-width: 300px">
       <q-card-section>
         <q-form @submit="register" @reset="reset">
           <q-input

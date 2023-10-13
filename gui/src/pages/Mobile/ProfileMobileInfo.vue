@@ -3,6 +3,7 @@ import {userApi} from "boot/axios";
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import ProfileDetail from "components/ProfileDetail.vue";
+import ChangePassword from "components/ChangePassword.vue";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar();
@@ -126,93 +127,56 @@ const onDelete = (item) => {
   })
 };
 const isDetail = ref(false);
+const isChangePassword = ref(false);
 </script>
 
 <template>
-  <q-dialog v-model="isDetail" persistent>
+  <q-dialog v-model="isDetail" persistent full-height>
     <ProfileDetail :isOpen="isDetail" :close="()=>{isDetail=false;loadData();}"/>
   </q-dialog>
+  <q-dialog v-model="isChangePassword" persistent>
+    <ChangePassword :isOpen="isChangePassword" :close="()=>{isChangePassword=false;loadData();}"/>
+  </q-dialog>
   <q-page class="flex items-start content-start justify-center">
-    <q-card class="q-mx-md q-mt-md q-mb-sm" style="min-width: 1000px">
+    <q-card class="q-mx-md q-mt-md q-mb-sm" style="width:100vw">
 
       <q-card-section tag="div" style="height: 132px" class="bg-grey">
-      </q-card-section>
-      <q-separator/>
-      <q-card-section tag="div" style="height: 132px">
-        <div style="position:absolute; left: 20%; top:10%;">
-          <div class="text-h5 text-weight-bolder">{{ userDetail.nickname }}</div>
-          <div class="text-subtitle2 q-my-md">{{ userDetail.description }}</div>
-          <div class="row" style="width: 800px;">
-            <div class="col">
-              <q-icon name="email"/>
-              邮箱: {{ userDetail.email }}
-            </div>
-            <div class="col">
-              <q-icon name="phone"/>
-              电话: {{ userDetail.telephone }}
-            </div>
-            <div class="col">
-              <q-icon name="description"/>
-              用户唯一标识: {{ userDetail.username }}
-            </div>
-          </div>
-        </div>
         <div class="row">
-          <div class="col text-right text-caption text-grey">
+          <div class="col text-right text-caption text-white">
             <q-icon name="calendar_today"/>
             温馨提示，邮箱、电话、用户唯一标识均可用于登录
           </div>
         </div>
       </q-card-section>
-      <q-avatar class="absolute-center" size="160px" style="left: 10%; border-radius: 50%">
+      <q-avatar class="absolute-center" size="120px" style="left: 25%; border-radius: 50%; top:calc(132px)">
         <img :src="userDetail.avatar"/>
       </q-avatar>
+      <div class="q-ma-md text-h5 text-weight-bolder text-right">{{ userDetail.nickname }}</div>
+      <q-separator/>
+      <q-card-section tag="div" style="height: calc(100vh - 350px); overflow-y: auto">
+
+        <div class="text-subtitle2 q-my-md">{{ userDetail.description }}</div>
+        <div class="row">
+          <q-icon name="email"/>
+          邮箱: {{ userDetail.email }}
+        </div>
+        <div class="row">
+          <q-icon name="phone"/>
+          电话: {{ userDetail.telephone }}
+        </div>
+        <div class="row">
+          <q-icon name="description"/>
+          用户唯一标识: {{ userDetail.username }}
+        </div>
+
+
+      </q-card-section>
+
       <q-card-actions align="right">
+        <q-btn flat label="修改密码" color="red" @click="isChangePassword=true"/>
         <q-btn flat label="编辑个人资料" color="primary" @click="isDetail=true"/>
       </q-card-actions>
     </q-card>
-    <div class="q-mx-md q-mb-md row" style="min-width: 1000px;min-height: 500px">
-      <q-card class="q-mr-xs col">
-        <q-list>
-          <q-item v-for="item in comments" :key="item.id"
-                  class="cursor-pointer">
-            <q-item-section>
-              <div class="row justify-between flex-center">
-                <div class=" text-h6" @click="toDetail(item.parent_id)">
-                  对《
-                  {{ item.parent_name }}
-                  》的评论
-                </div>
-                <div class="text-subtitle2 text-grey">
-                  <q-btn flat dense round @click="onDelete(item)" icon="delete" color="negative"/>
-                  发布时间:{{ item.updated_at }}
-                </div>
-              </div>
-              <q-separator/>
-              <q-input type="textarea" :readonly="!item.isUpdate" v-model="item.content" autogrow>
-                <template #append>
-                  <q-btn flat dense round @click="item.isUpdate = !item.isUpdate" class="q-mr-xs" color="primary"
-                         icon="edit"
-                         v-if="!item.isUpdate"/>
-                  <q-btn flat dense round @click="onSave(item.id,item.content)" icon="save" color="positive" v-else/>
-                </template>
-              </q-input>
-            </q-item-section>
-          </q-item>
-        </q-list>
-
-      </q-card>
-      <q-card class="col-3">
-        <q-list>
-          <q-item v-for="item in statistics" :key="item.name">
-            <q-item-section>
-              <div class="text-h6 text-weight-bold">{{ item.name }}</div>
-              <div class="text-subtitle2 text-grey">{{ item.value }}</div>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-card>
-    </div>
   </q-page>
 </template>
 
