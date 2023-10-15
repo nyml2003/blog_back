@@ -1,39 +1,21 @@
 <script setup>
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {useLoginStore} from "stores/LoginStore";
+import {useAuthStore} from "stores/AuthStore";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar();
-const loginStore = useLoginStore();
+const authStore = useAuthStore();
+const {login} = authStore;
 const router = useRouter();
 const username = ref("");
 const password = ref("");
-const login = () => {
-  loginStore.login(username.value, password.value).then((res) => {
-    if (res === 'success') {
-      router.push("/");
-      loginStore.isLogged = true;
-    } else {
-      $q.notify({
-        message: res,
-        color: 'negative',
-        icon: 'report_problem',
-        position: 'top',
-        timeout: 2000,
-      })
-    }
-  }).catch((err) => {
-    console.log(err);
-  })
-
-}
 </script>
 <template>
   <q-page class="flex flex-center">
     <q-card class="q-ma-md" style="min-width: 300px">
       <q-card-section>
-        <q-form @submit="login">
+        <q-form @submit="login(username,password,router)">
           <q-input
             v-model="username"
             label="用户唯一标识"

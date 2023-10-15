@@ -1,11 +1,12 @@
 <script setup>
-import {inject, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {useRouter} from "vue-router";
-import {useLoginStore} from "stores/LoginStore";
+import {useAuthStore} from "stores/AuthStore";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar();
-const loginStore = useLoginStore();
+const authStore = useAuthStore();
+const {register} = authStore;
 const router = useRouter();
 const form = ref({
   nickname: '',
@@ -15,32 +16,13 @@ const form = ref({
   telephone: '',
   avatar: null,
 })
-const register = () => {
-  loginStore.logout();
+const beforeRegister = () => {
   Object.entries(form.value).forEach(([key, value]) => {
     if (value === '' || value === null || value === undefined) {
       delete form.value[key];
     }
   })
-  loginStore.register(form.value).then((res) => {
-    if (res === 'success') {
-      router.push("/");
-      setTimeout(() => {
-        router.go(0);
-      }, 1000);
-      loginStore.isLogged = true;
-    } else {
-      $q.notify({
-        message: res.toString(),
-        color: 'negative',
-        icon: 'report_problem',
-        position: 'top',
-        timeout: 2000,
-      })
-    }
-  }).catch((err) => {
-    console.log(err);
-  })
+  register(form.value, router);
 }
 const reset = () => {
   form.value = {
@@ -63,7 +45,7 @@ watch(form.value, () => {
   <q-page class="flex-center flex non-selectable">
     <q-card class="q-ma-md" style="min-width: 300px">
       <q-card-section>
-        <q-form @submit="register" @reset="reset">
+        <q-form @submit="beforeRegister" @reset="reset">
           <q-input
             v-model="form.nickname"
             label="昵称"

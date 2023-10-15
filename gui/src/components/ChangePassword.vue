@@ -1,7 +1,6 @@
 <script setup>
 import {ref, watch} from "vue";
 import {useRouter} from "vue-router";
-import {useLoginStore} from "stores/LoginStore";
 import {useQuasar} from "quasar";
 import {userApi} from "boot/axios";
 
@@ -10,7 +9,6 @@ const props = defineProps({
   close: Function,
 })
 const $q = useQuasar();
-const loginStore = useLoginStore();
 const router = useRouter();
 const form = ref({
   old_password: '',

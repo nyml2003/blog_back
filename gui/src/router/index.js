@@ -1,10 +1,10 @@
 import {route} from "quasar/wrappers";
 import {createMemoryHistory, createRouter, createWebHashHistory, createWebHistory,} from "vue-router";
 import routes from "./routes";
-import {useLoginStore} from "stores/LoginStore";
 import {Notify,Loading} from "quasar";
 import {userApi} from "boot/axios";
-import {computed, ref} from "vue";
+import {useAuthStore} from "stores/AuthStore";
+import {storeToRefs} from "pinia";
 // /*
 //  * If not building with SSR mode, you can
 //  * directly export the Router instantiation;
@@ -16,8 +16,8 @@ import {computed, ref} from "vue";
 //
 
 export default route(function (/* { store, ssrContext } */) {
-  const loginStore = useLoginStore();
-  const isLogged = ref(computed(() => loginStore.isLogged));
+  const authStore = useAuthStore();
+  const {isAuthenticated} = storeToRefs(authStore);
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === "history"
@@ -40,7 +40,7 @@ export default route(function (/* { store, ssrContext } */) {
       next();
       return;
     }
-    if (to.meta.requireAuth !== isLogged.value) {
+    if (to.meta.requireAuth !== isAuthenticated.value) {
       Notify.create({
         message: '访问的页面和登录状态不匹配',
         color: 'red',

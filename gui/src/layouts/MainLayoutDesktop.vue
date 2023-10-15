@@ -1,46 +1,28 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useLoginStore} from "stores/LoginStore";
 import {computed, nextTick, onMounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
 import {useMainLayoutStore} from "stores/MainLayoutStore";
 import RecordShow from "components/RecordShow.vue";
+import {useAuthStore} from "stores/AuthStore";
+import {storeToRefs} from "pinia";
 
 const mainLayoutStore = useMainLayoutStore();
-const loginStore = useLoginStore();
+const authStore = useAuthStore();
 const login = () => {
   router.push("/login");
-}
-const logout = () => {
-  router.push("/");
-  loginStore.logout();
-  loginStore.isLogged = false;
 }
 const router = useRouter();
 const $q = useQuasar();
 
-const toggleLog = () => {
-  loginStore.checkLogged().then((res) => {
-    if (res === 'token valid') {
-      loginStore.isLogged = true;
-      loadUserDetail();
-      $q.loading.hide();
-    } else {
-      loginStore.logout();
-      loginStore.isLogged = false;
-      $q.loading.hide();
-    }
-  })
-};
-onMounted(() => {
-  $q.loading.show();
-  toggleLog();
+const {checkAndSetAuth,logout} = authStore;
+onMounted(async() => {
+  await checkAndSetAuth();
 });
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
 const keyword = ref("");
 provide('keyword', keyword);
-provide('toggleLog', toggleLog);
 const keywordCopy = ref("");
 const search = () => {
   keyword.value = keywordCopy.value;
@@ -57,9 +39,26 @@ const reload = () => {
     isRouteActive.value = true;
   })
 }
-watch(() => loginStore.isLogged, (val) => {
-  if (val === true) {
-    loadUserDetail();
+const {isAuthenticated} = storeToRefs(authStore);
+watch(isAuthenticated, (newVal) => {
+  switch (newVal){
+    case true:
+      loadUserDetail();
+      break;
+    case false:
+      userDetail.value.username = "";
+      userDetail.value.avatar = null;
+      userDetail.value.description = "";
+      userDetail.value.nickname = "";
+      break;
+    default:
+      $q.notify({
+        message: '未知错误',
+        icon: 'warning',
+        color: 'red',
+        position: 'top',
+      })
+      break;
   }
 })
 const loadUserDetail = () => {
@@ -81,7 +80,7 @@ const userDetail = ref({
   description: "",
 });
 const toggleRightDrawer = () => {
-  if (loginStore.isLogged) {
+  if (isAuthenticated.value) {
     mainLayoutStore.isRightDrawerOpen = !mainLayoutStore.isRightDrawerOpen
   } else {
     $q.notify({
@@ -105,7 +104,7 @@ const exit = () => {
       {label: '取消', color: 'black'},
       {
         label: '确定', color: 'primary', handler: () => {
-          logout()
+          logout(router)
         }
       }
     ]
@@ -140,7 +139,7 @@ const exit = () => {
         </q-input>
         <q-space/>
         <transition mode="out-in" name="fade">
-          <q-btn v-if="loginStore.isLogged" class="q-ml-md" flat icon="account_circle" label="帐号"
+          <q-btn v-if="isAuthenticated" class="q-ml-md" flat icon="account_circle" label="帐号"
                  @click="toggleRightDrawer"/>
           <q-btn v-else class="q-ml-md" flat icon="account_circle" label="登录"
                  @click="login"/>

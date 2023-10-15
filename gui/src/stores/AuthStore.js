@@ -7,7 +7,6 @@ import { isEmptyObject, isInvalidValue } from "src/utils/normalLogic";
 
 export const useAuthStore = defineStore("AuthStore", () => {
   const $q = useQuasar();
-  const router = useRouter();
   const isAuthenticated = ref(false);
 
   async function checkToken(token) {
@@ -81,7 +80,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
     }
   }
 
-  async function login(username, password) {
+  async function login(username, password,router) {
     try {
       const res = await guestApi.post("/user/login/", {
         username: username,
@@ -98,11 +97,12 @@ export const useAuthStore = defineStore("AuthStore", () => {
       await router.push("/");
       return;
     } catch (err) {
+      console.log(err)
       notifyError(err);
     }
   }
 
-  async function register(form) {
+  async function register(form,router) {
     try {
       const res = await guestApi.post("/user/register/", form, {
         headers: {
@@ -136,7 +136,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
     }
   }
 
-  async function logout() {
+  async function logout(router) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     disableAuth();

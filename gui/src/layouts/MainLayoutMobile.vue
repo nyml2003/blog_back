@@ -1,40 +1,22 @@
 <script setup>
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useLoginStore} from "stores/LoginStore";
 import {computed, nextTick, onMounted, onUnmounted, provide, ref, watch} from "vue";
 import {userApi} from "boot/axios";
 import RecordShow from "components/RecordShow.vue";
-
-const rightDrawerOpen = ref(false);
-const loginStore = useLoginStore();
+import {useAuthStore} from "stores/AuthStore";
+import {storeToRefs} from "pinia";
+import {useMainLayoutStore} from "stores/MainLayoutStore";
+const mainLayoutStore = useMainLayoutStore();
+const authStore=useAuthStore();
+const {isAuthenticated}=storeToRefs(authStore);
+const {logout,checkAndSetAuth}=authStore;
 const login = () => {
   router.push("/login");
 }
-const logout = () => {
-  router.push("/");
-  loginStore.logout();
-  loginStore.isLogged = false;
-}
 const router = useRouter();
 const $q = useQuasar();
-
-const toggleDarkMode = () => {
-  const dark = $q.dark.isActive;
-  $q.dark.set(!dark);
-  localStorage.setItem("dark", !dark);
-};
-const toggleLog = () => {
-  loginStore.checkLogged().then((res) => {
-    if (res === 'token valid') {
-      loginStore.isLogged = true;
-    } else {
-      loginStore.logout();
-      loginStore.isLogged = false;
-    }
-  })
-};
-onMounted(() => {
+onMounted(async() => {
   const handleClickOutside = (event) => {
     if (enableSearch.value === false) {
       isInputKeyword.value = false;
@@ -49,10 +31,8 @@ onMounted(() => {
   onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
   });
-  toggleLog();
+  await checkAndSetAuth();
 });
-const isLogged = ref(computed(() => loginStore.isLogged));
-provide('isLogged', isLogged);
 const keyword = ref("");
 provide('keyword', keyword);
 const keywordCopy = ref("");
@@ -65,6 +45,19 @@ const search = () => {
     path: '/blog'
   })
 }
+const toggleRightDrawer = () => {
+  if (isAuthenticated.value) {
+    mainLayoutStore.isRightDrawerOpen = !mainLayoutStore.isRightDrawerOpen
+  } else {
+    $q.notify({
+      message: '请先登录',
+      icon: 'warning',
+      color: 'red',
+      position: 'top',
+    })
+    login()
+  }
+}
 const isRouteActive = ref(true);
 const reload = () => {
   isRouteActive.value = false;
@@ -75,19 +68,25 @@ const reload = () => {
 const isInputKeyword = ref(false);
 const toolbarRef = ref(null);
 const enableSearch = ref(false);
-watch(rightDrawerOpen, () => {
-  if (isLogged.value === false) {
-    rightDrawerOpen.value = false;
-    setTimeout(
-      () => {
-        router.push({
-          path: '/login'
-        })
-      }, 200
-    )
-  } else {
-    loadUserDetail()
-
+watch(isAuthenticated, (newVal) => {
+  switch (newVal){
+    case true:
+      loadUserDetail();
+      break;
+    case false:
+      userDetail.value.username = "";
+      userDetail.value.avatar = null;
+      userDetail.value.description = "";
+      userDetail.value.nickname = "";
+      break;
+    default:
+      $q.notify({
+        message: '未知错误',
+        icon: 'warning',
+        color: 'red',
+        position: 'top',
+      })
+      break;
   }
 })
 const loadUserDetail = () => {
@@ -108,13 +107,31 @@ const userDetail = ref({
   description: "",
 });
 const drawerItems = ref([])
+const exit = () => {
+  mainLayoutStore.isRightDrawerOpen = false;
+  $q.notify({
+    message: '确定要退出登录吗？',
+    color: 'white',
+    icon: 'warning',
+    textColor: 'black',
+    position: 'center',
+    actions: [
+      {label: '取消', color: 'black'},
+      {
+        label: '确定', color: 'primary', handler: () => {
+          logout(router)
+        }
+      }
+    ]
+  })
+}
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
     <q-header elevated>
     </q-header>
     <q-drawer
-      v-model="rightDrawerOpen"
+      v-model="mainLayoutStore.isRightDrawerOpen"
       show-if-above
       :width="300"
       side="right"
@@ -130,20 +147,7 @@ const drawerItems = ref([])
               {{ item.name }}
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="()=>{
-            rightDrawerOpen = false
-            $q.notify({
-              message: '确定要退出登录吗？',
-              color: 'white',
-              icon: 'warning',
-              textColor: 'black',
-              position: 'center',
-              actions: [
-                {label: '取消', color: 'black'},
-                {label: '确定', color: 'primary', handler: () => {logout()}}
-                ]
-            })
-          }" exact>
+          <q-item clickable v-ripple @click="exit" exact>
             <q-item-section avatar>
               <q-icon name="exit_to_app"/>
             </q-item-section>
@@ -175,7 +179,7 @@ const drawerItems = ref([])
         unelevated
         color="primary"
         icon='chevron_right'
-        @click="rightDrawerOpen =false"
+        @click="toggleRightDrawer"
       />
     </q-drawer>
     <q-page-container>
@@ -186,8 +190,8 @@ const drawerItems = ref([])
           unelevated
           color="primary"
           icon='chevron_left'
-          @click="rightDrawerOpen =true"
-          v-if="!rightDrawerOpen"
+          @click="toggleRightDrawer"
+          v-if="!mainLayoutStore.isRightDrawerOpen"
         />
       </q-page-sticky>
       <router-view v-if="isRouteActive"/>
