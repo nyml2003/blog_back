@@ -66,24 +66,58 @@ def group(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsUser])
-def routes(request):
+def routes_desktop(request):
     if request.method == 'GET':
         user = request.user
         routes = []
         for group in user.groups.all():
-            if group==Group.objects.get(name='NormalAdminGroup'):
+            if group == Group.objects.get(name='NormalAdminGroup'):
                 routes.append({
                     'path': '/admin',
                     'name': '后台管理',
                     'icon': 'admin_panel_settings',
                 })
-            if group==Group.objects.get(name='NormalUserGroup'):
+            if group == Group.objects.get(name='NormalUserGroup'):
                 routes.append({
                     'path': '/user/profile/desktop',
                     'name': '个人中心',
                     'icon': 'person',
                 })
         return JsonResponse(routes, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsUser])
+def routes_mobile(request):
+    if request.method == 'GET':
+        user = request.user
+        routes = []
+        for group in user.groups.all():
+            if group == Group.objects.get(name='NormalAdminGroup'):
+                # routes.append({
+                #     'path': '/admin',
+                #     'name': '后台管理',
+                #     'icon': 'admin_panel_settings',
+                # })
+                pass
+            if group == Group.objects.get(name='NormalUserGroup'):
+                routes.append({
+                    'path': '/user/profile/mobile/info',
+                    'name': '个人中心',
+                    'icon': 'person',
+                })
+                routes.append({
+                    'path': '/user/profile/mobile/comment',
+                    'name': '我的评论',
+                    'icon': 'article',
+                })
+                routes.append({
+                    'path': '/user/profile/mobile/statistics',
+                    'name': '统计信息',
+                    'icon': 'analytics',
+                })
+        return JsonResponse(routes, safe=False)
+
 
 class UserView(ListAPIView):
     queryset = BlogUser.objects.all().order_by('id')
@@ -127,3 +161,29 @@ class UserDetailView(ModelViewSet):
         return JsonResponse({
             'message': 'success'
         })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsUser])
+def change_password(request):
+    if request.method == 'POST':
+        user = request.user
+        print(user)
+        json_data = json.loads(request.body)
+        old_password = json_data.get('old_password')
+        new_password = json_data.get('new_password')
+        confirm_password = json_data.get('confirm_password')
+        if new_password != confirm_password:
+            return JsonResponse({
+                'error': '确认密码不一致'
+            })
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            return JsonResponse({
+                'message': '修改成功'
+            })
+        else:
+            return JsonResponse({
+                'error': '原密码错误'
+            })

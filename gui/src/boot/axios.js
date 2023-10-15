@@ -50,21 +50,23 @@ userApi.interceptors.response.use(
     return response;
   },
   error => {
-    if (error.response.status === 401) {
-      Notify.create({
-        message: '登录状态已过期',
-        color: 'red',
-        icon: 'error',
-        position: 'top'
-      })
-    }
-    else if (error.response.status === 403) {
-      Notify.create({
-        message: '权限不足',
-        color: 'red',
-        icon: 'error',
-        position: 'top'
-      })
+    console.log(error)
+    if (error.response.hasOwnProperty('status')) {
+      if (error.response.status === 401) {
+        Notify.create({
+          message: '登录状态已过期',
+          color: 'red',
+          icon: 'error',
+          position: 'top'
+        })
+      } else if (error.response.status === 403) {
+        Notify.create({
+          message: '权限不足',
+          color: 'red',
+          icon: 'error',
+          position: 'top'
+        })
+      }
     }
     return Promise.reject(error);
   })

@@ -86,14 +86,28 @@ watch(rightDrawerOpen, () => {
       }, 200
     )
   } else {
-    userApi.get('/user/rest/').then((res) => {
-      username.value = res.data.username;
-      email.value = res.data.email;
-    })
+    loadUserDetail()
+
   }
 })
-const username = ref("");
-const email = ref("");
+const loadUserDetail = () => {
+  userApi.get('/user/self/').then((res) => {
+    userDetail.value.username = res.data.username;
+    userDetail.value.avatar = res.data.avatar;
+    userDetail.value.description = res.data.description;
+    userDetail.value.nickname = res.data.nickname;
+  })
+  userApi.get('/user/route/mobile/').then((res) => {
+    console.log(res)
+    drawerItems.value = res.data;
+  })
+}
+const userDetail = ref({
+  username: "",
+  avatar: null,
+  description: "",
+});
+const drawerItems = ref([])
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -108,28 +122,12 @@ const email = ref("");
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
-          <q-item clickable v-ripple to="/user/profile" exact>
+          <q-item v-ripple clickable exact :to="item.path" v-for="item in drawerItems" :key="item.path">
             <q-item-section avatar>
-              <q-icon name="account_circle"/>
+              <q-icon :name="item.icon"/>
             </q-item-section>
             <q-item-section>
-              My Profile
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple to="/user/comment" exact>
-            <q-item-section avatar>
-              <q-icon name="comment"/>
-            </q-item-section>
-            <q-item-section>
-              My Comments
-            </q-item-section>
-          </q-item>
-          <q-item clickable v-ripple to="/user/statistics" exact>
-            <q-item-section avatar>
-              <q-icon name="bar_chart"/>
-            </q-item-section>
-            <q-item-section>
-              Comment statistics
+              {{ item.name }}
             </q-item-section>
           </q-item>
           <q-item clickable v-ripple @click="()=>{
@@ -150,20 +148,23 @@ const email = ref("");
               <q-icon name="exit_to_app"/>
             </q-item-section>
             <q-item-section>
-              <div class="text-red text-weight-bold">Exit</div>
+              <div class="text-red text-weight-bold">注销</div>
             </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
       <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
         <div class="bg-transparent row justify-between" style="height: 150px; width: 300px">
-          <q-avatar size="100px">
-            <img
-              src="https://avatars.githubusercontent.com/u/106670529?s=400&u=1285065547ee37395586d36887a3d7a7b340d112&v=4">
+          <q-avatar size="80px">
+            <img :src="userDetail.avatar "
+                 alt="avatar">
           </q-avatar>
           <div class="text-right q-ma-md">
-            <div class="text-h6 text-weight-bold">{{ username }}</div>
-            <div class="text-subtitle2 q-mt-md">{{ email }}</div>
+            <div class="text-h6 text-weight-bold">{{
+                userDetail.nickname ? userDetail.nickname : userDetail.username
+              }}
+            </div>
+            <div class="text-subtitle2 q-mt-md">{{ userDetail.description }}</div>
           </div>
         </div>
       </q-img>
@@ -172,7 +173,7 @@ const email = ref("");
         dense
         round
         unelevated
-        color="accent"
+        color="primary"
         icon='chevron_right'
         @click="rightDrawerOpen =false"
       />
@@ -183,7 +184,7 @@ const email = ref("");
           dense
           round
           unelevated
-          color="accent"
+          color="primary"
           icon='chevron_left'
           @click="rightDrawerOpen =true"
           v-if="!rightDrawerOpen"
