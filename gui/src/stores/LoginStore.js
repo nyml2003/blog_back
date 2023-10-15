@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {guestApi, userApi} from "boot/axios";
+import {guestApi} from "boot/axios";
 
 export const useLoginStore = defineStore("LoginStore", {
     actions: {
@@ -76,20 +76,7 @@ export const useLoginStore = defineStore("LoginStore", {
             })
           }
         })
-      },
-      checkPermission: function (permission) {
-        return new Promise((resolve, reject) => {
-          userApi.post("/user/permission/", {
-            "permission": permission
-          }).then((res) => {
-            if (res.data.has('message')) {
-              resolve(res.data.get('message'))
-            } else {
-              resolve('no permission')
-            }
-          })
-        })
-      },
+      }
     },
     state: () => ({
       return: {
