@@ -164,17 +164,7 @@ const showComment = ref(false);
     </q-card>
     <q-card class="q-ma-sm" style="width: 700px;">
       <q-list separator>
-        <q-item>
-          <q-item-section>
-            <q-item-label>
-              评论
-            </q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-toggle v-model="showComment" label="显示评论"/>
-          </q-item-section>
-        </q-item>
-        <div v-if="showComment">
+        <q-expansion-item v-if="!showComment" label="评论">
           <q-item v-for="item in comments" :key="item.id">
             <q-item-section>
               <div class="row justify-between flex-center">
@@ -189,7 +179,7 @@ const showComment = ref(false);
               <q-input type="textarea" readonly v-model="item.content" autogrow/>
             </q-item-section>
           </q-item>
-        </div>
+        </q-expansion-item>
         <q-item>
           <q-item-section>
             <q-input v-model="comment" label="请输入评论" type="textarea" rows="3">

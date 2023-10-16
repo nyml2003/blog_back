@@ -115,8 +115,8 @@ const exit = () => {
 }
 </script>
 <template>
-  <q-layout class="non-selectable bg-grey-3" view="hHr LpR ffr">
-    <q-header class="bg-transparent" elevated style="backdrop-filter: blur(10px)">
+  <q-layout class=" bg-grey-3" view="hHr LpR ffr">
+    <q-header elevated style=" -webkit-backdrop-filter: blur(10px);" class="bg-transparent"  reveal :reveal-offset="100">
       <q-toolbar class=" text-black justify-center">
         <q-tabs inline-label>
           <q-route-tab exact icon="home" label="首页" to="/"/>
@@ -140,7 +140,7 @@ const exit = () => {
             <q-btn color="primary" icon="search" round size="sm" @click="search"></q-btn>
           </template>
         </q-input>
-        <q-space/>
+
         <transition mode="out-in" name="fade">
           <q-btn v-if="isAuthenticated" class="q-ml-md" flat icon="account_circle" label="帐号"
                  @click="toggleRightDrawer"/>
@@ -155,8 +155,6 @@ const exit = () => {
       bordered
       content-class="bg-grey-3"
       elevated
-      mini-to-overlay
-      overlay
       side="right"
       @mouseout="()=>{mainLayoutStore.isRightDrawerOpen = false}"
       @mouseover="()=>{mainLayoutStore.isRightDrawerOpen = true}"
