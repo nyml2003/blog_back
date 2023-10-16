@@ -22,8 +22,6 @@ export const useAuthStore = defineStore("AuthStore", () => {
         return false;
       }
     } catch (err) {
-      console.log('checkToken', err);
-      notifyError(err);
       return false;
     }
   }
