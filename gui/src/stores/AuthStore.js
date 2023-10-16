@@ -116,7 +116,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
       if (res.data.hasOwnProperty("message")) {
         localStorage.setItem("accessToken", res.data.access);
         localStorage.setItem("refreshToken", res.data.refresh);
-        notifySuccess(res.data.message);
+        notifySuccess("注册成功");
         enableAuth();
         await router.push("/");
         return;

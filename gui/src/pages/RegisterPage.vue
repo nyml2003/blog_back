@@ -121,10 +121,11 @@ watch(form.value, () => {
               <q-icon name="image"/>
             </template>
           </q-file>
-          <q-separator/>
+
           <div class="justify-center flex-center flex">
-            <q-btn type="submit" label="注册" color="primary" class="q-mt-md"/>
-            <q-btn type="reset" label="重置" color="negative" class="q-mt-md"/>
+            <q-btn type="reset" label="重置" color="negative" class="q-ma-md"/>
+            <q-btn type="submit" label="注册" color="primary" class="q-ma-md"/>
+
           </div>
         </q-form>
       </q-card-section>
