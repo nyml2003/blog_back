@@ -17,8 +17,6 @@ export const useAuthStore = defineStore("AuthStore", () => {
       if (isEmptyObject(res.data)) {
         return true;
       } else {
-        console.log('checkToken', res);
-        notifyError(res);
         return false;
       }
     } catch (err) {
