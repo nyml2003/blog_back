@@ -16,9 +16,12 @@ const login = () => {
 const router = useRouter();
 const $q = useQuasar();
 
-const {checkAndSetAuth,logout} = authStore;
-onMounted(async() => {
+const {checkAndSetAuth, logout} = authStore;
+onMounted(async () => {
   await checkAndSetAuth();
+  if (isAuthenticated.value) {
+    loadUserDetail();
+  }
 });
 const isRightDrawerOpen = ref(computed(() => mainLayoutStore.isRightDrawerOpen));
 const keyword = ref("");
@@ -41,7 +44,7 @@ const reload = () => {
 }
 const {isAuthenticated} = storeToRefs(authStore);
 watch(isAuthenticated, (newVal) => {
-  switch (newVal){
+  switch (newVal) {
     case true:
       loadUserDetail();
       break;

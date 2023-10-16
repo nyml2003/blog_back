@@ -18,12 +18,6 @@ const routes = [
         component: () => import(`components/${platform}/BlogDetail${platform}.vue`),
       },
       {
-        path: 'blog/edit',
-        props: true,
-        name: 'BlogEdit',
-        component: () => import("components/BlogEdit.vue"),
-      },
-      {
         path: 'login',
         name: 'Login',
         meta: {requireAuth: false},
@@ -98,6 +92,12 @@ const routes = [
             name: 'BlogManage',
             meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/BlogPostManage.vue"),
+          },
+          {
+            path: 'blog/edit',
+            props: true,
+            name: 'BlogEdit',
+            component: () => import("components/BlogEdit.vue"),
           },
           {
             path: 'user',

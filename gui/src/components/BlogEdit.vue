@@ -2,11 +2,12 @@
 import {ref, onMounted, reactive} from "vue";
 import {baseMediaURL, userApi} from "boot/axios";
 import {MdEditor} from "md-editor-v3";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar();
 const route = useRoute();
+const router = useRouter();
 import "md-editor-v3/lib/style.css";
 import axios from "axios";
 
@@ -61,6 +62,13 @@ const upload = () => {
       timeout: 1000,
     })
     console.log(res)
+    router.push({
+      path: '/admin/manage/blog/edit',
+      query: {
+        id: res.data.id
+      }
+    })
+    blog_id.value = res.data.id
     loadData()
   }).catch((err) => {
     console.log(err)
@@ -75,7 +83,7 @@ const update = () => {
       },
     }).then((res) => {
     $q.notify({
-      message: '添加成功',
+      message: '修改成功',
       color: 'positive',
       icon: 'check',
       position: 'top',

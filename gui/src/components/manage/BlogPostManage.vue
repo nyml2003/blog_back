@@ -3,13 +3,14 @@ import {useQuasar} from "quasar";
 import {onMounted, ref} from "vue";
 import {guestApi, userApi} from "boot/axios";
 import {useRouter} from "vue-router";
+
 const router = useRouter();
-const goEdit = (id)=>{
-    router.push({
-      path: '/blog/edit/',
-      query: {
-        id: id
-      }
+const goEdit = (id) => {
+  router.push({
+    path: '/admin/manage/blog/edit',
+    query: {
+      id: id
+    }
   })
 }
 const $q = useQuasar();
@@ -441,12 +442,12 @@ onMounted(() => {
               重置
             </q-btn>
             <q-btn
-           flat
-          dense
-          icon="edit"
-          color="primary"
-          @click="goEdit(null)">
-          编辑
+              flat
+              dense
+              icon="edit"
+              color="primary"
+              @click="goEdit(null)">
+              编辑
             </q-btn>
           </q-card-actions>
         </q-form>
@@ -514,7 +515,8 @@ onMounted(() => {
           icon="refresh"
           color="primary"
           @click="loadData"
-        >刷新</q-btn>
+        >刷新
+        </q-btn>
       </template>
     </q-table>
   </q-card-section>

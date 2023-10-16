@@ -43,7 +43,12 @@ export const useAuthStore = defineStore("AuthStore", () => {
       position: "top",
       icon: "report_problem",
       timeout: 0,
-      closeBtn: "关闭",
+      actions: [
+        {
+          icon: "close",
+          color: "white",
+        },
+      ],
     });
   }
 
@@ -102,7 +107,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
       return;
     } catch (err) {
       console.log(err)
-      notifyError(err);
+      notifyError(err.response.data.detail);
     }
   }
 
