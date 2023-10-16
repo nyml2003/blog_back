@@ -1,9 +1,9 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useQuasar } from "quasar";
-import { guestApi } from "boot/axios";
-import { isEmptyObject, isInvalidValue } from "src/utils/normalLogic";
+import {defineStore} from "pinia";
+import {ref} from "vue";
+import {useRouter} from "vue-router";
+import {useQuasar} from "quasar";
+import {guestApi} from "boot/axios";
+import {isEmptyObject, isInvalidValue} from "src/utils/normalLogic";
 
 export const useAuthStore = defineStore("AuthStore", () => {
   const $q = useQuasar();
@@ -17,10 +17,12 @@ export const useAuthStore = defineStore("AuthStore", () => {
       if (isEmptyObject(res.data)) {
         return true;
       } else {
+        console.log('checkToken', res);
         notifyError(res);
         return false;
       }
     } catch (err) {
+      console.log('checkToken', err);
       notifyError(err);
       return false;
     }
@@ -75,18 +77,20 @@ export const useAuthStore = defineStore("AuthStore", () => {
           break;
       }
     } catch (err) {
+      console.log('err', err);
       notifyError(err);
       disableAuth();
     }
   }
 
-  async function login(username, password,router) {
+  async function login(username, password, router) {
     try {
       const res = await guestApi.post("/user/login/", {
         username: username,
         password: password,
       });
       if (isInvalidValue(res)) {
+        console.log(res)
         notifyError(res);
         return;
       }
@@ -102,7 +106,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
     }
   }
 
-  async function register(form,router) {
+  async function register(form, router) {
     try {
       const res = await guestApi.post("/user/register/", form, {
         headers: {
@@ -110,6 +114,7 @@ export const useAuthStore = defineStore("AuthStore", () => {
         },
       });
       if (isInvalidValue(res)) {
+        console.log('register', res);
         notifyError(res);
         return;
       }
