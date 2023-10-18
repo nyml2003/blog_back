@@ -115,32 +115,29 @@ const exit = () => {
 }
 </script>
 <template>
-  <q-layout class=" bg-grey-3" view="hHr LpR ffr">
-    <q-header elevated style=" -webkit-backdrop-filter: blur(10px);" class="bg-transparent"  reveal :reveal-offset="100">
-      <q-toolbar class=" text-black justify-center">
+  <q-layout class="bg-grey-3" view="hHr LpR ffr">
+    <q-header elevated class="bg-transparent header-container" reveal>
+      <q-toolbar class="text-black justify-center">
         <q-tabs inline-label>
           <q-route-tab exact icon="home" label="首页" to="/"/>
           <q-route-tab exact icon="group" label="友链" to="/friend"/>
           <q-route-tab exact icon="menu_book" label="博文列表" to="/blog"/>
           <q-route-tab exact icon="videogame_asset" label="游戏" to="/game"/>
         </q-tabs>
-        <div class="q-mx-md"/>
         <q-input
           ref="input"
           v-model="keywordCopy"
           color="primary"
+          class="q-ml-md"
           dense
           outlined
           placeholder="搜索"
-          @blur="search"
           @keyup.enter="search"
-
         >
           <template #prepend>
             <q-btn color="primary" icon="search" round size="sm" @click="search"></q-btn>
           </template>
         </q-input>
-
         <transition mode="out-in" name="fade">
           <q-btn v-if="isAuthenticated" class="q-ml-md" flat icon="account_circle" label="帐号"
                  @click="toggleRightDrawer"/>
@@ -198,8 +195,7 @@ const exit = () => {
     </q-drawer>
     <q-page-container>
       <router-view v-if="isRouteActive"/>
-      <q-footer class="flex flex-center bg-grey-3" style="height: 50px">
-        <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+      <q-footer class="flex flex-center bg-grey-3">
         <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
       </q-footer>
     </q-page-container>
@@ -208,6 +204,10 @@ const exit = () => {
 </template>
 
 <style scoped>
+.header-container {
+  height: 50px;
+  -webkit-backdrop-filter: blur(10px);
+}
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }

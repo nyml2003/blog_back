@@ -1,13 +1,16 @@
 <script setup>
-import {useRecordStore} from "stores/RecordStore";
+import { useRecordStore } from "stores/RecordStore";
 
 const recordStore = useRecordStore();
 </script>
 
 <template>
-  <a href="http://beian.miit.gov.cn" target="_blank">{{ recordStore.RecordNumber }}</a>
+  <div class="text-caption1 text-grey-8">
+    © 2023 风唤长河
+    <a href="http://beian.miit.gov.cn" target="_blank">{{
+      recordStore.RecordNumber
+    }}</a>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

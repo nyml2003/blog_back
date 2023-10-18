@@ -195,11 +195,11 @@ const exit = () => {
         />
       </q-page-sticky>
       <router-view v-if="isRouteActive"/>
+      <q-footer class="flex flex-center bg-grey-3">
+        <RecordShow class="text-caption1 text-grey-8 q-mb-xl"></RecordShow>
+      </q-footer>
     </q-page-container>
-    <div class="flex flex-center bg-grey-3" style="height: 200px">
-      <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
-      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
-    </div>
+
     <q-footer reveal ref="toolbarRef" elevated style="backdrop-filter: blur(10px)" class="bg-transparent">
       <q-toolbar class="text-black justify-between" v-if="!isInputKeyword">
         <q-tabs inline-label>

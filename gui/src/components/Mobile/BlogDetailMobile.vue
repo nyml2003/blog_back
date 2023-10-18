@@ -5,7 +5,8 @@ import {useRoute, useRouter} from "vue-router";
 import {guestApi, userApi} from "boot/axios";
 import "md-editor-v3/lib/preview.css";
 import axios from "axios";
-
+import {useMainLayoutStore} from "stores/MainLayoutStore";
+const mainLayoutStore = useMainLayoutStore();
 const route = useRoute();
 const router = useRouter();
 const title = ref("");
@@ -32,15 +33,17 @@ const loadData = () => {
       prevId.value = res.data.prev_id;
     }
   });
-  guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-    console.log(res)
-    comments.value = res.data;
-    comments.value.forEach((item) => {
-      item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
-        hour12: false,
+  if (mainLayoutStore.isCommentShow) {
+    guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
+      console.log(res)
+      comments.value = res.data;
+      comments.value.forEach((item) => {
+        item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
+          hour12: false,
+        });
       });
     });
-  });
+  }
 };
 const blogList = ref([]);
 const nextId = ref(0);
@@ -153,7 +156,7 @@ const showComment = ref(false);
         />
       </q-card-actions>
     </q-card>
-    <q-card class="q-ma-sm" style="width: 95%">
+    <q-card class="q-ma-sm" style="width: 95%" v-if="mainLayoutStore.isCommentShow">
       <q-list separator>
         <q-item>
           <q-item-section>
