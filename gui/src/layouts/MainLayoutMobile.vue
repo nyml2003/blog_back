@@ -125,10 +125,14 @@ const exit = () => {
     ]
   })
 }
+function toGithub() {
+  window.open("https://github.com/nyml2003")
+}
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
-    <q-header elevated>
+    <q-header elevated class="bg-transparent">
+
     </q-header>
     <q-drawer
       v-model="mainLayoutStore.isRightDrawerOpen"
@@ -196,6 +200,16 @@ const exit = () => {
       </q-page-sticky>
       <router-view v-if="isRouteActive"/>
       <q-footer class="flex flex-center bg-grey-3">
+        <q-btn
+          dense
+          flat
+          unelevated
+          size="xs"
+          label="GitHub"
+          color="primary"
+          class="q-mb-xl"
+          @click="toGithub"
+        />
         <RecordShow class="text-caption1 text-grey-8 q-mb-xl"></RecordShow>
       </q-footer>
     </q-page-container>

@@ -113,6 +113,9 @@ const exit = () => {
     ]
   })
 }
+function toGithub() {
+  window.open("https://github.com/nyml2003")
+}
 </script>
 <template>
   <q-layout class="bg-grey-3" view="hHr LpR ffr">
@@ -123,6 +126,7 @@ const exit = () => {
           <q-route-tab exact icon="group" label="友链" to="/friend"/>
           <q-route-tab exact icon="menu_book" label="博文列表" to="/blog"/>
           <q-route-tab exact icon="videogame_asset" label="游戏" to="/game"/>
+          <q-route-tab exact label="关于我" to="/about" icon="person"/>
         </q-tabs>
         <q-input
           ref="input"
@@ -138,6 +142,8 @@ const exit = () => {
             <q-btn color="primary" icon="search" round size="sm" @click="search"></q-btn>
           </template>
         </q-input>
+        <q-btn flat label="github" @click="toGithub" class="q-ml-md">
+        </q-btn>
         <transition mode="out-in" name="fade">
           <q-btn v-if="isAuthenticated" class="q-ml-md" flat icon="account_circle" label="帐号"
                  @click="toggleRightDrawer"/>
