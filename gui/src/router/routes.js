@@ -21,12 +21,12 @@ const routes = [
         path: 'login',
         name: 'Login',
         meta: {requireAuth: false},
-        component: () => import("pages/LoginPage.vue")
+        component: () => process.env.DEV ? import("pages/LoginPage.vue") : import("pages/ErrorNotFound.vue")
       },
       {
         path: 'register',
         name: 'Register',
-        component: () => import("pages/RegisterPage.vue")
+        component: () => process.env.DEV ? import("pages/RegisterPage.vue") : import("pages/ErrorNotFound.vue")
       },
       {
         path: "/user",

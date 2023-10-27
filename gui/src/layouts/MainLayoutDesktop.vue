@@ -116,6 +116,7 @@ const exit = () => {
 function toGithub() {
   window.open("https://github.com/nyml2003")
 }
+const isDEV = ref(process.env.DEV);
 </script>
 <template>
   <q-layout class="bg-grey-3" view="hHr LpR ffr">
@@ -144,7 +145,7 @@ function toGithub() {
         </q-input>
         <q-btn flat label="github" @click="toGithub" class="q-ml-md">
         </q-btn>
-        <transition mode="out-in" name="fade">
+        <transition mode="out-in" name="fade" v-if="isDEV">
           <q-btn v-if="isAuthenticated" class="q-ml-md" flat icon="account_circle" label="帐号"
                  @click="toggleRightDrawer"/>
           <q-btn v-else class="q-ml-md" flat icon="account_circle" label="登录"

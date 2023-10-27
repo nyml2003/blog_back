@@ -128,6 +128,7 @@ const exit = () => {
 function toGithub() {
   window.open("https://github.com/nyml2003")
 }
+const isDEV = ref(process.env.DEV);
 </script>
 <template>
   <q-layout view="hHr LpR ffr" class="non-selectable bg-grey-3">
@@ -140,6 +141,7 @@ function toGithub() {
       :width="300"
       side="right"
       elevated
+      v-if="isDEV"
     >
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-left: 1px solid #ddd">
         <q-list padding>
@@ -184,6 +186,7 @@ function toGithub() {
         color="primary"
         icon='chevron_right'
         @click="toggleRightDrawer"
+        v-if="isDEV"
       />
     </q-drawer>
     <q-page-container>
@@ -195,7 +198,7 @@ function toGithub() {
           color="primary"
           icon='chevron_left'
           @click="toggleRightDrawer"
-          v-if="!mainLayoutStore.isRightDrawerOpen"
+          v-if="!mainLayoutStore.isRightDrawerOpen && isDEV"
         />
       </q-page-sticky>
       <router-view v-if="isRouteActive"/>
