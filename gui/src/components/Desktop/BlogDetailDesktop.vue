@@ -6,6 +6,7 @@ import {guestApi, userApi} from "boot/axios";
 import "md-editor-v3/lib/preview.css";
 import axios from "axios";
 import {useMainLayoutStore} from "stores/MainLayoutStore";
+
 const mainLayoutStore = useMainLayoutStore();
 const route = useRoute();
 const router = useRouter();
@@ -16,7 +17,7 @@ const id = "preview-only";
 const blog_id = ref(0);
 const comments = ref([]);
 const tags = ref([]);
-
+const isDEV = ref(process.env.DEV);
 const loadData = () => {
   blog_id.value = parseInt(route.params.id);
   guestApi.get(`/blog/rest/`).then((res) => {
@@ -41,15 +42,15 @@ const loadData = () => {
       prevId.value = res.data.prev_id;
     }
   });
-    if (mainLayoutStore.isCommentShow){
+  if (mainLayoutStore.isCommentShow) {
     guestApi.get(`/comment/blog/${blog_id.value}/`).then((res) => {
-    comments.value = res.data;
-    comments.value.forEach((item) => {
-      item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
-        hour12: false,
+      comments.value = res.data;
+      comments.value.forEach((item) => {
+        item.updated_at = new Date(item.updated_at).toLocaleString("zh-CN", {
+          hour12: false,
+        });
       });
     });
-  });
   }
 
 };
@@ -168,7 +169,7 @@ const showComment = ref(false);
         />
       </q-card-actions>
     </q-card>
-    <q-card class="q-ma-sm" style="width: 700px;" v-if="mainLayoutStore.isCommentShow">
+    <q-card class="q-ma-sm" style="width: 700px;" v-if="mainLayoutStore.isCommentShow && isDEV">
       <q-list separator>
         <q-expansion-item v-if="!showComment" label="评论">
           <q-item v-for="item in comments" :key="item.id">
@@ -186,7 +187,7 @@ const showComment = ref(false);
             </q-item-section>
           </q-item>
         </q-expansion-item>
-        <q-item >
+        <q-item>
           <q-item-section>
             <q-input v-model="comment" label="请输入评论" type="textarea" rows="3">
               <template #append>

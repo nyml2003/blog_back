@@ -6,6 +6,28 @@ import {userApi} from "boot/axios";
 const $q = useQuasar();
 const data = ref([])
 const loading = ref(false)
+const statusMapper = [
+  {
+    label: '审核中',
+    color: 'warning'
+  },
+  {
+    label: '审核通过',
+    color: 'positive'
+  },
+  {
+    label: '审核未通过',
+    color: 'negative'
+  },
+  {
+    label: '已逻辑删除',
+    color: 'grey'
+  },
+  {
+    label: '重新审核中',
+    color: 'warning'
+  }
+]
 const loadData = () => {
   loading.value = true
   userApi.get("/comment/rest/", {
@@ -34,6 +56,12 @@ const TableParams = {
       label: '用户',
       field: 'user',
       align: 'center',
+    },
+    {
+      name: 'status',
+      label: '状态',
+      field: 'status',
+      align: 'center'
     },
     {
       name: 'content',
@@ -82,7 +110,8 @@ const TableParams = {
       label: '操作',
       field: 'operation',
       align: 'center',
-    }
+    },
+
   ],
   pagination: ref({
     sortBy: 'id',
@@ -164,7 +193,7 @@ onMounted(() => {
       binary-state-sort
       :separator="'cell'"
       :rows-per-page-options="[7, 10, 15]"
-      :visible-columns="['id', 'user', 'content', 'parent_id', 'parent_name', 'parent_type', 'created_at', 'updated_at', 'operation']"
+      :visible-columns="['id', 'user', 'status','content', 'parent_id', 'parent_name', 'parent_type', 'created_at', 'updated_at', 'operation',]"
     >
       <template #body-cell-avatar="props">
         <q-td :props="props">
@@ -187,6 +216,14 @@ onMounted(() => {
             class="q-mx-sm"
             color="negative"
             @click="deleteById(props.row.id)"
+          />
+        </q-td>
+      </template>
+      <template #body-cell-status="props">
+        <q-td :props="props">
+          <q-chip
+            :label="statusMapper[props.row.status/100-1].label"
+            :color="statusMapper[props.row.status/100-1].color"
           />
         </q-td>
       </template>

@@ -14,7 +14,7 @@ class CommentListByBlog(ListAPIView):
 
     def get_queryset(self):
         blog_id = self.kwargs['id']
-        return Comment.objects.filter(parent_blog_id=blog_id).order_by('-updated_at')
+        return Comment.objects.filter(parent_blog_id=blog_id).filter(status=200).order_by('-updated_at')
 
 
 class CommentListByUser(ListAPIView):
@@ -95,4 +95,3 @@ class CommentDetailView(ModelViewSet):
             return JsonResponse({'message': 'delete success'}, safe=False)
         else:
             return JsonResponse({'error': 'permission denied'}, safe=False)
-

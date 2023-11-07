@@ -36,15 +36,24 @@ const leftDrawerOpen = ref(true);
               <q-item-label>管理</q-item-label>
             </q-item-section>
           </q-item>
+          <!--          审核-->
+          <q-item clickable v-ripple @click="router.push({path: '/admin/review'})">
+            <q-item-section avatar>
+              <q-icon name="check" size="md"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>审核</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
     <q-page-container>
       <router-view/>
       <q-footer class="flex flex-center bg-grey-3" style="height: 50px">
-          <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
-      <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
-        </q-footer>
+        <div class="text-caption1 text-grey-8">© 2023 风唤长河</div>
+        <RecordShow class="text-caption1 text-grey-8 q-mx-md"/>
+      </q-footer>
     </q-page-container>
   </q-layout>
 </template>

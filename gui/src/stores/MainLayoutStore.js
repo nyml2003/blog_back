@@ -4,6 +4,6 @@ export const useMainLayoutStore = defineStore("MainLayoutStore", {
   state: () => ({
     isRightDrawerOpen: false,
     id: null,
-    isCommentShow: false,
+    isCommentShow: true,
   }),
 });
