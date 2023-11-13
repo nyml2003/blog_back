@@ -6,7 +6,7 @@ const tableTab = ref("user");
 </script>
 
 <template>
-  <q-page class="bg-grey-2 ">
+  <q-page class="bg-grey-2">
     <q-toolbar
       class="shadow-2 bg-white calc"
       elevated

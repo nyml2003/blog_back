@@ -5,7 +5,7 @@ const recordStore = useRecordStore();
 </script>
 
 <template>
-  <div class="text-caption1 text-grey-8">
+  <div class="text-caption1 text-grey-2">
     © 2023 风唤长河
     <a href="http://beian.miit.gov.cn" target="_blank">{{
       recordStore.RecordNumber

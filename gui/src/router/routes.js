@@ -123,7 +123,14 @@ const routes = [
             meta: {requireAuth: true, group: 'NormalAdminGroup'},
             component: () => import("components/manage/FriendManage.vue"),
           }]
+      },
+      {
+        path:'review',
+        name:'Review',
+        meta: {requireAuth: true, group: 'NormalAdminGroup'},
+        component: () => import("pages/ReviewPage.vue"),
       }
+
     ]
   },
   // Always leave this as last one,
