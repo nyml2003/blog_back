@@ -18,14 +18,6 @@ const statusMapper = [
   {
     label: '审核未通过',
     color: 'negative'
-  },
-  {
-    label: '已逻辑删除',
-    color: 'grey'
-  },
-  {
-    label: '重新审核中',
-    color: 'warning'
   }
 ]
 const loadData = () => {

@@ -125,10 +125,10 @@ const routes = [
           }]
       },
       {
-        path:'review',
-        name:'Review',
+        path: 'review',
+        name: 'Review',
         meta: {requireAuth: true, group: 'NormalAdminGroup'},
-        component: () => import("pages/ReviewPage.vue"),
+        component: () => import("components/manage/ReviewManage.vue"),
       }
 
     ]
