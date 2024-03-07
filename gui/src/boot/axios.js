@@ -8,13 +8,14 @@ import {Notify} from "quasar";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const baseAxiosConfig = {
-  baseURL: process.env.NODE_ENV === 'http://localhost:8091/api',
-  // baseURL: process.env.NODE_ENV === 'production' ? 'http://8.130.84.162:8080/api' : 'http://localhost:8090/api',
-  timeout: 1000,
+  baseURL:
+    process.env.NODE_ENV === "production"
+      ? "http://39.101.164.12:8080/api"
+      : "http://localhost:8090/api",
   headers: {
-    'Content-Type': 'application/json;charset=UTF-8'
-  }
-}
+    "Content-Type": "application/json;charset=UTF-8",
+  },
+};
 const baseMediaURL = process.env.NODE_ENV === 'http://localhost:8091';
 const guestApi = axios.create(baseAxiosConfig);
 const userApi = axios.create(baseAxiosConfig);
