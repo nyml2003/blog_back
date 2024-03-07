@@ -16,7 +16,9 @@ const baseAxiosConfig = {
     "Content-Type": "application/json;charset=UTF-8",
   },
 };
-const baseMediaURL = process.env.NODE_ENV === 'http://localhost:8091';
+const baseMediaURL = process.env.NODE_ENV === "production"
+    ? "http://39.101.164.12:8080/api"
+    : "http://localhost:8090/api";
 const guestApi = axios.create(baseAxiosConfig);
 const userApi = axios.create(baseAxiosConfig);
 userApi.interceptors.request.use(
