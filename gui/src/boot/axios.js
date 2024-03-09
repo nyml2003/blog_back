@@ -10,14 +10,15 @@ import {Notify} from "quasar";
 const baseAxiosConfig = {
   baseURL:
     process.env.NODE_ENV === "production"
-      ? "https://api.ventusvocatflumen.cn"
+      ? "https://ventusvocatflumen.cn/api/"
       : "http://localhost:8090/api",
   headers: {
     "Content-Type": "application/json;charset=UTF-8",
   },
 };
-const baseMediaURL = process.env.NODE_ENV === "production"
-    ? "https://api.ventusvocatflumen.cn"
+const baseMediaURL =
+  process.env.NODE_ENV === "production"
+    ? "https://ventusvocatflumen.cn/api/"
     : "http://localhost:8090/api";
 const guestApi = axios.create(baseAxiosConfig);
 const userApi = axios.create(baseAxiosConfig);
