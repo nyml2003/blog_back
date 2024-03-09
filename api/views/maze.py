@@ -1,4 +1,6 @@
+import os
 from django.http import JsonResponse
+from blog_back import settings
 from utils.maze.mazeCreator import mazeCreator, putter
 
 
@@ -42,4 +44,20 @@ def create_maze(request):
         return JsonResponse({
             'message': 'maze',
             'error': 'method not allowed'
+        })
+import pandas    
+def query_wordle(request):
+    if request.method == 'GET':
+        frq = str(request.GET.get('frq'))
+        length = int(request.GET.get('len'))
+        src_csv = os.path.join(settings.STATIC_URL,"ecdict.csv")
+        df = pandas.read_csv(src_csv, dtype=str).fillna('')
+        ans = ""
+        for index, row in df.iterrows():
+            if row["frq"] == frq and len(row["word"]) == length:
+                ans = row["word"]
+                break
+        return JsonResponse({
+            'message': 'wordle',
+            'word': ans
         })

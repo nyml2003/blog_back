@@ -127,7 +127,6 @@ const isDEV = ref(process.env.DEV);
           <q-route-tab exact icon="group" label="友链" to="/friend"/>
           <q-route-tab exact icon="menu_book" label="博文列表" to="/blog"/>
           <q-route-tab exact icon="videogame_asset" label="游戏" to="/game"/>
-          <q-route-tab exact label="关于我" to="/about" icon="person"/>
         </q-tabs>
         <q-input
           ref="input"

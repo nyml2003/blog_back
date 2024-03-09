@@ -67,5 +67,6 @@ urlpatterns = [
         'delete': 'destroy'
     })),
     path('maze/create', maze.create_maze),
+    path('wordle/query', maze.query_wordle),
     path('img/upload/', img.upload)
 ]
