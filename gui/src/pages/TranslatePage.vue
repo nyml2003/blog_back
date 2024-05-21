@@ -1,6 +1,6 @@
-<script setup>
+<script setup >
 import { ref } from "vue";
-import translateMIPS2Verilog from "src/utils/instruction";
+import {translateMIPS2Verilog }from "src/utils/instruction";
 const instructions = ref(`addi r1,r1,0x0004
 or r4,r5,r6
 addi r3,r2,0x0
@@ -15,7 +15,8 @@ addi r1,r1,0x0004
 addi r1,r1,0x0004`);
 const verilog = ref("");
 function compile() {
-    verilog.value = translateMIPS2Verilog(instructions.value.split("\n")).join("\n");
+    // instructions.value.split("\n") 并去除空行
+    verilog.value = translateMIPS2Verilog(instructions.value.split("\n").filter((line) => line.trim() !== "")).join("\n");
 }
 </script>
 

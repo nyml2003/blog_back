@@ -1,4 +1,3 @@
-"use strict";
 class Bit32 {
   constructor(value) {
     this.value = value;
@@ -256,7 +255,7 @@ class Jump extends J {
     );
   }
 }
-export default function translateMIPS2Verilog(input) {
+export function translateMIPS2Verilog(input) {
   const verilogCode = [`assign rom[6'h00] = 32'h00000000;`];
   function addInstructionToROM(instruction) {
     verilogCode.push(
