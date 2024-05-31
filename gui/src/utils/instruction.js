@@ -7,7 +7,7 @@ class Bit32 {
     return parseInt(this.value, 2).toString(16).padStart(8, "0");
   }
 }
-class R {
+class RType {
   constructor(op, func, shift = "00000", rd, rs = "00000", rt, name) {
     this.op = op;
     this.func = func;
@@ -33,7 +33,7 @@ class R {
     return this.name;
   }
 }
-class I {
+class IType {
   constructor(op, imm, rs, rt, name) {
     this.op = op;
     this.imm = imm;
@@ -53,7 +53,7 @@ class I {
     return this.name;
   }
 }
-class J {
+class JType {
   constructor(op, addr, name) {
     this.op = op;
     this.addr = addr;
@@ -69,7 +69,7 @@ class J {
     return this.name;
   }
 }
-class Add extends R {
+class Add extends RType {
   constructor(rd, rs, rt) {
     super(
       "000000",
@@ -82,7 +82,7 @@ class Add extends R {
     );
   }
 }
-class And extends R {
+class And extends RType {
   constructor(rd, rs, rt) {
     super(
       "000001",
@@ -95,7 +95,7 @@ class And extends R {
     );
   }
 }
-class Or extends R {
+class Or extends RType {
   constructor(rd, rs, rt) {
     super(
       "000001",
@@ -108,7 +108,7 @@ class Or extends R {
     );
   }
 }
-class Xor extends R {
+class Xor extends RType {
   constructor(rd, rs, rt) {
     super(
       "000001",
@@ -121,7 +121,7 @@ class Xor extends R {
     );
   }
 }
-class Srl extends R {
+class Srl extends RType {
   constructor(rd, rt, shift) {
     super(
       "000010",
@@ -134,7 +134,7 @@ class Srl extends R {
     );
   }
 }
-class Sll extends R {
+class Sll extends RType {
   constructor(shift, rd, rt) {
     super(
       "000010",
@@ -147,7 +147,7 @@ class Sll extends R {
     );
   }
 }
-class Addi extends I {
+class Addi extends IType {
   constructor(rt, rs, imm) {
     super(
       "000101",
@@ -158,7 +158,7 @@ class Addi extends I {
     );
   }
 }
-class Andi extends I {
+class Andi extends IType {
   constructor(rt, rs, imm) {
     super(
       "001001",
@@ -169,7 +169,7 @@ class Andi extends I {
     );
   }
 }
-class Ori extends I {
+class Ori extends IType {
   constructor(rt, rs, imm) {
     super(
       "001010",
@@ -180,7 +180,7 @@ class Ori extends I {
     );
   }
 }
-class Xori extends I {
+class Xori extends IType {
   constructor(rt, rs, imm) {
     super(
       "001100",
@@ -191,7 +191,7 @@ class Xori extends I {
     );
   }
 }
-class Load extends I {
+class Load extends IType {
   constructor(rt, offset, rs) {
     super(
       "001101",
@@ -202,7 +202,7 @@ class Load extends I {
     );
   }
 }
-class Store extends I {
+class Store extends IType {
   constructor(rt, offset, rs) {
     super(
       "001110",
@@ -213,7 +213,7 @@ class Store extends I {
     );
   }
 }
-class Beq extends I {
+class Beq extends IType {
   constructor(index, rs, rt, imm) {
     const offset =
       parseInt(imm.slice(3), 16) - index - 1 < 0
@@ -228,7 +228,7 @@ class Beq extends I {
     );
   }
 }
-class Bne extends I {
+class Bne extends IType {
   constructor(index, rs, rt, imm) {
     // 4*label = 4*index + 4 + offset << 2
     // offset = label - index - 1
@@ -246,7 +246,7 @@ class Bne extends I {
     );
   }
 }
-class Jump extends J {
+class Jump extends JType {
   constructor(addr) {
     super(
       "010010",
@@ -272,34 +272,89 @@ export function translateMIPS2Verilog(input) {
     if (name === "store") {
       const [rt, ...rest] = args[0].split(",");
       const [offset, rs] = rest.join(" ").split("(");
-      const __reflect = Reflect.construct(instruction_class, [
-        rt,
-        offset,
-        rs.slice(0, -1),
-      ]);
+      const __reflect = new Store(rt, offset, rs.slice(0, -1));
       addInstructionToROM(__reflect);
     } else if (name === "load") {
       const [rt, ...rest] = args[0].split(",");
       const [offset, rs] = rest.join(" ").split("(");
-      const __reflect = Reflect.construct(instruction_class, [
-        rt,
-        offset,
-        rs.slice(0, -1),
-      ]);
+      const __reflect = new Load(rt, offset, rs.slice(0, -1));
       addInstructionToROM(__reflect);
-    } else if (name === "beq" || name === "bne") {
-      const __reflect = Reflect.construct(instruction_class, [
-        index,
-        ...args[0].split(","),
-      ]);
+    } else if (name === "beq") {
+      const [rs, rt, imm] = args[0].split(",");
+      const __reflect = new Beq(index + 1, rs, rt, imm);
       addInstructionToROM(__reflect);
-    } else {
-      const __reflect = Reflect.construct(
-        instruction_class,
-        args[0].split(",")
-      );
+    } else if (name === "bne") {
+      const [rs, rt, imm] = args[0].split(",");
+      const __reflect = new Bne(index + 1, rs, rt, imm);
+      addInstructionToROM(__reflect);
+    } else if (name === "jump") {
+      const __reflect = new Jump(args[0]);
+      addInstructionToROM(__reflect);
+    } else if (name === "add") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rs, rt] = rest;
+      const __reflect = new Add(rd, rs, rt);
+      addInstructionToROM(__reflect);
+    } else if (name === "sll") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rt, shift] = rest;
+      const __reflect = new Sll(shift, rd, rt);
+      addInstructionToROM(__reflect);
+    } else if (name === "srl") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rt, shift] = rest;
+      const __reflect = new Srl(rd, rt, shift);
+      addInstructionToROM(__reflect);
+    } else if (name === "addi") {
+      const [rt, ...rest] = args[0].split(",");
+      const [rs, imm] = rest;
+      const __reflect = new Addi(rt, rs, imm);
+      addInstructionToROM(__reflect);
+    } else if (name === "and") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rs, rt] = rest;
+      const __reflect = new And(rd, rs, rt);
+      addInstructionToROM(__reflect);
+    } else if (name === "andi") {
+      const [rt, ...rest] = args[0].split(",");
+      const [rs, imm] = rest;
+      const __reflect = new Andi(rt, rs, imm);
+      addInstructionToROM(__reflect);
+    } else if (name === "or") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rs, rt] = rest;
+      const __reflect = new Or(rd, rs, rt);
+      addInstructionToROM(__reflect);
+    } else if (name === "ori") {
+      const [rt, ...rest] = args[0].split(",");
+      const [rs, imm] = rest;
+      const __reflect = new Ori(rt, rs, imm);
+      addInstructionToROM(__reflect);
+    } else if (name === "xor") {
+      const [rd, ...rest] = args[0].split(",");
+      const [rs, rt] = rest;
+      const __reflect = new Xor(rd, rs, rt);
+      addInstructionToROM(__reflect);
+    } else if (name === "xori") {
+      const [rt, ...rest] = args[0].split(",");
+      const [rs, imm] = rest;
+      const __reflect = new Xori(rt, rs, imm);
       addInstructionToROM(__reflect);
     }
+
+    // } else if (name === "beq" || name === "bne") {
+    //   const __reflect = Reflect.construct(instruction_class, [
+    //     index,
+    //     ...args[0].split(","),
+    //   ]);
+    //   addInstructionToROM(__reflect);
+    // } else {
+    //   const __reflect = Reflect.construct(
+    //     instruction_class,
+    //     args[0].split(",")
+    //   );
+    //   addInstructionToROM(__reflect);
+    // }
   }
   return verilogCode;
 }
